@@ -106,7 +106,7 @@ func (n *NFTCtrt) Supersede(by *Account, newIssuer, attachment string) (*Broadca
 	)
 	resp, err := by.ExecuteCtrt(txReq)
 	if err != nil {
-	        return nil, fmt.Errorf("Supersede: %w", err)
+		return nil, fmt.Errorf("Supersede: %w", err)
 	}
 	return resp, nil
 }
