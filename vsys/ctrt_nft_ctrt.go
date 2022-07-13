@@ -82,7 +82,12 @@ func (n *NFTCtrt) Issue(by *Account, tokenDescription, attachment string) (*Broa
 		FEE_EXEC_CTRT,
 	)
 
-	return by.ExecuteCtrt(txReq)
+	resp, err := by.ExecuteCtrt(txReq)
+	if err != nil {
+		return nil, fmt.Errorf("Issue: %w", err)
+	}
+
+	return resp, nil
 }
 
 func (n *NFTCtrt) Supersede(by *Account, newIssuer, attachment string) (*BroadcastExecuteTxResp, error) {
