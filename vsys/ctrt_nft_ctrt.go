@@ -84,3 +84,20 @@ func (n *NFTCtrt) Issue(by *Account, tokenDescription, attachment string) (*Broa
 
 	return by.ExecuteCtrt(txReq)
 }
+
+func (n *NFTCtrt) Supersede(by *Account, newIssuer string, attachment string) (*BroadcastExecuteTxResp, error) {
+	addr, err := NewAddrFromB58Str(newIssuer)
+	if err != nil {
+		return nil, err
+	}
+
+	txReq := NewExecCtrtFuncTxReq(
+		n.CtrtId,
+		FUNC_IDX_NFT_SUPERSEDE,
+		DataStack{NewDeAddr(addr)},
+		NewVSYSTimestampForNow(),
+		Str(attachment),
+		FEE_EXEC_CTRT,
+	)
+	return by.ExecuteCtrt(txReq)
+}
