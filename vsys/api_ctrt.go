@@ -22,7 +22,7 @@ type BroadcastRegisterTxResp struct {
 	InitData    Str `json:"initData"`
 	Description Str `json:"description"`
 
-	Ctrt CtrtMeta `json:"contract"`
+	CtrtMeta CtrtMetaResp `json:"contract"`
 }
 
 func (na *NodeAPI) BroadcastRegister(p *BroadcastRegisterPayload) (*BroadcastRegisterTxResp, error) {
