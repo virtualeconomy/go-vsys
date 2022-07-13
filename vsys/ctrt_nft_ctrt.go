@@ -85,10 +85,10 @@ func (n *NFTCtrt) Issue(by *Account, tokenDescription, attachment string) (*Broa
 	return by.ExecuteCtrt(txReq)
 }
 
-func (n *NFTCtrt) Supersede(by *Account, newIssuer string, attachment string) (*BroadcastExecuteTxResp, error) {
+func (n *NFTCtrt) Supersede(by *Account, newIssuer, attachment string) (*BroadcastExecuteTxResp, error) {
 	addr, err := NewAddrFromB58Str(newIssuer)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Supersede: %w", err)
 	}
 
 	txReq := NewExecCtrtFuncTxReq(
@@ -99,5 +99,9 @@ func (n *NFTCtrt) Supersede(by *Account, newIssuer string, attachment string) (*
 		Str(attachment),
 		FEE_EXEC_CTRT,
 	)
-	return by.ExecuteCtrt(txReq)
+	resp, err := by.ExecuteCtrt(txReq)
+	if err != nil {
+	        return nil, fmt.Errorf("Supersede: %w", err)
+	}
+	return resp, nil
 }
