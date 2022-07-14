@@ -84,7 +84,7 @@ func (a AtomicSwapCtrt) Unit() (uint64, error) {
 }
 
 func (a *AtomicSwapCtrt) Lock(
-	by Account,
+	by *Account,
 	amount float64,
 	recipient string,
 	hashSecret Bytes,
