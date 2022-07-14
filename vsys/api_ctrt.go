@@ -103,3 +103,52 @@ func (na *NodeAPI) GetCtrtData(ctrtId, key string) (*CtrtDataResp, error) {
 	}
 	return res, nil
 }
+
+type TokenInfoResp struct {
+	TokenId     Str    `json:"tokenId"`
+	CtrtId      Str    `json:"contractId"`
+	Max         uint64 `json:"max"`
+	Total       uint64 `json:"total"`
+	Unity       uint64 `json:"unity"`
+	Description Str    `json:"description"`
+}
+
+func (na *NodeAPI) GetTokInfo(tokId string) (*TokenInfoResp, error) {
+	res := &TokenInfoResp{}
+	resp, err := na.R().SetResult(res).Get(
+		fmt.Sprintf("/contract/tokenInfo/%s", tokId),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokInfo: %w", err)
+	}
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GetTokInfo: %s", resp.String())
+	}
+	return res, nil
+}
+
+type CtrtInfoResp struct {
+	CtrtId        Str `json:"contractId"`
+	TransactionId Str `json:"transactionId"`
+	Type          Str `json:"type"`
+	Info          []struct {
+		Data Str `json:"data"`
+		Type Str `json:"type"`
+		Name Str `json:"name"`
+	}
+	Height Height `json:"height"`
+}
+
+func (na *NodeAPI) GetCtrtInfo(ctrtId string) (*CtrtInfoResp, error) {
+	res := &CtrtInfoResp{}
+	resp, err := na.R().SetResult(res).Get(
+		fmt.Sprintf("/contract/info/%s", ctrtId),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtInfo: %w", err)
+	}
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GetCtrtInfo: %s", resp.String())
+	}
+	return res, nil
+}

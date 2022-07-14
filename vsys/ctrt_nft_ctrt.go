@@ -8,6 +8,11 @@ type NFTCtrt struct {
 	*Ctrt
 }
 
+func (n NFTCtrt) Unit() uint64 {
+	//TODO implement me
+	return 1
+}
+
 func NewNFTCtrt(ctrtId string, chain *Chain) (*NFTCtrt, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {

@@ -1,0 +1,52 @@
+package vsys
+
+import (
+	"fmt"
+)
+
+type DeBytes struct {
+	Idx DeIdx
+
+	Data Bytes
+}
+
+// TODO: other constructors/factories?
+func NewDeBytes(b Bytes) *DeBytes {
+	return &DeBytes{
+		Idx:  11,
+		Data: b,
+	}
+}
+
+func (b *DeBytes) IdxBytes() Bytes {
+	return b.Idx.Serialize()
+}
+
+func (b *DeBytes) DataBytes() Bytes {
+	return b.Data
+}
+
+func (b *DeBytes) LenBytes() Bytes {
+	return PackUInt16(uint16(len(b.DataBytes())))
+}
+
+func (b *DeBytes) Serialize() Bytes {
+	size := len(b.IdxBytes()) +
+		len(b.LenBytes()) +
+		len(b.DataBytes())
+
+	bs := make([]byte, 0, size)
+	bs = append(bs, b.IdxBytes()...)
+	bs = append(bs, b.LenBytes()...)
+	bs = append(bs, b.DataBytes()...)
+
+	return bs
+}
+
+func (b *DeBytes) Size() int {
+	return 1 + len(b.DataBytes())
+}
+
+func (b *DeBytes) String() string {
+	return fmt.Sprintf("%T(%+v)", b, b.Data)
+}
