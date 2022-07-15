@@ -110,3 +110,95 @@ func (n *NFTCtrt) Supersede(by *Account, newIssuer, attachment string) (*Broadca
 	}
 	return resp, nil
 }
+
+func (n *NFTCtrt) Send(by *Account, recipient string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
+	rcpt_addr, err := NewAddrFromB58Str(recipient)
+	if err != nil {
+		return nil, fmt.Errorf("Send: %w", err)
+	}
+	// TODO: move to MustOn() bool function
+	if rcpt_addr.ChainID() != by.Chain.ChainID {
+		return nil, fmt.Errorf("Send: Adress must be on same chain")
+	}
+
+	txReq := NewExecCtrtFuncTxReq(
+		n.CtrtId,
+		FUNC_IDX_NFT_SEND,
+		DataStack{
+			NewDeAddr(rcpt_addr),
+			NewDeInt32(uint32(tok_idx)),
+		},
+		NewVSYSTimestampForNow(),
+		Str(attachment),
+		FEE_EXEC_CTRT,
+	)
+
+	resp, err := by.ExecuteCtrt(txReq)
+	if err != nil {
+		return nil, fmt.Errorf("Send: %w", err)
+	}
+	return resp, nil
+}
+
+func (n *NFTCtrt) Transfer(by *Account, sender, recipient string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
+	rcpt_addr, err := NewAddrFromB58Str(recipient)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
+	}
+	sender_addr, err := NewAddrFromB58Str(sender)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
+	}
+	// TODO: move to MustOn() bool function
+	if rcpt_addr.ChainID() != by.Chain.ChainID {
+		return nil, fmt.Errorf("Transfer: Adress must be on same chain")
+	}
+	if sender_addr.ChainID() != by.Chain.ChainID {
+		return nil, fmt.Errorf("Transfer: Adress must be on same chain")
+	}
+
+	txReq := NewExecCtrtFuncTxReq(
+		n.CtrtId,
+		FUNC_IDX_NFT_TRANSFER,
+		DataStack{
+			NewDeAddr(sender_addr),
+			NewDeAddr(rcpt_addr),
+			NewDeInt32(uint32(tok_idx)),
+		},
+		NewVSYSTimestampForNow(),
+		Str(attachment),
+		FEE_EXEC_CTRT,
+	)
+
+	resp, err := by.ExecuteCtrt(txReq)
+	if err != nil {
+		return nil, fmt.Errorf("Send: %w", err)
+	}
+	return resp, nil
+}
+
+func (n *NFTCtrt) Withdraw(by *Account, ctrtId string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
+	ctrtID, err := NewCtrtIdFromB58Str(ctrtId)
+	if err != nil {
+		return nil, fmt.Errorf("Withdraw: %w", err)
+	}
+
+	txReq := NewExecCtrtFuncTxReq(
+		n.CtrtId,
+		FUNC_IDX_NFT_TRANSFER,
+		DataStack{
+			NewDeCtrtAddrFromCtrtId(ctrtID),
+			NewDeAddr(by.Addr),
+			NewDeInt32(uint32(tok_idx)),
+		},
+		NewVSYSTimestampForNow(),
+		Str(attachment),
+		FEE_EXEC_CTRT,
+	)
+
+	resp, err := by.ExecuteCtrt(txReq)
+	if err != nil {
+		return nil, fmt.Errorf("Withdraw: %w", err)
+	}
+	return resp, nil
+}
