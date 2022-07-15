@@ -59,7 +59,7 @@ func (n NFTCtrt) Unit() Unit {
 	return 1
 }
 
-func NewDBKEYNFTCtrtMaker() Bytes {
+func NewDBKeyNFTCtrtMaker() Bytes {
 	return STATE_VAR_NFT_MAKER.Serialize()
 }
 
