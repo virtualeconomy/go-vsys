@@ -8,11 +8,6 @@ type NFTCtrt struct {
 	*Ctrt
 }
 
-func (n NFTCtrt) Unit() Unit {
-	// NFT contract have unit of 1
-	return 1
-}
-
 func NewNFTCtrt(ctrtId string, chain *Chain) (*NFTCtrt, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
@@ -59,8 +54,31 @@ func RegisterNFTCtrt(by *Account, ctrtDescription string) (*NFTCtrt, error) {
 	}, nil
 }
 
+func (n NFTCtrt) Unit() Unit {
+	// NFT contract have unit of 1
+	return 1
+}
+
+func NewDBKEYNFTCtrtMaker() Bytes {
+	return STATE_VAR_NFT_MAKER.Serialize()
+}
+
 func NewDBKeyNFTCtrtIssuer() Bytes {
 	return STATE_VAR_NFT_ISSUER.Serialize()
+}
+
+func (n *NFTCtrt) Maker() (*Addr, error) {
+	resp, err := n.QueryDBKey(
+		NewDBKEYNFTCtrtMaker(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
+	}
+	addr, err := NewAddrFromB58Str(resp.Val.Str())
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
+	}
+	return addr, nil
 }
 
 func (n *NFTCtrt) Issuer() (*Addr, error) {
