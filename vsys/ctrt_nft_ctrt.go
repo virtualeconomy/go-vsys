@@ -177,6 +177,35 @@ func (n *NFTCtrt) Transfer(by *Account, sender, recipient string, tok_idx int, a
 	return resp, nil
 }
 
+func (n *NFTCtrt) Deposit(
+	by *Account,
+	ctrtId string,
+	tokIdx int,
+	attachment string,
+) (*BroadcastExecuteTxResp, error) {
+
+	// TODO: dataentry_ctrtAccount
+	ctrtID, err := NewCtrtIdFromB58Str(ctrtId)
+	if err != nil {
+		return nil, fmt.Errorf("Deposit: %w", err)
+	}
+
+	ctrtAccount := NewDeCtrtAddrFromCtrtId(ctrtID)
+
+	// model.TokenIdx not needed?
+
+	txReq := NewExecCtrtFuncTxReq(
+		n.CtrtId,
+		FUNC_IDX_NFT_DEPOSIT,
+		DataStack{NewDeAddr(by.Addr), ctrtAccount, NewDeInt32(uint32(tokIdx))},
+		NewVSYSTimestampForNow(),
+		Str(attachment),
+		FEE_EXEC_CTRT,
+	)
+
+	return by.ExecuteCtrt(txReq)
+}
+
 func (n *NFTCtrt) Withdraw(by *Account, ctrtId string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
 	ctrtID, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
