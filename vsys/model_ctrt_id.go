@@ -1,6 +1,8 @@
 package vsys
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type CtrtId struct {
 	Bytes
@@ -26,6 +28,16 @@ func NewCtrtIdFromB58Str(s string) (*CtrtId, error) {
 	}
 
 	return cid, nil
+}
+
+func (c *CtrtId) GetTokId(tokIdx uint32) (*TokenId, error) {
+	b := c.Bytes
+	raw_CtrtId := b[1 : len(b)-CTRT_META_CHECKSUM_LEN]
+	ctrtIdNoChecksum := append(append(PackUInt8(CTRT_META_TOKEN_ADDR_VER), raw_CtrtId...), PackUInt32(tokIdx)...)
+	h := Keccak256Hash(Blake2bHash(ctrtIdNoChecksum))
+	tokIdBytes := B58Encode(append(ctrtIdNoChecksum, h[:CTRT_META_CHECKSUM_LEN]...))
+	tokId := string(tokIdBytes)
+	return NewTokenIdFromB58Str(tokId)
 }
 
 func (c *CtrtId) String() string {
