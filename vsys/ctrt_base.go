@@ -21,3 +21,42 @@ func (c *Ctrt) QueryDBKey(dbKey Bytes) (*CtrtDataResp, error) {
 	}
 	return resp, nil
 }
+
+type BaseTokCtrt interface {
+	Unit() Unit
+}
+
+func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
+	tokInfo, err := chain.NodeAPI.GetTokInfo(string(tokId.B58Str()))
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+	}
+	ctrtInfo, err := chain.NodeAPI.GetCtrtInfo(tokInfo.CtrtId.Str())
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+	}
+	// Switch statement here to choose constructor
+	switch string(ctrtInfo.Type) {
+	case "NonFungibleContract":
+		n, err := NewNFTCtrt(ctrtInfo.CtrtId.Str(), chain)
+		if err != nil {
+			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+		}
+		return n, nil
+	//TODO: add other contracts
+	case "NFTContractWithBlacklist":
+		return nil, fmt.Errorf("not implemented!")
+	case "NFTContractWithWhitelist":
+		return nil, fmt.Errorf("not implemented!")
+	case "TokenContract":
+		return nil, fmt.Errorf("not implemented!")
+	case "TokenContractWithSplit":
+		return nil, fmt.Errorf("not implemented!")
+	case "TokenContractWithWhitelist":
+		return nil, fmt.Errorf("not implemented!")
+	case "TokenContractWithBlacklist":
+		return nil, fmt.Errorf("not implemented!")
+	default:
+		return nil, fmt.Errorf("contract type unexpected: %s", ctrtInfo.Type)
+	}
+}

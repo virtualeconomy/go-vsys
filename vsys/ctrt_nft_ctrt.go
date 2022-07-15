@@ -8,6 +8,11 @@ type NFTCtrt struct {
 	*Ctrt
 }
 
+func (n NFTCtrt) Unit() Unit {
+	// NFT contract have unit of 1
+	return 1
+}
+
 func NewNFTCtrt(ctrtId string, chain *Chain) (*NFTCtrt, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {

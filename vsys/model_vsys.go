@@ -9,7 +9,7 @@ const VSYS_UNIT = 1_00_000_000
 func NewVSYSForAmount(amount float64) (VSYS, error) {
 	data := amount * VSYS_UNIT
 
-	// if data has non-zero fraction
+	// if Data has non-zero fraction
 	if float64(int(data)) < data {
 		return 0, fmt.Errorf("NewVSYSForAmount: the minimal valid amount granularity is %f", 1/float64(VSYS_UNIT))
 	}
