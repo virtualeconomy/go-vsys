@@ -1,6 +1,9 @@
 package vsys
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/btcsuite/btcd/btcutil/base58"
+)
 
 type CtrtId struct {
 	Bytes
@@ -26,6 +29,18 @@ func NewCtrtIdFromB58Str(s string) (*CtrtId, error) {
 	}
 
 	return cid, nil
+}
+
+func (c *CtrtId) GetTokId(tokIdx uint32) (*TokenId, error) {
+	b := c.Bytes
+	raw_CtrtId := b[1 : len(b)-4]
+	ctrtIdNoChecksum := append(append(PackUInt8(132), raw_CtrtId...), PackUInt32(tokIdx)...)
+	h := Keccak256Hash(Blake2bHash(ctrtIdNoChecksum))
+	tokIdBytes := base58.Encode(
+		append(ctrtIdNoChecksum, h[:4]...))
+	tokId := string(tokIdBytes)
+	fmt.Println(tokId)
+	return NewTokenIdFromB58Str(tokId)
 }
 
 func (c *CtrtId) String() string {

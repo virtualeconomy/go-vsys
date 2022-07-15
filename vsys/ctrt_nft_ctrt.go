@@ -189,15 +189,12 @@ func (n *NFTCtrt) Deposit(
 	attachment string,
 ) (*BroadcastExecuteTxResp, error) {
 
-	// TODO: dataentry_ctrtAccount
 	ctrtID, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
 		return nil, fmt.Errorf("Deposit: %w", err)
 	}
 
 	ctrtAccount := NewDeCtrtAddrFromCtrtId(ctrtID)
-
-	// model.TokenIdx not needed?
 
 	txReq := NewExecCtrtFuncTxReq(
 		n.CtrtId,
@@ -219,7 +216,7 @@ func (n *NFTCtrt) Withdraw(by *Account, ctrtId string, tok_idx int, attachment s
 
 	txReq := NewExecCtrtFuncTxReq(
 		n.CtrtId,
-		FUNC_IDX_NFT_TRANSFER,
+		FUNC_IDX_NFT_WITHDRAW,
 		DataStack{
 			NewDeCtrtAddrFromCtrtId(ctrtID),
 			NewDeAddr(by.Addr),
