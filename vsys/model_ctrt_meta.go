@@ -227,8 +227,12 @@ func (c *CtrtMetaTextual) String() string {
 }
 
 const (
-	LANG_CODE_BYTES_LEN = 4
-	LANG_VER_BYTES_LEN  = 4
+	CTRT_META_LANG_CODE_BYTE_LEN  = 4
+	CTRT_META_LANG_VER_BYTES_LEN  = 4
+	CTRT_META_CHECKSUM_LEN        = 4
+	CTRT_META_TOKEN_ADDR_VER      = 132
+	CTRT_META_TOKEN_IDX_BYTES_LEN = 4
+	CTRT_META_CTRT_ADDR_VER       = 6
 )
 
 type CtrtMeta struct {
@@ -242,14 +246,14 @@ type CtrtMeta struct {
 }
 
 func NewCtrtMeta(b []byte) (*CtrtMeta, error) {
-	langCode := CtrtMetaLangCode(b[:LANG_CODE_BYTES_LEN])
-	b = b[LANG_CODE_BYTES_LEN:]
+	langCode := CtrtMetaLangCode(b[:CTRT_META_LANG_CODE_BYTE_LEN])
+	b = b[CTRT_META_LANG_CODE_BYTE_LEN:]
 
-	langVer, err := UnpackUInt32(b[:LANG_VER_BYTES_LEN])
+	langVer, err := UnpackUInt32(b[:CTRT_META_LANG_VER_BYTES_LEN])
 	if err != nil {
 		return nil, fmt.Errorf("NewCtrtMeta: %w", err)
 	}
-	b = b[LANG_VER_BYTES_LEN:]
+	b = b[CTRT_META_LANG_VER_BYTES_LEN:]
 
 	triggersLen, err := UnpackUInt16(b[:2])
 	if err != nil {
@@ -347,8 +351,8 @@ func NewCtrtMetaForAtomicSwapCtrt() (*CtrtMeta, error) {
 }
 
 func (c *CtrtMeta) Serialize() Bytes {
-	size := LANG_CODE_BYTES_LEN +
-		LANG_VER_BYTES_LEN +
+	size := CTRT_META_LANG_CODE_BYTE_LEN +
+		CTRT_META_LANG_VER_BYTES_LEN +
 		c.Triggers.Size() +
 		c.Descriptors.Size() +
 		c.StateVars.Size() +

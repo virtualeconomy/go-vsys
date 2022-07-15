@@ -33,13 +33,11 @@ func NewCtrtIdFromB58Str(s string) (*CtrtId, error) {
 
 func (c *CtrtId) GetTokId(tokIdx uint32) (*TokenId, error) {
 	b := c.Bytes
-	raw_CtrtId := b[1 : len(b)-4]
-	ctrtIdNoChecksum := append(append(PackUInt8(132), raw_CtrtId...), PackUInt32(tokIdx)...)
+	raw_CtrtId := b[1 : len(b)-CTRT_META_CHECKSUM_LEN]
+	ctrtIdNoChecksum := append(append(PackUInt8(CTRT_META_TOKEN_ADDR_VER), raw_CtrtId...), PackUInt32(tokIdx)...)
 	h := Keccak256Hash(Blake2bHash(ctrtIdNoChecksum))
-	tokIdBytes := base58.Encode(
-		append(ctrtIdNoChecksum, h[:4]...))
+	tokIdBytes := base58.Encode(append(ctrtIdNoChecksum, h[:CTRT_META_CHECKSUM_LEN]...))
 	tokId := string(tokIdBytes)
-	fmt.Println(tokId)
 	return NewTokenIdFromB58Str(tokId)
 }
 
