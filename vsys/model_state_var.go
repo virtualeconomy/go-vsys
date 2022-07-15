@@ -14,10 +14,10 @@ func (s StateVar) String() string {
 
 const (
 	STATE_VAR_NFT_ISSUER = StateVar(iota)
-	STATE_VAR_NFT_MAKER  = StateVar(iota)
+	STATE_VAR_NFT_MAKER
 )
 
 const (
-	STATE_VAR_ATOMIC_SWAP_MAKER    = StateVar(iota)
-	STATE_VAR_ATOMIC_SWAP_TOKEN_ID = StateVar(iota)
+	STATE_VAR_ATOMIC_SWAP_MAKER = StateVar(iota)
+	STATE_VAR_ATOMIC_SWAP_TOKEN_ID
 )

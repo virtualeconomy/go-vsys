@@ -104,17 +104,17 @@ func (na *NodeAPI) GetCtrtData(ctrtId, key string) (*CtrtDataResp, error) {
 	return res, nil
 }
 
-type TokenInfoResp struct {
-	TokenId     Str    `json:"tokenId"`
+type TokInfoResp struct {
+	TokId       Str    `json:"tokenId"`
 	CtrtId      Str    `json:"contractId"`
 	Max         uint64 `json:"max"`
 	Total       uint64 `json:"total"`
-	Unity       uint64 `json:"unity"`
+	Unit        uint64 `json:"unity"`
 	Description Str    `json:"description"`
 }
 
-func (na *NodeAPI) GetTokInfo(tokId string) (*TokenInfoResp, error) {
-	res := &TokenInfoResp{}
+func (na *NodeAPI) GetTokInfo(tokId string) (*TokInfoResp, error) {
+	res := &TokInfoResp{}
 	resp, err := na.R().SetResult(res).Get(
 		fmt.Sprintf("/contract/tokenInfo/%s", tokId),
 	)
@@ -128,14 +128,14 @@ func (na *NodeAPI) GetTokInfo(tokId string) (*TokenInfoResp, error) {
 }
 
 type CtrtInfoResp struct {
-	CtrtId        Str `json:"contractId"`
-	TransactionId Str `json:"transactionId"`
-	Type          Str `json:"type"`
-	Info          []struct {
+	CtrtId Str `json:"contractId"`
+	TxId   Str `json:"transactionId"`
+	Type   Str `json:"type"`
+	Info   []struct {
 		Data Str `json:"data"`
 		Type Str `json:"type"`
 		Name Str `json:"name"`
-	}
+	} `json:"info"`
 	Height Height `json:"height"`
 }
 

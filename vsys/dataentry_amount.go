@@ -4,14 +4,14 @@ import "fmt"
 
 type DeAmount struct {
 	Idx DeIdx
-	// use model token instead model amount
-	Data Token
+
+	Data Amount
 }
 
-func NewDeAmount(t Token) *DeAmount {
+func NewDeAmount(a Amount) *DeAmount {
 	return &DeAmount{
 		Idx:  3,
-		Data: t,
+		Data: a,
 	}
 }
 
@@ -20,7 +20,7 @@ func NewDeAmountForTokAmount(amount float64, unit uint64) (*DeAmount, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewDeAmount(*token), nil
+	return NewDeAmount(Amount(token.Data)), nil
 }
 
 func (t *DeAmount) IdxBytes() Bytes {

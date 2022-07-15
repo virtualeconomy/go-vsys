@@ -6,8 +6,8 @@ type AtomicSwapCtrt struct {
 	*Ctrt
 }
 
-func RegisterAtomicSwapCtrt(by *Account, tokenId string, ctrtDescription string) (*AtomicSwapCtrt, error) {
-	ctrtMeta, err := newCtrtMetaForAtomicSwapCtrt()
+func RegisterAtomicSwapCtrt(by *Account, tokenId, ctrtDescription string) (*AtomicSwapCtrt, error) {
+	ctrtMeta, err := NewCtrtMetaForAtomicSwapCtrt()
 	if err != nil {
 		return nil, fmt.Errorf("RegisterAtomicSwapCtrt: %w", err)
 	}
@@ -75,7 +75,7 @@ func (a *AtomicSwapCtrt) TokId() (*TokenId, error) {
 	return tokId, nil
 }
 
-func (a AtomicSwapCtrt) Unit() (uint64, error) {
+func (a AtomicSwapCtrt) Unit() (Unit, error) {
 	tc, err := a.TokCtrt()
 	if err != nil {
 		return 0, err
@@ -90,12 +90,11 @@ func (a *AtomicSwapCtrt) Lock(
 	hashSecret Bytes,
 	expireTime int64,
 	attachment string) (*BroadcastExecuteTxResp, error) {
-	// TODO: unit function
 	unit, err := a.Unit()
 	if err != nil {
 		return nil, err
 	}
-	deTokAmount, err := NewDeAmountForTokAmount(amount, unit)
+	deTokAmount, err := NewDeAmountForTokAmount(amount, uint64(unit))
 	if err != nil {
 		return nil, fmt.Errorf("Lock: %w", err)
 	}

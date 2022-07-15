@@ -8,8 +8,8 @@ type NFTCtrt struct {
 	*Ctrt
 }
 
-func (n NFTCtrt) Unit() uint64 {
-	//TODO implement me
+func (n NFTCtrt) Unit() Unit {
+	// NFT contract have unit of 1
 	return 1
 }
 
@@ -82,35 +82,6 @@ func (n *NFTCtrt) Issue(by *Account, tokenDescription, attachment string) (*Broa
 		n.CtrtId,
 		FUNC_IDX_NFT_ISSUE,
 		DataStack{NewDeStrFromString(tokenDescription)},
-		NewVSYSTimestampForNow(),
-		Str(attachment),
-		FEE_EXEC_CTRT,
-	)
-
-	return by.ExecuteCtrt(txReq)
-}
-
-func (n *NFTCtrt) Deposit(
-	by *Account,
-	ctrtId string,
-	tokIdx int,
-	attachment string,
-) (*BroadcastExecuteTxResp, error) {
-
-	// TODO: dataentry_ctrtAccount
-	ctrtID, err := NewCtrtIdFromB58Str(ctrtId)
-	if err != nil {
-		return nil, fmt.Errorf("Deposit: %w", err)
-	}
-
-	ctrtAccount := NewDeCtrtAddrFromCtrtId(ctrtID)
-
-	// model.TokenIdx not needed?
-
-	txReq := NewExecCtrtFuncTxReq(
-		n.CtrtId,
-		FUNC_IDX_NFT_DEPOSIT,
-		DataStack{NewDeAddr(by.Addr), ctrtAccount, NewDeInt32(uint32(tokIdx))},
 		NewVSYSTimestampForNow(),
 		Str(attachment),
 		FEE_EXEC_CTRT,

@@ -23,7 +23,7 @@ func (c *Ctrt) QueryDBKey(dbKey Bytes) (*CtrtDataResp, error) {
 }
 
 type BaseTokCtrt interface {
-	Unit() uint64
+	Unit() Unit
 }
 
 func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
@@ -45,24 +45,18 @@ func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 		return n, nil
 	//TODO: add other contracts
 	case "NFTContractWithBlacklist":
-		panic("not implemented!")
-		return nil, nil
+		return nil, fmt.Errorf("not implemented!")
 	case "NFTContractWithWhitelist":
-		panic("not implemented!")
-		return nil, nil
+		return nil, fmt.Errorf("not implemented!")
 	case "TokenContract":
-		panic("not implemented!")
-		return nil, nil
+		return nil, fmt.Errorf("not implemented!")
 	case "TokenContractWithSplit":
-		panic("not implemented!")
-		return nil, nil
+		return nil, fmt.Errorf("not implemented!")
 	case "TokenContractWithWhitelist":
-		panic("not implemented!")
-		return nil, nil
+		return nil, fmt.Errorf("not implemented!")
 	case "TokenContractWithBlacklist":
-		panic("not implemented!")
-		return nil, nil
+		return nil, fmt.Errorf("not implemented!")
+	default:
+		return nil, fmt.Errorf("contract type unexpected: %s", ctrtInfo.Type)
 	}
-	// Default fallback here before we implemented other contracts
-	return NFTCtrt{}, nil
 }

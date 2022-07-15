@@ -18,12 +18,6 @@ func NewTokenId(b []byte) (*TokenId, error) {
 
 	tokId := &TokenId{b}
 
-	//No chain validation?
-	//err := tokId.ChainID().Validate()
-	//if err != nil {
-	//	return nil, fmt.Errorf("NewTokenId: %w", err)
-	//}
-
 	checksum := Keccak256Hash(
 		Blake2bHash(
 			tokId.NonChecksumBytes(),
