@@ -69,7 +69,7 @@ func NewDBKeyNFTCtrtIssuer() Bytes {
 
 func (n *NFTCtrt) Maker() (*Addr, error) {
 	resp, err := n.QueryDBKey(
-		NewDBKEYNFTCtrtMaker(),
+		NewDBKeyNFTCtrtMaker(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
