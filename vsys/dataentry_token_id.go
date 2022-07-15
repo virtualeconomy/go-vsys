@@ -6,6 +6,13 @@ type DeTokenId struct {
 	Data *TokenId
 }
 
+func NewDeTokenId(t *TokenId) *DeTokenId {
+	return &DeTokenId{
+		Idx:  8,
+		Data: t,
+	}
+}
+
 func (d *DeTokenId) IdxBytes() Bytes {
 	return d.Idx.Serialize()
 }
@@ -20,11 +27,4 @@ func (d *DeTokenId) Serialize() Bytes {
 
 func (d *DeTokenId) Size() int {
 	return 1 + len(d.DataBytes())
-}
-
-func NewDeTokenId(t *TokenId) *DeTokenId {
-	return &DeTokenId{
-		Idx:  8,
-		Data: t,
-	}
 }

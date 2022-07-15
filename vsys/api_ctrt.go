@@ -107,9 +107,9 @@ func (na *NodeAPI) GetCtrtData(ctrtId, key string) (*CtrtDataResp, error) {
 type TokInfoResp struct {
 	TokId       Str    `json:"tokenId"`
 	CtrtId      Str    `json:"contractId"`
-	Max         uint64 `json:"max"`
-	Total       uint64 `json:"total"`
-	Unit        uint64 `json:"unity"`
+	Max         Amount `json:"max"`
+	Total       Amount `json:"total"`
+	Unit        Unit   `json:"unity"`
 	Description Str    `json:"description"`
 }
 

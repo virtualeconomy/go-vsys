@@ -3,12 +3,12 @@ package vsys
 import "fmt"
 
 type Token struct {
-	Data uint64
+	Data Amount
 	Unit Unit
 }
 
 // TODO: Refactor carefully and add methods.
-func NewToken(data uint64, unit Unit) *Token {
+func NewToken(data Amount, unit Unit) *Token {
 	return &Token{data, unit}
 }
 
@@ -17,7 +17,7 @@ func NewTokenForAmount(amount float64, unit uint64) (*Token, error) {
 	if float64(int(data)) < data {
 		return nil, fmt.Errorf("NewTokenForAmount: The minimal valid granularity is %f", 1/unit)
 	}
-	return &Token{uint64(data), Unit(unit)}, nil
+	return &Token{Amount(data), Unit(unit)}, nil
 }
 
 func (t *Token) Amount() float64 {
@@ -25,7 +25,7 @@ func (t *Token) Amount() float64 {
 }
 
 func (t *Token) DataUint64() uint64 {
-	return t.Data
+	return uint64(t.Data)
 }
 
 func (t *Token) Serialize() Bytes {

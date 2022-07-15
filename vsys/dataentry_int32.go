@@ -6,6 +6,13 @@ type DeInt32 struct {
 	Data uint32
 }
 
+func NewDeInt32(i uint32) *DeInt32 {
+	return &DeInt32{
+		Idx:  4,
+		Data: i,
+	}
+}
+
 func (i DeInt32) IdxBytes() Bytes {
 	return i.Idx.Serialize()
 }
@@ -20,11 +27,4 @@ func (i DeInt32) Serialize() Bytes {
 
 func (i DeInt32) Size() int {
 	return 1 + len(i.DataBytes())
-}
-
-func NewDeInt32(i uint32) *DeInt32 {
-	return &DeInt32{
-		Idx:  4,
-		Data: i,
-	}
 }

@@ -20,7 +20,7 @@ func NewDeAmountForTokAmount(amount float64, unit uint64) (*DeAmount, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewDeAmount(Amount(token.Data)), nil
+	return NewDeAmount(token.Data), nil
 }
 
 func (t *DeAmount) IdxBytes() Bytes {
