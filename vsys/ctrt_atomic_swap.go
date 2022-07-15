@@ -1,6 +1,8 @@
 package vsys
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type AtomicSwapCtrt struct {
 	*Ctrt
@@ -50,7 +52,7 @@ func (a *AtomicSwapCtrt) Maker() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.Str())
+	addr, err := NewAddrFromB58Str(resp.Val.(string))
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
@@ -68,11 +70,23 @@ func (a *AtomicSwapCtrt) TokId() (*TokenId, error) {
 	if err != nil {
 		return nil, fmt.Errorf("TokId: %w", err)
 	}
-	tokId, err := NewTokenIdFromB58Str(resp.Val.Str())
+	tokId, err := NewTokenIdFromB58Str(resp.Val.(string))
 	if err != nil {
 		return nil, fmt.Errorf("TokId: %w", err)
 	}
 	return tokId, nil
+}
+
+func (a *AtomicSwapCtrt) TokCtrt() (BaseTokCtrt, error) {
+	tokId, err := a.TokId()
+	if err != nil {
+		return nil, err
+	}
+	instance, err := GetCtrtFromTokId(tokId, a.Chain)
+	if err != nil {
+		return nil, err
+	}
+	return instance, nil
 }
 
 func (a AtomicSwapCtrt) Unit() (Unit, error) {
@@ -81,6 +95,30 @@ func (a AtomicSwapCtrt) Unit() (Unit, error) {
 		return 0, err
 	}
 	return tc.Unit(), nil
+}
+
+func (a *AtomicSwapCtrt) GetCtrtBal(addr string) (*Token, error) {
+	// TODO: separate into StateMap function + mb get statemapconstant
+	Addr, err := NewAddrFromB58Str(addr)
+	if err != nil {
+		return nil, fmt.Errorf("Lock: %w", err)
+	}
+	raw_val, err := a.QueryDBKey(append(PackUInt8(uint8(STATE_MAP_IDX_ATOMIC_SWAP_CONTRACT_BALANCE)),
+		NewDeAddr(Addr).Serialize()...))
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtBal: %w", err)
+	}
+	fmt.Println(raw_val)
+	unit, err := a.Unit()
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtBal: %w", err)
+	}
+	// TODO: verify raw_val format
+	amount := raw_val.Val.(float64)
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtBal: %w", err)
+	}
+	return NewToken(Amount(amount), unit), nil
 }
 
 func (a *AtomicSwapCtrt) Lock(
@@ -117,16 +155,4 @@ func (a *AtomicSwapCtrt) Lock(
 		FEE_EXEC_CTRT,
 	)
 	return by.ExecuteCtrt(txReq)
-}
-
-func (a *AtomicSwapCtrt) TokCtrt() (BaseTokCtrt, error) {
-	tokId, err := a.TokId()
-	if err != nil {
-		return nil, err
-	}
-	instance, err := GetCtrtFromTokId(tokId, a.Chain)
-	if err != nil {
-		return nil, err
-	}
-	return instance, nil
 }

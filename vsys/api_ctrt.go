@@ -82,12 +82,12 @@ func (na *NodeAPI) BroadcastExecute(p *BroadcastExecutePayload) (*BroadcastExecu
 }
 
 type CtrtDataResp struct {
-	CtrtId   Str    `json:"contractId"`
-	Key      Str    `json:"key"`
-	Height   Height `json:"height"`
-	DbName   Str    `json:"dbName"`
-	DataType Str    `json:"dataType"`
-	Val      Str    `json:"value"`
+	CtrtId   Str         `json:"contractId"`
+	Key      Str         `json:"key"`
+	Height   Height      `json:"height"`
+	DbName   Str         `json:"dbName"`
+	DataType Str         `json:"dataType"`
+	Val      interface{} `json:"value"` // Can be number or string
 }
 
 func (na *NodeAPI) GetCtrtData(ctrtId, key string) (*CtrtDataResp, error) {

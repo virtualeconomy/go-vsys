@@ -74,7 +74,7 @@ func (n *NFTCtrt) Maker() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.Str())
+	addr, err := NewAddrFromB58Str(resp.Val.(string))
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
@@ -88,7 +88,7 @@ func (n *NFTCtrt) Issuer() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.Str())
+	addr, err := NewAddrFromB58Str(resp.Val.(string))
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
 	}
