@@ -54,9 +54,9 @@ func RegisterNFTCtrt(by *Account, ctrtDescription string) (*NFTCtrt, error) {
 	}, nil
 }
 
-func (n NFTCtrt) Unit() Unit {
+func (n NFTCtrt) Unit() (Unit, error) {
 	// NFT contract have unit of 1
-	return 1
+	return 1, nil
 }
 
 func NewDBKeyNFTCtrtMaker() Bytes {

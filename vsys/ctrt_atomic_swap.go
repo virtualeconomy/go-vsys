@@ -80,7 +80,7 @@ func (a AtomicSwapCtrt) Unit() (Unit, error) {
 	if err != nil {
 		return 0, err
 	}
-	return tc.Unit(), nil
+	return tc.Unit()
 }
 
 func (a *AtomicSwapCtrt) Lock(
