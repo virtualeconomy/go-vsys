@@ -15,6 +15,9 @@ func RegisterAtomicSwapCtrt(by *Account, tokenId, ctrtDescription string) (*Atom
 	}
 
 	tokId, err := NewTokenIdFromB58Str(tokenId)
+	if err != nil {
+		return nil, fmt.Errorf("RegisterAtomicSwapCtrt: %w", err)
+	}
 
 	txReq := NewRegCtrtTxReq(
 		DataStack{NewDeTokenId(tokId)},
@@ -190,11 +193,11 @@ func (a *AtomicSwapCtrt) GetSwapRecipient(txId string) (*Addr, error) {
 }
 
 func NewDBKeyAtomicSwapPuzzle(txId string) (Bytes, error) {
-	de, err := NewBytesFromB58Str(txId)
+	b, err := NewBytesFromB58Str(txId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyAtomicSwapPuzzle: %w", err)
 	}
-	return NewStateMap(STATE_MAP_IDX_ATOMIC_SWAP_PUZZLE, NewDeBytes(de)).Serialize(), nil
+	return NewStateMap(STATE_MAP_IDX_ATOMIC_SWAP_PUZZLE, NewDeBytes(b)).Serialize(), nil
 }
 
 func (a *AtomicSwapCtrt) GetSwapPuzzle(txId string) (Str, error) {
