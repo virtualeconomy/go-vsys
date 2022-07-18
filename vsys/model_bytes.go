@@ -14,6 +14,10 @@ func NewBytesFromB58Str(s string) (Bytes, error) {
 	return Bytes(b), nil
 }
 
+func NewBytesFromStr(s string) Bytes {
+	return Bytes(s)
+}
+
 func (b Bytes) B58Str() Str {
 	return Str(B58Encode(b))
 }
