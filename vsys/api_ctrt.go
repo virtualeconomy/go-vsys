@@ -152,3 +152,25 @@ func (na *NodeAPI) GetCtrtInfo(ctrtId string) (*CtrtInfoResp, error) {
 	}
 	return res, nil
 }
+
+type TokBalResp struct {
+	Addr    Str    `json:"address/contractId"`
+	Height  Height `json:"height"`
+	TokId   Str    `json:"tokenId"`
+	Balance Amount `json:"balance"`
+	Unit    Unit   `json:"unity"`
+}
+
+func (na *NodeAPI) GetTokBal(addr, tokenId string) (*TokBalResp, error) {
+	res := &TokBalResp{}
+	resp, err := na.R().SetResult(res).Get(
+		fmt.Sprintf("/contract/balance/%s/%s", addr, tokenId),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokBal: %w", err)
+	}
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GetTokBal: %s", resp.String())
+	}
+	return res, nil
+}

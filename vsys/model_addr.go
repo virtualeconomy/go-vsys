@@ -110,6 +110,13 @@ func (a *Addr) Checksum() Bytes {
 	return a.Bytes[offset:]
 }
 
+func (a *Addr) MustOn(chain *Chain) error {
+	if a.ChainID() != chain.ChainID {
+		return fmt.Errorf("Addr is not on the chain. Addr has chain %s, but caller expects %s", a.ChainID(), chain.ChainID)
+	}
+	return nil
+}
+
 func (a *Addr) String() string {
 	return fmt.Sprintf("%T(%s)", a, a.B58Str())
 }

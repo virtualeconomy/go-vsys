@@ -139,9 +139,10 @@ func (n *NFTCtrt) Send(by *Account, recipient string, tok_idx int, attachment st
 	if err != nil {
 		return nil, fmt.Errorf("Send: %w", err)
 	}
-	// TODO: move to MustOn() bool function
-	if rcpt_addr.ChainID() != by.Chain.ChainID {
-		return nil, fmt.Errorf("Send: Adress must be on same chain")
+
+	err = rcpt_addr.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Send: %w", err)
 	}
 
 	txReq := NewExecCtrtFuncTxReq(
@@ -172,12 +173,14 @@ func (n *NFTCtrt) Transfer(by *Account, sender, recipient string, tok_idx int, a
 	if err != nil {
 		return nil, fmt.Errorf("Transfer: %w", err)
 	}
-	// TODO: move to MustOn() bool function
-	if rcpt_addr.ChainID() != by.Chain.ChainID {
-		return nil, fmt.Errorf("Transfer: Adress must be on same chain")
+
+	err = sender_addr.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
 	}
-	if sender_addr.ChainID() != by.Chain.ChainID {
-		return nil, fmt.Errorf("Transfer: Adress must be on same chain")
+	err = rcpt_addr.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
 	}
 
 	txReq := NewExecCtrtFuncTxReq(
