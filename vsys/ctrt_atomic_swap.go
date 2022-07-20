@@ -80,11 +80,16 @@ func (a *AtomicSwapCtrt) Maker() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.(string))
-	if err != nil {
-		return nil, fmt.Errorf("Maker: %w", err)
+	switch addrB58 := resp.Val.(type) {
+	case string:
+		addr, err := NewAddrFromB58Str(addrB58)
+		if err != nil {
+			return nil, fmt.Errorf("Maker: %w", err)
+		}
+		return addr, nil
+	default:
+		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", addrB58)
 	}
-	return addr, nil
 }
 
 // NewDBKeyAtomicSwapTokId returns DB key to query TokenId of contract's token.
