@@ -14,6 +14,11 @@ func NewBytesFromB58Str(s string) (Bytes, error) {
 	return Bytes(b), nil
 }
 
+// NewBytesFromStr converts string data type to Bytes type.
+func NewBytesFromStr(s string) Bytes {
+	return Bytes(s)
+}
+
 func (b Bytes) B58Str() Str {
 	return Str(B58Encode(b))
 }

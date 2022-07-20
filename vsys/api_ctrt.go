@@ -15,6 +15,7 @@ type BroadcastRegisterPayload struct {
 	Signature    Str           `json:"signature"`
 }
 
+// BroadcastRegisterTxResp is the response for calling endpoint /contract/broadcast/register
 type BroadcastRegisterTxResp struct {
 	TxBasic
 
@@ -55,6 +56,7 @@ type BroadcastExecutePayload struct {
 	Signature    Str           `json:"signature"`
 }
 
+// BroadcastExecuteTxResp is the response for calling endpoint /contract/broadcast/execute
 type BroadcastExecuteTxResp struct {
 	TxBasic
 
@@ -81,13 +83,14 @@ func (na *NodeAPI) BroadcastExecute(p *BroadcastExecutePayload) (*BroadcastExecu
 	return res, nil
 }
 
+// CtrtDataResp is the response for calling endpoint /contract/data/{contractId}/{key}
 type CtrtDataResp struct {
-	CtrtId   Str    `json:"contractId"`
-	Key      Str    `json:"key"`
-	Height   Height `json:"height"`
-	DbName   Str    `json:"dbName"`
-	DataType Str    `json:"dataType"`
-	Val      Str    `json:"value"`
+	CtrtId   Str         `json:"contractId"`
+	Key      Str         `json:"key"`
+	Height   Height      `json:"height"`
+	DbName   Str         `json:"dbName"`
+	DataType Str         `json:"dataType"`
+	Val      interface{} `json:"value"` // Can be number or string
 }
 
 func (na *NodeAPI) GetCtrtData(ctrtId, key string) (*CtrtDataResp, error) {
@@ -104,6 +107,7 @@ func (na *NodeAPI) GetCtrtData(ctrtId, key string) (*CtrtDataResp, error) {
 	return res, nil
 }
 
+// TokInfoResp is the response for calling endpoint /contract/tokenInfo/{tokenId}
 type TokInfoResp struct {
 	TokId       Str    `json:"tokenId"`
 	CtrtId      Str    `json:"contractId"`
@@ -127,6 +131,7 @@ func (na *NodeAPI) GetTokInfo(tokId string) (*TokInfoResp, error) {
 	return res, nil
 }
 
+// CtrtInfoResp is the response for calling endpoint /contract/info/{contractId}
 type CtrtInfoResp struct {
 	CtrtId Str `json:"contractId"`
 	TxId   Str `json:"transactionId"`
