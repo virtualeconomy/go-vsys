@@ -11,6 +11,23 @@ type AtomicSwapCtrt struct {
 	tokCtrt BaseTokCtrt
 }
 
+// NewAtomicSwapCtrt creates instance of AtomicSwapCtrt from given contract id.
+func NewAtomicSwapCtrt(ctrtId string, chain *Chain) (*AtomicSwapCtrt, error) {
+	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
+	if err != nil {
+		return nil, fmt.Errorf("NewAtomicSwapCtrt: %w", err)
+	}
+
+	return &AtomicSwapCtrt{
+		Ctrt: &Ctrt{
+			CtrtId: ctrtIdMd,
+			Chain:  chain,
+		},
+		tokId:   nil,
+		tokCtrt: nil,
+	}, nil
+}
+
 // RegisterAtomicSwapCtrt registers an Atomic Swap Contract.
 func RegisterAtomicSwapCtrt(by *Account, tokenId, ctrtDescription string) (*AtomicSwapCtrt, error) {
 	ctrtMeta, err := NewCtrtMetaForAtomicSwapCtrt()
@@ -117,7 +134,7 @@ func (a AtomicSwapCtrt) Unit() (Unit, error) {
 			return 0, err
 		}
 	}
-	return a.tokCtrt.Unit(), nil
+	return a.tokCtrt.Unit()
 }
 
 // NewDBKeyAtomicSwapGetCtrtBal returns DB key for querying the contract balance for given address.
@@ -329,7 +346,6 @@ func (a *AtomicSwapCtrt) GetSwapStatus(txId string) (bool, error) {
 	default:
 		return false, fmt.Errorf("GetSwapStatus: CtrtDataResp.Val is %T but string was expected", val)
 	}
-	return tc.Unit()
 }
 
 // Lock locks the token and creates a swap.
