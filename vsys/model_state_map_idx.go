@@ -12,6 +12,7 @@ func (s StateMapIdx) String() string {
 	return fmt.Sprintf("%T(%d)", s, s)
 }
 
+// Constants for Atomic Swap Contract state map indexes.
 const (
 	STATE_MAP_IDX_ATOMIC_SWAP_CONTRACT_BALANCE = StateMapIdx(iota)
 	STATE_MAP_IDX_ATOMIC_SWAP_OWNER
