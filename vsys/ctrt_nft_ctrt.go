@@ -54,9 +54,9 @@ func RegisterNFTCtrt(by *Account, ctrtDescription string) (*NFTCtrt, error) {
 	}, nil
 }
 
-func (n NFTCtrt) Unit() Unit {
+func (n NFTCtrt) Unit() (Unit, error) {
 	// NFT contract have unit of 1
-	return 1
+	return 1, nil
 }
 
 func NewDBKeyNFTCtrtMaker() Bytes {
@@ -149,9 +149,10 @@ func (n *NFTCtrt) Send(by *Account, recipient string, tok_idx int, attachment st
 	if err != nil {
 		return nil, fmt.Errorf("Send: %w", err)
 	}
-	// TODO: move to MustOn() bool function
-	if rcpt_addr.ChainID() != by.Chain.ChainID {
-		return nil, fmt.Errorf("Send: Adress must be on same chain")
+
+	err = rcpt_addr.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Send: %w", err)
 	}
 
 	txReq := NewExecCtrtFuncTxReq(
@@ -182,12 +183,14 @@ func (n *NFTCtrt) Transfer(by *Account, sender, recipient string, tok_idx int, a
 	if err != nil {
 		return nil, fmt.Errorf("Transfer: %w", err)
 	}
-	// TODO: move to MustOn() bool function
-	if rcpt_addr.ChainID() != by.Chain.ChainID {
-		return nil, fmt.Errorf("Transfer: Adress must be on same chain")
+
+	err = sender_addr.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
 	}
-	if sender_addr.ChainID() != by.Chain.ChainID {
-		return nil, fmt.Errorf("Transfer: Adress must be on same chain")
+	err = rcpt_addr.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
 	}
 
 	txReq := NewExecCtrtFuncTxReq(

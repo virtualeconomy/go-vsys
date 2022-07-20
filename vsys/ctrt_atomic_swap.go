@@ -329,6 +329,7 @@ func (a *AtomicSwapCtrt) GetSwapStatus(txId string) (bool, error) {
 	default:
 		return false, fmt.Errorf("GetSwapStatus: CtrtDataResp.Val is %T but string was expected", val)
 	}
+	return tc.Unit()
 }
 
 // Lock locks the token and creates a swap.

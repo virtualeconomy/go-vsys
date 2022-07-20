@@ -22,10 +22,12 @@ func (c *Ctrt) QueryDBKey(dbKey Bytes) (*CtrtDataResp, error) {
 	return resp, nil
 }
 
+// BaseTokCtrt is the general interface for Token certificates
 type BaseTokCtrt interface {
-	Unit() Unit
+	Unit() (Unit, error)
 }
 
+// GetCtrtFromTokId returns instance of token contract corresponding to given tokenId
 func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 	tokInfo, err := chain.NodeAPI.GetTokInfo(string(tokId.B58Str()))
 	if err != nil {
@@ -49,7 +51,11 @@ func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 	case "NFTContractWithWhitelist":
 		return nil, fmt.Errorf("not implemented!")
 	case "TokenContract":
-		return nil, fmt.Errorf("not implemented!")
+		n, err := NewTokCtrtWithoutSplit(ctrtInfo.CtrtId.Str(), chain)
+		if err != nil {
+			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+		}
+		return n, nil
 	case "TokenContractWithSplit":
 		return nil, fmt.Errorf("not implemented!")
 	case "TokenContractWithWhitelist":
