@@ -2,10 +2,12 @@ package vsys
 
 import "fmt"
 
+// TokCtrtWithoutSplit is the struct for Token Contract Without Split.
 type TokCtrtWithoutSplit struct {
 	*Ctrt
 }
 
+// NewTokCtrtWithoutSplit creates an instance of TokCtrtWithoutSplit from given contract id.
 func NewTokCtrtWithoutSplit(ctrtId string, chain *Chain) (*TokCtrtWithoutSplit, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
@@ -20,6 +22,7 @@ func NewTokCtrtWithoutSplit(ctrtId string, chain *Chain) (*TokCtrtWithoutSplit, 
 	}, nil
 }
 
+// RegisterTokCtrtWithoutSplit registers a token contract without split.
 func RegisterTokCtrtWithoutSplit(by *Account, max float64, unit uint64, token_description, ctrt_desciption string) (*TokCtrtWithoutSplit, error) {
 	ctrtMeta, err := NewCtrtMetaForTokCtrtWithoutSplit()
 	if err != nil {
@@ -61,8 +64,18 @@ func RegisterTokCtrtWithoutSplit(by *Account, max float64, unit uint64, token_de
 	}, nil
 }
 
-func (t TokCtrtWithoutSplit) Unit() (Unit, error) {
+// TokId returns TokenId of the contract.
+func (t *TokCtrtWithoutSplit) TokId() (*TokenId, error) {
 	tokId, err := t.CtrtId.GetTokId(0)
+	if err != nil {
+		return nil, fmt.Errorf("TokId: %w", err)
+	}
+	return tokId, nil
+}
+
+// Unit queries and returns Unit of the token of contract.
+func (t *TokCtrtWithoutSplit) Unit() (Unit, error) {
+	tokId, err := t.TokId()
 	if err != nil {
 		return 0, fmt.Errorf("Unit: %w", err)
 	}
@@ -73,6 +86,7 @@ func (t TokCtrtWithoutSplit) Unit() (Unit, error) {
 	return info.Unit, nil
 }
 
+// Supersede transfers the issuing right of the contract to another account.
 func (t *TokCtrtWithoutSplit) Supersede(by *Account, newIssuer string, attachment string) (*BroadcastExecuteTxResp, error) {
 	newIssuerAddr, err := NewAddrFromB58Str(newIssuer)
 	if err != nil {
@@ -97,6 +111,7 @@ func (t *TokCtrtWithoutSplit) Supersede(by *Account, newIssuer string, attachmen
 	return resp, nil
 }
 
+// Issue issues new Tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplit) Issue(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	unit, err := t.Unit()
 	if err != nil {
@@ -126,6 +141,7 @@ func (t *TokCtrtWithoutSplit) Issue(by *Account, amount float64, attachment stri
 	return resp, nil
 }
 
+// Send sends tokens to another account.
 func (t *TokCtrtWithoutSplit) Send(by *Account, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	rcpt_addr, err := NewAddrFromB58Str(recipient)
 	if err != nil {
@@ -167,6 +183,7 @@ func (t *TokCtrtWithoutSplit) Send(by *Account, recipient string, amount float64
 	return resp, nil
 }
 
+// Destroy destroys an amount of tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplit) Destroy(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	unit, err := t.Unit()
 	if err != nil {
@@ -197,6 +214,7 @@ func (t *TokCtrtWithoutSplit) Destroy(by *Account, amount float64, attachment st
 	return resp, nil
 }
 
+// Transfer transfers tokens from sender to recipient.
 func (t *TokCtrtWithoutSplit) Transfer(by *Account, sender, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	sender_addr, err := NewAddrFromB58Str(sender)
 	if err != nil {
@@ -246,6 +264,7 @@ func (t *TokCtrtWithoutSplit) Transfer(by *Account, sender, recipient string, am
 	return resp, nil
 }
 
+// Deposit deposits the tokens into the contract.
 func (t *TokCtrtWithoutSplit) Deposit(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	unit, err := t.Unit()
 	if err != nil {
@@ -283,6 +302,7 @@ func (t *TokCtrtWithoutSplit) Deposit(by *Account, ctrtId string, amount float64
 	return resp, nil
 }
 
+// Withdraw withdraws tokens from another contract.
 func (t *TokCtrtWithoutSplit) Withdraw(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	unit, err := t.Unit()
 	if err != nil {
@@ -320,14 +340,7 @@ func (t *TokCtrtWithoutSplit) Withdraw(by *Account, ctrtId string, amount float6
 	return resp, nil
 }
 
-func (t *TokCtrtWithoutSplit) TokId() (*TokenId, error) {
-	tokId, err := t.CtrtId.GetTokId(0)
-	if err != nil {
-		return nil, fmt.Errorf("TokId: %w", err)
-	}
-	return tokId, nil
-}
-
+// GetTokBal queries & returns the balance of the token of the contract belonging to the user address.
 func (t *TokCtrtWithoutSplit) GetTokBal(addr string) (*Token, error) {
 	tokId, err := t.TokId()
 	if err != nil {
@@ -341,10 +354,12 @@ func (t *TokCtrtWithoutSplit) GetTokBal(addr string) (*Token, error) {
 	return tokMd, nil
 }
 
+// NewDBKeyTokCtrtWithoutSplitMaker returns DB key for querying maker of the contract.
 func NewDBKeyTokCtrtWithoutSplitMaker() Bytes {
 	return STATE_VAR_TOK_CTRT_WITHOUT_SPLIT_MAKER.Serialize()
 }
 
+// Maker queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplit) Maker() (*Addr, error) {
 	resp, err := t.QueryDBKey(NewDBKeyTokCtrtWithoutSplitMaker())
 	if err != nil {
@@ -356,10 +371,13 @@ func (t *TokCtrtWithoutSplit) Maker() (*Addr, error) {
 	}
 	return addr, nil
 }
+
+// NewDBKeyTokCtrtWithoutSplitIssuer returns DB key for querying issuer of the contract.
 func NewDBKeyTokCtrtWithoutSplitIssuer() Bytes {
 	return STATE_VAR_TOK_CTRT_WITHOUT_SPLIT_ISSUER.Serialize()
 }
 
+// Issuer queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplit) Issuer() (*Addr, error) {
 	resp, err := t.QueryDBKey(NewDBKeyTokCtrtWithoutSplitIssuer())
 	if err != nil {

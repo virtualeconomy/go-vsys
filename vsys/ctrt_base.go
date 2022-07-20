@@ -22,10 +22,12 @@ func (c *Ctrt) QueryDBKey(dbKey Bytes) (*CtrtDataResp, error) {
 	return resp, nil
 }
 
+// BaseTokCtrt is the general interface for Token certificates
 type BaseTokCtrt interface {
 	Unit() (Unit, error)
 }
 
+// GetCtrtFromTokId returns instance of token contract corresponding to given tokenId
 func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 	tokInfo, err := chain.NodeAPI.GetTokInfo(string(tokId.B58Str()))
 	if err != nil {

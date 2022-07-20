@@ -153,6 +153,7 @@ func (na *NodeAPI) GetCtrtInfo(ctrtId string) (*CtrtInfoResp, error) {
 	return res, nil
 }
 
+// TokBalResp is the response for calling endpoint /contract/balance/{addr}/{tokenId}
 type TokBalResp struct {
 	Addr    Str    `json:"address/contractId"`
 	Height  Height `json:"height"`
@@ -161,6 +162,7 @@ type TokBalResp struct {
 	Unit    Unit   `json:"unity"`
 }
 
+// GetTokBal queries and returns response of /contract/balance/{addr}/{tokenId} endpoint
 func (na *NodeAPI) GetTokBal(addr, tokenId string) (*TokBalResp, error) {
 	res := &TokBalResp{}
 	resp, err := na.R().SetResult(res).Get(
