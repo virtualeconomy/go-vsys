@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//goland:noinspection GoSnakeCaseUsage
 func Test_Account_Pay(t *testing.T) {
 	t.Run("", func(t *testing.T) {
 		const PAY_AMOUNT = 1
