@@ -24,8 +24,6 @@ func NewVEscrowCtrt(ctrtId string, chain *Chain) (*VEscrowCtrt, error) {
 	}, nil
 }
 
-// TODO: Test everything in VEscrow
-
 func RegisterVEscrowCtrt(
 	by *Account,
 	tokenId string,
@@ -203,6 +201,8 @@ func (v *VEscrowCtrt) JudgeDeposit(
 	orderId string,
 	attachment string,
 ) (*BroadcastExecuteTxResp, error) {
+	fmt.Println(orderId)
+
 	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("JudgeDeposit: %w", err)
@@ -599,136 +599,136 @@ func NewDBKeyVEscrowContractBalance(addr *Addr) Bytes {
 	).Serialize()
 }
 
-func NewDBKeyVEscrowOrderPayer(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderPayer(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderPayer: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_PAYER, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderRecipient(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderRecipient(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderRecipient: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_RECIPIENT, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderAmount(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderAmount(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderAmount: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_AMOUNT, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderRecipientDeposit(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderRecipientDeposit(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderRecipientDeposit: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_RECIPIENT_DEPOSIT, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderJudgeDeposit(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderJudgeDeposit(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderJudgeDeposit: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_JUDGE_DEPOSIT, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderFee(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderFee(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderFee: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_FEE, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderRecipientAmount(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderRecipientAmount(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderRecipientAmount: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_RECIPIENT_AMOUNT, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderRefund(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderRefund(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderRefund: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_REFUND, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderRecipientRefund(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderRecipientRefund(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderRecipientRefund: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_RECIPIENT_REFUND, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowExpirationTime(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowExpirationTime(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowExpirationTime: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_EXPIRATION_TIME, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderStatus(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderStatus(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderStatus: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_STATUS, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderRecipientDepositStatus(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderRecipientDepositStatus(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderRecipientDepositStatus: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_RECIPIENT_DEPOSIT_STATUS, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderJudgeDepositStatus(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderJudgeDepositStatus(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderJudgeDepositStatus: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_JUDGE_DEPOSIT_STATUS, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderSubmitStatus(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderSubmitStatus(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderSubmitStatus: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_SUBMIT_STATUS, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderJudgeStatus(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderJudgeStatus(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderJudgeStatus: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_JUDGE_STATUS, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderRecipientLockedAmount(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderRecipientLockedAmount(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderRecipientLockedAmount: %w", err)
 	}
 	return NewStateMap(STATE_MAP_IDX_V_ESCROW_ORDER_RECIPIENT_LOCKED_AMOUNT, NewDeBytes(b)).Serialize(), nil
 }
 
-func NewDBKeyVEscrowOrderJudgeLockedAmount(order_id string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(order_id)
+func NewDBKeyVEscrowOrderJudgeLockedAmount(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("NewDBKeyVEscrowOrderJudgeLockedAmount: %w", err)
 	}
@@ -801,8 +801,12 @@ func (v *VEscrowCtrt) Duration() (VSYSTimestamp, error) {
 	if err != nil {
 		return 0, fmt.Errorf("Duration: %w", err)
 	}
-	// TODO: error handling?
-	return VSYSTimestamp(resp.Val.(float64)), nil
+	switch duration := resp.Val.(type) {
+	case float64:
+		return VSYSTimestamp(duration), nil
+	default:
+		return 0, fmt.Errorf("Duration: CtrtDataResp.Val is %T but float64 was expected", duration)
+	}
 }
 
 // JudgeDuration queries & returns the duration where the judge can
@@ -814,8 +818,12 @@ func (v *VEscrowCtrt) JudgeDuration() (VSYSTimestamp, error) {
 	if err != nil {
 		return 0, fmt.Errorf("JudgeDuration: %w", err)
 	}
-	// TODO: error handling?
-	return VSYSTimestamp(resp.Val.(float64)), nil
+	switch duration := resp.Val.(type) {
+	case float64:
+		return VSYSTimestamp(duration), nil
+	default:
+		return 0, fmt.Errorf("JudgeDuration: CtrtDataResp.Val is %T but float64 was expected", duration)
+	}
 }
 
 // Unit queries and returns Unit of the token of contract.
@@ -843,7 +851,13 @@ func (v *VEscrowCtrt) GetCtrtBal(addr string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetCtrtBal: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderPayer queries & returns the payer of the order.
@@ -907,7 +921,12 @@ func (v *VEscrowCtrt) GetOrderAmount(orderId string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderAmount: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderAmount: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderRecipientDeposit queries & returns the amount the recipient should deposit in the order.
@@ -923,7 +942,12 @@ func (v *VEscrowCtrt) GetOrderRecipientDeposit(orderId string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientDeposit: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderRecipientDeposit: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderJudgeDeposit queries & returns the amount the recipient should deposit in the order.
@@ -939,7 +963,12 @@ func (v *VEscrowCtrt) GetOrderJudgeDeposit(orderId string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderJudgeDeposit: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderJudgeDeposit: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderFee queries & returns the fee of the order.
@@ -955,7 +984,12 @@ func (v *VEscrowCtrt) GetOrderFee(orderId string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderFee: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderFee: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderRecipientAmount queries & returns how much the recipient will receive
@@ -973,7 +1007,12 @@ func (v *VEscrowCtrt) GetOrderRecipientAmount(orderId string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientAmount: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderRecipientAmount: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderRefund queries & returns the refund amount of the order.
@@ -991,7 +1030,12 @@ func (v *VEscrowCtrt) GetOrderRefund(orderId string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRefund: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderRefund: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderRecipientRefund queries & returns the recipient refund amount of the order.
@@ -1009,7 +1053,12 @@ func (v *VEscrowCtrt) GetOrderRecipientRefund(orderId string) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientRefund: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderRecipientRefund: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderExpirationTime queries & returns the expiration time of the order.
@@ -1024,8 +1073,12 @@ func (v *VEscrowCtrt) GetOrderExpirationTime(orderId string) (VSYSTimestamp, err
 	if err != nil {
 		return 0, fmt.Errorf("NewDBKeyVEscrowExpirationTime: %w", err)
 	}
-	// TODO: error handling?
-	return VSYSTimestamp(resp.Val.(float64)), nil
+	switch expTime := resp.Val.(type) {
+	case float64:
+		return VSYSTimestamp(expTime), nil
+	default:
+		return 0, fmt.Errorf("JudgeDuration: CtrtDataResp.Val is %T but float64 was expected", expTime)
+	}
 }
 
 // GetOrderStatus queries & returns the status of the order.
@@ -1050,24 +1103,25 @@ func (v *VEscrowCtrt) GetOrderStatus(orderId string) (bool, error) {
 	}
 }
 
-// GetRecipientDepositStatus queries & returns the recipient deposit status of the order.
+// GetOrderRecipientDepositStatus queries & returns the recipient deposit status of the order.
 // The order recipient deposit status means if the recipient has deposited into the order.
-func (v *VEscrowCtrt) GetRecipientDepositStatus(orderId string) (bool, error) {
+func (v *VEscrowCtrt) GetOrderRecipientDepositStatus(orderId string) (bool, error) {
 	dbKey, err := NewDBKeyVEscrowOrderRecipientDepositStatus(orderId)
 	if err != nil {
-		return false, fmt.Errorf("GetRecipientDepositStatus: %w", err)
+		return false, fmt.Errorf("GetOrderRecipientDepositStatus: %w", err)
 	}
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
 	if err != nil {
-		return false, fmt.Errorf("GetRecipientDepositStatus: %w", err)
+		return false, fmt.Errorf("GetOrderRecipientDepositStatus: %w", err)
 	}
+	fmt.Println(resp)
 	switch val := resp.Val.(type) {
 	case string:
 		return val == "true", nil
 	default:
-		return false, fmt.Errorf("GetRecipientDepositStatus: CtrtDataResp.Val is %T but string was expected", val)
+		return false, fmt.Errorf("GetOrderRecipientDepositStatus: CtrtDataResp.Val is %T but string was expected", val)
 	}
 }
 
@@ -1146,7 +1200,12 @@ func (v *VEscrowCtrt) GetOrderRecipientLockedAmount(orderId string) (*Token, err
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientLockedAmount: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderRecipientLockedAmount: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // GetOrderJudgeLockedAmount queries & returns the amount from the judge
@@ -1163,7 +1222,12 @@ func (v *VEscrowCtrt) GetOrderJudgeLockedAmount(orderId string) (*Token, error) 
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderJudgeLockedAmount: %w", err)
 	}
-	return NewTokenForAmount(resp.Val.(float64), uint64(unit))
+	switch amount := resp.Val.(type) {
+	case float64:
+		return NewToken(Amount(amount), unit), nil
+	default:
+		return nil, fmt.Errorf("GetOrderJudgeLockedAmount: CtrtDataResp.Val is %T but float64 was expected", amount)
+	}
 }
 
 // TokCtrt queries and returns instance of token contract of V Escrow Contract's token.
