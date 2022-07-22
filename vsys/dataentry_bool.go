@@ -33,11 +33,6 @@ func (b *DeBool) DataBytes() Bytes {
 	return PackBool(b.Data)
 }
 
-// TODO: return 1?
-func (b *DeBool) LenBytes() Bytes {
-	return PackUInt16(uint16(len(b.DataBytes())))
-}
-
 func Deserialize(b Bytes) (*DeBool, error) {
 	return NewDeBoolFromBytes(b[1:2])
 }

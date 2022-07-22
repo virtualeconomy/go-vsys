@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// TODO: refine interface and refactor name
 type QueryDBKeyInterface interface {
 	QueryDBKey(bytes Bytes) (*CtrtDataResp, error)
 	ctrtId() *CtrtId
@@ -710,6 +711,11 @@ func isInList(t QueryDBKeyInterface, dbKey Bytes) (bool, error) {
 	switch val := resp.Val.(type) {
 	case string:
 		return val == "true", nil
+	case float64:
+		if val == 0 {
+			return false, nil
+		}
+		return false, fmt.Errorf("isInList: 'dbName:contractNumInfo' but value != 0")
 	default:
 		return false, fmt.Errorf("isInList: CtrtDataResp.Val is %T but string was expected", val)
 	}
