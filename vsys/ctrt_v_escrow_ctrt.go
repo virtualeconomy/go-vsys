@@ -121,23 +121,23 @@ func (v *VEscrowCtrt) Create(
 		return nil, fmt.Errorf("Create: %w", err)
 	}
 
-	deAmount1, err := NewDeAmountForTokAmount(amount, uint64(unit))
+	deVEscrowAmount, err := NewDeAmountForTokAmount(amount, uint64(unit))
 	if err != nil {
 		return nil, fmt.Errorf("Create: %w", err)
 	}
-	deAmount2, err := NewDeAmountForTokAmount(rcpt_deposit_amount, uint64(unit))
+	deRcptDepAmount, err := NewDeAmountForTokAmount(rcpt_deposit_amount, uint64(unit))
 	if err != nil {
 		return nil, fmt.Errorf("Create: %w", err)
 	}
-	deAmount3, err := NewDeAmountForTokAmount(judge_deposit_amount, uint64(unit))
+	deJudgeDepAmount, err := NewDeAmountForTokAmount(judge_deposit_amount, uint64(unit))
 	if err != nil {
 		return nil, fmt.Errorf("Create: %w", err)
 	}
-	deAmount4, err := NewDeAmountForTokAmount(order_fee, uint64(unit))
+	deFeeAmount, err := NewDeAmountForTokAmount(order_fee, uint64(unit))
 	if err != nil {
 		return nil, fmt.Errorf("Create: %w", err)
 	}
-	deAmount5, err := NewDeAmountForTokAmount(refund_amount, uint64(unit))
+	deRefundAmount, err := NewDeAmountForTokAmount(refund_amount, uint64(unit))
 	if err != nil {
 		return nil, fmt.Errorf("Create: %w", err)
 	}
@@ -147,11 +147,11 @@ func (v *VEscrowCtrt) Create(
 		FUNC_IDX_V_ESCROW_CTRT_CREATE,
 		DataStack{
 			NewDeAddr(rcptAddr),
-			deAmount1,
-			deAmount2,
-			deAmount3,
-			deAmount4,
-			deAmount5,
+			deVEscrowAmount,
+			deRcptDepAmount,
+			deJudgeDepAmount,
+			deFeeAmount,
+			deRefundAmount,
 			NewDeTimestamp(NewVSYSTimestampFromUnixTs(expire_at)),
 		},
 		NewVSYSTimestampForNow(),
@@ -400,8 +400,7 @@ func (v *VEscrowCtrt) ApplyToJudge(
 	return resp, err
 }
 
-// DoJudge judges the work and decides on how much the payer & recipient
-//        will receive.
+// DoJudge judges the work and decides on how much the payer & recipient will receive.
 func (v *VEscrowCtrt) DoJudge(
 	by *Account,
 	orderId string,
@@ -755,6 +754,7 @@ func (v *VEscrowCtrt) Maker() (*Addr, error) {
 	}
 }
 
+// Judge queries and returns judge Addr of the contract.
 func (v *VEscrowCtrt) Judge() (*Addr, error) {
 	resp, err := v.QueryDBKey(
 		NewDBKeyVEscrowJudge(),
@@ -792,8 +792,7 @@ func (v *VEscrowCtrt) TokId() (*TokenId, error) {
 	return v.tokId, nil
 }
 
-// Duration queries & returns the duration where the recipient can
-//        take actions in the contract.
+// Duration queries & returns the duration where the recipient can take actions in the contract.
 func (v *VEscrowCtrt) Duration() (VSYSTimestamp, error) {
 	resp, err := v.QueryDBKey(
 		NewDBKeyVEscrowDuration(),
@@ -809,8 +808,7 @@ func (v *VEscrowCtrt) Duration() (VSYSTimestamp, error) {
 	}
 }
 
-// JudgeDuration queries & returns the duration where the judge can
-//        take actions in the contract.
+// JudgeDuration queries & returns the duration where the judge can take actions in the contract.
 func (v *VEscrowCtrt) JudgeDuration() (VSYSTimestamp, error) {
 	resp, err := v.QueryDBKey(
 		NewDBKeyVEscrowJudgeDuration(),
@@ -837,8 +835,7 @@ func (v *VEscrowCtrt) Unit() (Unit, error) {
 	return v.tokCtrt.Unit()
 }
 
-// GetCtrtBal queries & returns the balance of the token within this contract
-//        belonging to the user address.
+// GetCtrtBal queries & returns the balance of the token within this contract belonging to the user address.
 func (v *VEscrowCtrt) GetCtrtBal(addr string) (*Token, error) {
 	addrMd, err := NewAddrFromB58Str(addr)
 	if err != nil {
@@ -993,8 +990,8 @@ func (v *VEscrowCtrt) GetOrderFee(orderId string) (*Token, error) {
 }
 
 // GetOrderRecipientAmount queries & returns how much the recipient will receive
-//        from the order if the order goes smoothly(i.e. work is submitted & approved).
-//        The recipient amount = order amount - order fee.
+// from the order if the order goes smoothly(i.e. work is submitted & approved).
+// The recipient amount = order amount - order fee.
 func (v *VEscrowCtrt) GetOrderRecipientAmount(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVEscrowOrderRecipientAmount(orderId)
 	if err != nil {
@@ -1187,7 +1184,7 @@ func (v *VEscrowCtrt) GetOrderJudgeStatus(orderId string) (bool, error) {
 }
 
 // GetOrderRecipientLockedAmount queries & returns the amount from the recipient
-//        that is locked(deposited) in the order.
+// that is locked(deposited) in the order.
 func (v *VEscrowCtrt) GetOrderRecipientLockedAmount(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVEscrowOrderRecipientLockedAmount(orderId)
 	if err != nil {
@@ -1209,7 +1206,7 @@ func (v *VEscrowCtrt) GetOrderRecipientLockedAmount(orderId string) (*Token, err
 }
 
 // GetOrderJudgeLockedAmount queries & returns the amount from the judge
-//        that is locked(deposited) in the order.
+// that is locked(deposited) in the order.
 func (v *VEscrowCtrt) GetOrderJudgeLockedAmount(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVEscrowOrderJudgeLockedAmount(orderId)
 	if err != nil {
