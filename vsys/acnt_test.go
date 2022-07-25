@@ -15,6 +15,9 @@ func Test_Account_Pay(t *testing.T) {
 		testAcnt1BalBefore, _ := testAcnt1.Bal()
 
 		resp, err := testAcnt0.Pay(testAcnt1.Addr.B58Str().Str(), PAY_AMOUNT, "")
+		if err != nil {
+			t.Fatal(err)
+		}
 		waitForBlock()
 		assertTxSuccess(t, resp.Id.Str())
 		assert.Nil(t, err)
