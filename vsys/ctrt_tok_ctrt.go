@@ -365,7 +365,7 @@ func (t *TokCtrtWithoutSplit) Maker() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.Str())
+	addr, err := NewAddrFromB58Str(resp.Val.(string))
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
@@ -383,7 +383,7 @@ func (t *TokCtrtWithoutSplit) Issuer() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.Str())
+	addr, err := NewAddrFromB58Str(resp.Val.(string))
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
 	}

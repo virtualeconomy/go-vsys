@@ -40,7 +40,10 @@ func waitForBlock() {
 }
 
 func assertTxStatus(t *testing.T, txId, status string) {
-	tx, _ := testApi.GetTxInfo(txId)
+	tx, err := testApi.GetTxInfo(txId)
+	if err != nil {
+		t.Log(err)
+	}
 	assert.Equal(t, tx.GetTxGeneral().Status.Str(), status)
 }
 
