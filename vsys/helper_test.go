@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -44,7 +44,7 @@ func assertTxStatus(t *testing.T, txId, status string) {
 	if err != nil {
 		t.Log(err)
 	}
-	assert.Equal(t, tx.GetTxGeneral().Status.Str(), status)
+	require.Equal(t, tx.GetTxGeneral().Status.Str(), status)
 }
 
 func assertTxSuccess(t *testing.T, txId string) {

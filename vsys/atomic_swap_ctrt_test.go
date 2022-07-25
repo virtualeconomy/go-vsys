@@ -2,7 +2,7 @@ package vsys
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 	"testing"
 	"time"
@@ -61,12 +61,12 @@ func test_AtomicSwapCtrt_Register(t *testing.T, acnt *Account, tc *TokCtrtWithou
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, acnt.Addr, maker)
+	require.Equal(t, acnt.Addr, maker)
 	tokIdFromCtrt, err := ac.TokId()
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, tokId, tokIdFromCtrt)
+	require.Equal(t, tokId, tokIdFromCtrt)
 	return ac
 }
 
@@ -96,23 +96,23 @@ func test_AtomicSwapCtrt_Lock(t *testing.T, maker, taker *Account, makerCtrt, ta
 	assertTxSuccess(t, makerLockTxId)
 
 	makerSwapOwner, _ := makerCtrt.GetSwapOwner(makerLockTxId)
-	assert.Equal(t, maker.Addr, makerSwapOwner)
+	require.Equal(t, maker.Addr, makerSwapOwner)
 	makerSwapRecipient, _ := makerCtrt.GetSwapRecipient(makerLockTxId)
-	assert.Equal(t, taker.Addr, makerSwapRecipient)
+	require.Equal(t, taker.Addr, makerSwapRecipient)
 	makerSwapAmount, _ := makerCtrt.GetSwapAmount(makerLockTxId)
-	assert.Equal(t, makerLockAmount, makerSwapAmount.Amount())
+	require.Equal(t, makerLockAmount, makerSwapAmount.Amount())
 	makerSwapTimestamp, _ := makerCtrt.GetSwapExpiredTime(makerLockTxId)
-	assert.Equal(t, makerLockTimestamp, makerSwapTimestamp.UnixTs())
+	require.Equal(t, makerLockTimestamp, makerSwapTimestamp.UnixTs())
 	makerSwapStatus, _ := makerCtrt.GetSwapStatus(makerLockTxId)
-	assert.Equal(t, true, makerSwapStatus)
+	require.Equal(t, true, makerSwapStatus)
 	makerPuzzle, _ := makerCtrt.GetSwapPuzzle(makerLockTxId)
 	decoded, err := B58Decode(string(makerPuzzle))
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, Sha256Hash([]byte(makerPuzzlePlain)), decoded)
+	require.Equal(t, Sha256Hash([]byte(makerPuzzlePlain)), decoded)
 	makerBalAfterLock, _ := makerCtrt.GetCtrtBal(string(maker.Addr.B58Str()))
-	assert.Equal(t, makerBalInit.Amount()-makerLockAmount, makerBalAfterLock.Amount())
+	require.Equal(t, makerBalInit.Amount()-makerLockAmount, makerBalAfterLock.Amount())
 
 	// Taker lock here
 	takerLockAmount := 5.0
@@ -125,10 +125,13 @@ func test_AtomicSwapCtrt_Lock(t *testing.T, maker, taker *Account, makerCtrt, ta
 		takerLockTimestamp,
 		"",
 	)
+	if err != nil {
+		t.Fatal(t)
+	}
 	waitForBlock()
 	assertTxSuccess(t, string(takerLockTxInfo.Id))
 	takerBalAfterLock, _ := takerCtrt.GetCtrtBal(string(taker.Addr.B58Str()))
-	assert.Equal(t, takerBalInit.Amount()-takerLockAmount, takerBalAfterLock.Amount())
+	require.Equal(t, takerBalInit.Amount()-takerLockAmount, takerBalAfterLock.Amount())
 }
 
 func Test_AtomicSwapCtrt_Lock(t *testing.T) {
@@ -207,7 +210,7 @@ func test_AtomicSwapCtrt_Solve(t *testing.T, maker, taker *Account, makerCtrt, t
 		t.Fatal(err)
 	}
 	revealedSecret := string(ds[1].DataBytes())
-	assert.Equal(t, makerPuzzlePlain, revealedSecret)
+	require.Equal(t, makerPuzzlePlain, revealedSecret)
 
 	// taker solve
 	takerSolveTxInfo, err := makerCtrt.Solve(taker, makerLockTxId, revealedSecret, "")
@@ -264,7 +267,7 @@ func test_AtomicSwapCtrt_ExpWithdraw(t *testing.T, acnt0, acnt1 *Account, makerC
 	assertTxSuccess(t, string(expWithdrawTxInfo.Id))
 
 	bal, _ := makerCtrt.GetCtrtBal(string(acnt0.Addr.B58Str()))
-	assert.Equal(t, bal_old.Amount()+makerLockAmount, bal.Amount())
+	require.Equal(t, bal_old.Amount()+makerLockAmount, bal.Amount())
 }
 
 func Test_AtomicSwapCtrt_ExpWithdraw(t *testing.T) {
