@@ -143,12 +143,19 @@ func Test_AtomicSwapCtrt_Lock(t *testing.T) {
 }
 
 func Test_AtomicSwapCtrt_Solve(t *testing.T) {
-	makerCtrt, err := newAtomicSwap(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	takerCtrt, err := newAtomicSwap(t, testAcnt1)
-	if err != nil {
+	g := new(errgroup.Group)
+	var makerCtrt, takerCtrt *AtomicSwapCtrt
+	g.Go(func() error {
+		var err error
+		makerCtrt, err = newAtomicSwap(t, testAcnt0)
+		return err
+	})
+	g.Go(func() error {
+		var err error
+		takerCtrt, err = newAtomicSwap(t, testAcnt1)
+		return err
+	})
+	if err := g.Wait(); err != nil {
 		t.Fatal(err)
 	}
 
