@@ -88,7 +88,7 @@ func (e *ExecCtrtFuncTxReq) BroadcastExecutePayload(priKey *PriKey, pubKey *PubK
 		CtrtId:       e.CtrtId.B58Str(),
 		FuncIdx:      e.FuncIdx,
 		FuncData:     e.DataStack.Serialize().B58Str(),
-		Attachment:   e.Attachment,
+		Attachment:   Str(e.Attachment.B58Str()),
 		Fee:          e.Fee,
 		FeeScale:     FEE_SCALE_DEFAULT,
 		Timestamp:    e.Timestamp,
