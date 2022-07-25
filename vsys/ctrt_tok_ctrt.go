@@ -474,6 +474,7 @@ func (t *TokCtrtWithoutSplit) Unit() (Unit, error) {
 	if err != nil {
 		return 0, fmt.Errorf("Unit: %w", err)
 	}
+
 	info, err := t.Chain.NodeAPI.GetTokInfo(string(tokId.B58Str()))
 	if err != nil {
 		return 0, fmt.Errorf("Unit: %w", err)
