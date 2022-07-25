@@ -365,11 +365,17 @@ func (t *TokCtrtWithoutSplit) Maker() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.Str())
-	if err != nil {
-		return nil, fmt.Errorf("Maker: %w", err)
+
+	switch val := resp.Val.(type) {
+	case string:
+		addr, err := NewAddrFromB58Str(val)
+		if err != nil {
+			return nil, fmt.Errorf("Maker: %w", err)
+		}
+		return addr, nil
+	default:
+		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", val)
 	}
-	return addr, nil
 }
 
 // NewDBKeyTokCtrtWithoutSplitIssuer returns DB key for querying issuer of the contract.
@@ -383,9 +389,15 @@ func (t *TokCtrtWithoutSplit) Issuer() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
 	}
-	addr, err := NewAddrFromB58Str(resp.Val.Str())
-	if err != nil {
-		return nil, fmt.Errorf("Issuer: %w", err)
+
+	switch val := resp.Val.(type) {
+	case string:
+		addr, err := NewAddrFromB58Str(val)
+		if err != nil {
+			return nil, fmt.Errorf("Issuer: %w", err)
+		}
+		return addr, nil
+	default:
+		return nil, fmt.Errorf("Issuer: CtrtDataResp.Val is %T but string was expected", val)
 	}
-	return addr, nil
 }
