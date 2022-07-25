@@ -4,15 +4,14 @@ import (
 	"fmt"
 )
 
-// TODO: refine interface and refactor name
-type QueryDBKeyInterface interface {
+type ITokCtrt interface {
 	QueryDBKey(bytes Bytes) (*CtrtDataResp, error)
 	ctrtId() *CtrtId
 	Unit() (Unit, error)
 }
 
 // internal implementation for Issuer function.
-func issuer(t QueryDBKeyInterface, dbKey Bytes) (*Addr, error) {
+func issuer(t ITokCtrt, dbKey Bytes) (*Addr, error) {
 	resp, err := t.QueryDBKey(dbKey)
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
@@ -31,7 +30,7 @@ func issuer(t QueryDBKeyInterface, dbKey Bytes) (*Addr, error) {
 }
 
 // Maker queries and returns maker Addr of the contract.
-func maker(t QueryDBKeyInterface, dbKey Bytes) (*Addr, error) {
+func maker(t ITokCtrt, dbKey Bytes) (*Addr, error) {
 	resp, err := t.QueryDBKey(dbKey)
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
@@ -50,7 +49,7 @@ func maker(t QueryDBKeyInterface, dbKey Bytes) (*Addr, error) {
 }
 
 // tokId is internal implementation for TokId.
-func tokId(t QueryDBKeyInterface) (*TokenId, error) {
+func tokId(t ITokCtrt) (*TokenId, error) {
 	tokId, err := t.ctrtId().GetTokId(0)
 	if err != nil {
 		return nil, fmt.Errorf("tokId: %w", err)
@@ -60,7 +59,7 @@ func tokId(t QueryDBKeyInterface) (*TokenId, error) {
 
 // supersede is internal implementation for Supersede.
 func supersede(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
 	newIssuer string,
@@ -91,7 +90,7 @@ func supersede(
 
 // issue is internal implementation for Issue.
 func issue(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
 	amount float64,
@@ -127,7 +126,7 @@ func issue(
 
 // send is internal implementation for Send.
 func send(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
 	recipient string,
@@ -176,7 +175,7 @@ func send(
 
 // destroy is internal implementation for Destroy.
 func destroy(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
 	amount float64,
@@ -213,7 +212,7 @@ func destroy(
 
 // Transfer transfers tokens from sender to recipient.
 func transfer(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
 	sender, recipient string,
@@ -270,7 +269,7 @@ func transfer(
 
 // deposit is internal implementation for Deposit.
 func deposit(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
 	ctrtId string,
@@ -315,7 +314,7 @@ func deposit(
 
 // withdraw is internal implementation for Withdraw.
 func withdraw(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
 	ctrtId string,
@@ -703,7 +702,7 @@ func (t *TokCtrtWithSplit) Split(by *Account, newUnit uint64, attachment string)
 
 // General functions for Token Contracts with Lists
 
-func isInList(t QueryDBKeyInterface, dbKey Bytes) (bool, error) {
+func isInList(t ITokCtrt, dbKey Bytes) (bool, error) {
 	resp, err := t.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("isInList: %w", err)
@@ -724,7 +723,7 @@ func isInList(t QueryDBKeyInterface, dbKey Bytes) (bool, error) {
 // updateList updates the presence of the address within the given data entry in the list.
 //        It's the helper method for UpdateList*.
 func updateList(
-	t QueryDBKeyInterface,
+	t ITokCtrt,
 	by *Account,
 	addrDe DataEntry,
 	val bool,
@@ -747,7 +746,7 @@ func updateList(
 }
 
 // supersedeCtrtWithList is internal implementation of Supersede for contracts with lists.
-func supersedeCtrtWithList(t QueryDBKeyInterface,
+func supersedeCtrtWithList(t ITokCtrt,
 	by *Account,
 	newIssuer string,
 	newRegulator string,
@@ -868,7 +867,7 @@ func NewDBKeyTokCtrtV2Regulator() Bytes {
 }
 
 // regulator is internal implementation for Regulator.
-func regulator(t QueryDBKeyInterface) (*Addr, error) {
+func regulator(t ITokCtrt) (*Addr, error) {
 	resp, err := t.QueryDBKey(NewDBKeyTokCtrtV2Regulator())
 	if err != nil {
 		return nil, fmt.Errorf("Regulator: %w", err)
