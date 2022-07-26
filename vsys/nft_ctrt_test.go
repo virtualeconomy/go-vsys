@@ -44,7 +44,7 @@ func newNFTCtrtWithTok(t *testing.T, by *Account) (*NFTCtrt, error) {
 		return nil, err
 	}
 	waitForBlock()
-	resp, err := nc.Issue(testAcnt0, "description", "attachment")
+	resp, err := nc.Issue(by, "description", "attachment")
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func test_NFTCtrt_Issue(t *testing.T, by *Account, nc *NFTCtrt) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tokBal, err := testAcnt0.Chain.NodeAPI.GetTokBal(string(testAcnt0.Addr.B58Str()), string(tokId.B58Str()))
+	tokBal, err := by.Chain.NodeAPI.GetTokBal(string(by.Addr.B58Str()), string(tokId.B58Str()))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,16 +93,16 @@ func test_NFTCtrt_Send(t *testing.T, sender, receiver *Account, nc *NFTCtrt) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tok_bal_acnt0, err := sender.Chain.NodeAPI.GetTokBal(string(sender.Addr.B58Str()), string(tokId.B58Str()))
+	tok_bal_sender, err := sender.Chain.NodeAPI.GetTokBal(string(sender.Addr.B58Str()), string(tokId.B58Str()))
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, 1, int(tok_bal_acnt0.Balance))
-	tok_bal_acnt1, err := testAcnt0.Chain.NodeAPI.GetTokBal(string(receiver.Addr.B58Str()), string(tokId.B58Str()))
+	require.Equal(t, 1, int(tok_bal_sender.Balance))
+	tok_bal_receiver, err := sender.Chain.NodeAPI.GetTokBal(string(receiver.Addr.B58Str()), string(tokId.B58Str()))
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, 0, int(tok_bal_acnt1.Balance))
+	require.Equal(t, 0, int(tok_bal_receiver.Balance))
 
 	resp, err := nc.Send(sender, string(receiver.Addr.B58Str()), 0, "sending nft")
 	if err != nil {
@@ -111,16 +111,16 @@ func test_NFTCtrt_Send(t *testing.T, sender, receiver *Account, nc *NFTCtrt) {
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 
-	tok_bal_acnt0, err = sender.Chain.NodeAPI.GetTokBal(string(sender.Addr.B58Str()), string(tokId.B58Str()))
+	tok_bal_sender, err = sender.Chain.NodeAPI.GetTokBal(string(sender.Addr.B58Str()), string(tokId.B58Str()))
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, 0, int(tok_bal_acnt0.Balance))
-	tok_bal_acnt1, err = sender.Chain.NodeAPI.GetTokBal(string(receiver.Addr.B58Str()), string(tokId.B58Str()))
+	require.Equal(t, 0, int(tok_bal_sender.Balance))
+	tok_bal_receiver, err = sender.Chain.NodeAPI.GetTokBal(string(receiver.Addr.B58Str()), string(tokId.B58Str()))
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, 1, int(tok_bal_acnt1.Balance))
+	require.Equal(t, 1, int(tok_bal_receiver.Balance))
 }
 
 func Test_NFTCtrt_Transfer(t *testing.T) {
