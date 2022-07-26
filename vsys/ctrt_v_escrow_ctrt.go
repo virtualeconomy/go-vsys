@@ -201,8 +201,6 @@ func (v *VEscrowCtrt) JudgeDeposit(
 	orderId string,
 	attachment string,
 ) (*BroadcastExecuteTxResp, error) {
-	fmt.Println(orderId)
-
 	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("JudgeDeposit: %w", err)
@@ -1113,7 +1111,7 @@ func (v *VEscrowCtrt) GetOrderRecipientDepositStatus(orderId string) (bool, erro
 	if err != nil {
 		return false, fmt.Errorf("GetOrderRecipientDepositStatus: %w", err)
 	}
-	fmt.Println(resp)
+
 	switch val := resp.Val.(type) {
 	case string:
 		return val == "true", nil
