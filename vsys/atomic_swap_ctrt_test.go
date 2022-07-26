@@ -137,15 +137,13 @@ func test_AtomicSwapCtrt_Lock(t *testing.T, maker, taker *Account, makerCtrt, ta
 func Test_AtomicSwapCtrt_Lock(t *testing.T) {
 	g := new(errgroup.Group)
 	var makerCtrt, takerCtrt *AtomicSwapCtrt
-	g.Go(func() error {
-		var err error
+	g.Go(func() (err error) {
 		makerCtrt, err = newAtomicSwap(t, testAcnt0)
-		return err
+		return
 	})
-	g.Go(func() error {
-		var err error
+	g.Go(func() (err error) {
 		takerCtrt, err = newAtomicSwap(t, testAcnt1)
-		return err
+		return
 	})
 	if err := g.Wait(); err != nil {
 		t.Fatal(err)
@@ -224,15 +222,13 @@ func test_AtomicSwapCtrt_Solve(t *testing.T, maker, taker *Account, makerCtrt, t
 func Test_AtomicSwapCtrt_Solve(t *testing.T) {
 	g := new(errgroup.Group)
 	var makerCtrt, takerCtrt *AtomicSwapCtrt
-	g.Go(func() error {
-		var err error
+	g.Go(func() (err error) {
 		makerCtrt, err = newAtomicSwap(t, testAcnt0)
-		return err
+		return
 	})
-	g.Go(func() error {
-		var err error
+	g.Go(func() (err error) {
 		takerCtrt, err = newAtomicSwap(t, testAcnt1)
-		return err
+		return
 	})
 	if err := g.Wait(); err != nil {
 		t.Fatal(err)
