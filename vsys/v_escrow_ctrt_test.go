@@ -1,10 +1,13 @@
 package vsys
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
+
+// TODO: create some test struct with variables and utility functions? to avoid name collision or namespace pollution
 
 func test_VEscrowCtrt_Register(t *testing.T, acnt *Account, tc *TokCtrtWithoutSplit) *VEscrowCtrt {
 	tokId, err := tc.TokId()
@@ -65,7 +68,7 @@ func newVEscrowCtrt_forTest(t *testing.T, judge, maker, recipient *Account) *VEs
 	if err != nil {
 		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
 	}
-	// testing send is out of scope of this function
+	// testing send is out of scope of this file
 	_, err = tc.Send(judge, string(maker.Addr.B58Str()), 200, "")
 	if err != nil {
 		t.Fatal(err)
@@ -194,4 +197,142 @@ func Test_VEscrowCtrt_Create(t *testing.T) {
 	require.Equal(t, 0.0, rcptLockedAmount.Amount())
 	judgeLockedAmount, _ := vc.GetOrderRecipientLockedAmount(orderId)
 	require.Equal(t, 0.0, judgeLockedAmount.Amount())
+}
+
+func Test_VEscrowCtrt_RecipientDeposit(t *testing.T) {
+	vc := newVEscrowCtrt_forTest(t, testAcnt0, testAcnt1, testAcnt2)
+
+	later := time.Now().Unix() + 45
+	resp, err := vc.Create(testAcnt1, string(testAcnt2.Addr.B58Str()), 10, 2, 3, 4, 5, later, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+	orderId := string(resp.Id)
+	orderRcptDepStatus, _ := vc.GetOrderRecipientDepositStatus(orderId)
+	require.Equal(t, false, orderRcptDepStatus)
+	rcptLockedAmount, _ := vc.GetOrderRecipientLockedAmount(orderId)
+	require.Equal(t, 0.0, rcptLockedAmount.Amount())
+
+	resp, err = vc.RecipientDeposit(testAcnt2, orderId, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+
+	orderRcptDepStatus, _ = vc.GetOrderRecipientDepositStatus(orderId)
+	require.Equal(t, true, orderRcptDepStatus)
+	rcptLockedAmount, _ = vc.GetOrderRecipientLockedAmount(orderId)
+	require.Equal(t, 2.0, rcptLockedAmount.Amount())
+}
+
+func Test_VEscrowCtrt_JudgeDeposit(t *testing.T) {
+	vc := newVEscrowCtrt_forTest(t, testAcnt0, testAcnt1, testAcnt2)
+
+	later := time.Now().Unix() + 45
+	resp, err := vc.Create(testAcnt1, string(testAcnt2.Addr.B58Str()), 10, 2, 3, 4, 5, later, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+	orderId := string(resp.Id)
+
+	orderJudgeDepStatus, _ := vc.GetOrderJudgeDepositStatus(orderId)
+	require.Equal(t, false, orderJudgeDepStatus)
+	judgeLockedAmount, _ := vc.GetOrderJudgeLockedAmount(orderId)
+	require.Equal(t, 0.0, judgeLockedAmount.Amount())
+
+	resp, err = vc.JudgeDeposit(testAcnt0, orderId, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+
+	orderJudgeDepStatus, _ = vc.GetOrderJudgeDepositStatus(orderId)
+	require.Equal(t, true, orderJudgeDepStatus)
+	judgeLockedAmount, _ = vc.GetOrderJudgeLockedAmount(orderId)
+	require.Equal(t, 3.0, judgeLockedAmount.Amount())
+}
+
+func Test_VEscrowCtrt_PayerCancel(t *testing.T) {
+	vc := newVEscrowCtrt_forTest(t, testAcnt0, testAcnt1, testAcnt2)
+
+	later := time.Now().Unix() + 45
+	resp, err := vc.Create(testAcnt1, string(testAcnt2.Addr.B58Str()), 10, 2, 3, 4, 5, later, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+	orderId := string(resp.Id)
+
+	orderStatus, _ := vc.GetOrderStatus(orderId)
+	require.Equal(t, true, orderStatus)
+
+	resp, err = vc.PayerCancel(testAcnt1, orderId, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(resp)
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+
+	orderStatus, _ = vc.GetOrderStatus(orderId)
+	require.Equal(t, false, orderStatus)
+}
+
+func Test_VEscrowCtrt_RecipientCancel(t *testing.T) {
+	vc := newVEscrowCtrt_forTest(t, testAcnt0, testAcnt1, testAcnt2)
+
+	later := time.Now().Unix() + 45
+	resp, err := vc.Create(testAcnt1, string(testAcnt2.Addr.B58Str()), 10, 2, 3, 4, 5, later, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+	orderId := string(resp.Id)
+
+	orderStatus, _ := vc.GetOrderStatus(orderId)
+	require.Equal(t, true, orderStatus)
+
+	resp, err = vc.RecipientCancel(testAcnt2, orderId, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+
+	orderStatus, _ = vc.GetOrderStatus(orderId)
+	require.Equal(t, false, orderStatus)
+}
+
+func Test_VEscrowCtrt_JudgeCancel(t *testing.T) {
+	vc := newVEscrowCtrt_forTest(t, testAcnt0, testAcnt1, testAcnt2)
+
+	later := time.Now().Unix() + 45
+	resp, err := vc.Create(testAcnt1, string(testAcnt2.Addr.B58Str()), 10, 2, 3, 4, 5, later, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+	orderId := string(resp.Id)
+
+	orderStatus, _ := vc.GetOrderStatus(orderId)
+	require.Equal(t, true, orderStatus)
+
+	resp, err = vc.JudgeCancel(testAcnt0, orderId, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+
+	orderStatus, _ = vc.GetOrderStatus(orderId)
+	require.Equal(t, false, orderStatus)
 }
