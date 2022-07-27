@@ -44,7 +44,7 @@ func assertTxStatus(t *testing.T, txId, status string) {
 	if err != nil {
 		t.Log(err)
 	}
-	require.Equal(t, tx.GetTxGeneral().Status.Str(), status)
+	require.Equal(t, status, tx.GetTxGeneral().Status.Str())
 }
 
 func assertTxSuccess(t *testing.T, txId string) {
