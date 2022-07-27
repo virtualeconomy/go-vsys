@@ -8,7 +8,12 @@ import (
 	"time"
 )
 
-func newTokCtrtWithTok(t *testing.T, by *Account) (*TokCtrtWithoutSplit, error) {
+type atomicSwapTest struct {
+}
+
+var asT *atomicSwapTest
+
+func (ast *atomicSwapTest) newTokCtrtWithTok(t *testing.T, by *Account) (*TokCtrtWithoutSplit, error) {
 	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
 	if err != nil {
 		return nil, fmt.Errorf("newMakerTokCtrtWithTok: %w", err)
@@ -24,8 +29,8 @@ func newTokCtrtWithTok(t *testing.T, by *Account) (*TokCtrtWithoutSplit, error) 
 	return tc, nil
 }
 
-func newAtomicSwap(t *testing.T, by *Account) (*AtomicSwapCtrt, error) {
-	token, err := newTokCtrtWithTok(t, by)
+func (ast *atomicSwapTest) newAtomicSwap(t *testing.T, by *Account) (*AtomicSwapCtrt, error) {
+	token, err := asT.newTokCtrtWithTok(t, by)
 	if err != nil {
 		return nil, fmt.Errorf(": %w", err)
 	}
@@ -46,7 +51,7 @@ func newAtomicSwap(t *testing.T, by *Account) (*AtomicSwapCtrt, error) {
 	return ac, nil
 }
 
-func test_AtomicSwapCtrt_Register(t *testing.T, acnt *Account, tc *TokCtrtWithoutSplit) *AtomicSwapCtrt {
+func (ast *atomicSwapTest) test_Register(t *testing.T, acnt *Account, tc *TokCtrtWithoutSplit) *AtomicSwapCtrt {
 	tokId, err := tc.TokId()
 	if err != nil {
 		t.Fatal(err)
@@ -71,14 +76,14 @@ func test_AtomicSwapCtrt_Register(t *testing.T, acnt *Account, tc *TokCtrtWithou
 }
 
 func Test_AtomicSwapCtrt_Register(t *testing.T) {
-	tc, err := newTokCtrtWithTok(t, testAcnt0)
+	tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatalf("Cannot get new maker token ctrt: %s\n", err.Error())
 	}
-	test_AtomicSwapCtrt_Register(t, testAcnt0, tc)
+	asT.test_Register(t, testAcnt0, tc)
 }
 
-func test_AtomicSwapCtrt_Lock(t *testing.T, maker, taker *Account, makerCtrt, takerCtrt *AtomicSwapCtrt) {
+func (ast *atomicSwapTest) test_Lock(t *testing.T, maker, taker *Account, makerCtrt, takerCtrt *AtomicSwapCtrt) {
 	makerBalInit, _ := makerCtrt.GetCtrtBal(string(maker.Addr.B58Str()))
 	takerBalInit, _ := takerCtrt.GetCtrtBal(string(taker.Addr.B58Str()))
 
@@ -138,20 +143,20 @@ func Test_AtomicSwapCtrt_Lock(t *testing.T) {
 	g := new(errgroup.Group)
 	var makerCtrt, takerCtrt *AtomicSwapCtrt
 	g.Go(func() (err error) {
-		makerCtrt, err = newAtomicSwap(t, testAcnt0)
+		makerCtrt, err = asT.newAtomicSwap(t, testAcnt0)
 		return
 	})
 	g.Go(func() (err error) {
-		takerCtrt, err = newAtomicSwap(t, testAcnt1)
+		takerCtrt, err = asT.newAtomicSwap(t, testAcnt1)
 		return
 	})
 	if err := g.Wait(); err != nil {
 		t.Fatal(err)
 	}
-	test_AtomicSwapCtrt_Lock(t, testAcnt0, testAcnt1, makerCtrt, takerCtrt)
+	asT.test_Lock(t, testAcnt0, testAcnt1, makerCtrt, takerCtrt)
 }
 
-func test_AtomicSwapCtrt_Solve(t *testing.T, maker, taker *Account, makerCtrt, takerCtrt *AtomicSwapCtrt) {
+func (ast *atomicSwapTest) test_Solve(t *testing.T, maker, taker *Account, makerCtrt, takerCtrt *AtomicSwapCtrt) {
 	// Maker lock
 	makerLockAmount := 10.0
 	makerLockTimestamp := time.Now().Unix() + 1800
@@ -223,20 +228,20 @@ func Test_AtomicSwapCtrt_Solve(t *testing.T) {
 	g := new(errgroup.Group)
 	var makerCtrt, takerCtrt *AtomicSwapCtrt
 	g.Go(func() (err error) {
-		makerCtrt, err = newAtomicSwap(t, testAcnt0)
+		makerCtrt, err = asT.newAtomicSwap(t, testAcnt0)
 		return
 	})
 	g.Go(func() (err error) {
-		takerCtrt, err = newAtomicSwap(t, testAcnt1)
+		takerCtrt, err = asT.newAtomicSwap(t, testAcnt1)
 		return
 	})
 	if err := g.Wait(); err != nil {
 		t.Fatal(err)
 	}
-	test_AtomicSwapCtrt_Solve(t, testAcnt0, testAcnt1, makerCtrt, takerCtrt)
+	asT.test_Solve(t, testAcnt0, testAcnt1, makerCtrt, takerCtrt)
 }
 
-func test_AtomicSwapCtrt_ExpWithdraw(t *testing.T, acnt0, acnt1 *Account, makerCtrt *AtomicSwapCtrt) {
+func (ast *atomicSwapTest) test_ExpWithdraw(t *testing.T, acnt0, acnt1 *Account, makerCtrt *AtomicSwapCtrt) {
 	makerLockAmount := 10.0
 	makerLockTimestamp := time.Now().Unix() + 8
 	makerPuzzlePlain := "abc"
@@ -267,19 +272,19 @@ func test_AtomicSwapCtrt_ExpWithdraw(t *testing.T, acnt0, acnt1 *Account, makerC
 }
 
 func Test_AtomicSwapCtrt_ExpWithdraw(t *testing.T) {
-	makerCtrt, err := newAtomicSwap(t, testAcnt0)
+	makerCtrt, err := asT.newAtomicSwap(t, testAcnt0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	test_AtomicSwapCtrt_ExpWithdraw(t, testAcnt0, testAcnt1, makerCtrt)
+	asT.test_ExpWithdraw(t, testAcnt0, testAcnt1, makerCtrt)
 }
 
 func Test_AtomicSwapCtrt_AsWhole(t *testing.T) {
-	maker_tc, err := newTokCtrtWithTok(t, testAcnt0)
+	maker_tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	makerCtrt := test_AtomicSwapCtrt_Register(t, testAcnt0, maker_tc)
+	makerCtrt := asT.test_Register(t, testAcnt0, maker_tc)
 	resp, err := maker_tc.Deposit(testAcnt0, string(makerCtrt.CtrtId.B58Str()), 1000, "")
 	if err != nil {
 		t.Fatal(err)
@@ -287,10 +292,10 @@ func Test_AtomicSwapCtrt_AsWhole(t *testing.T) {
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 
-	takerCtrt, err := newAtomicSwap(t, testAcnt1)
+	takerCtrt, err := asT.newAtomicSwap(t, testAcnt1)
 	if err != nil {
 		t.Fatal(err)
 	}
-	test_AtomicSwapCtrt_Solve(t, testAcnt0, testAcnt1, makerCtrt, takerCtrt)
-	test_AtomicSwapCtrt_ExpWithdraw(t, testAcnt0, testAcnt1, makerCtrt)
+	asT.test_Solve(t, testAcnt0, testAcnt1, makerCtrt, takerCtrt)
+	asT.test_ExpWithdraw(t, testAcnt0, testAcnt1, makerCtrt)
 }

@@ -6,7 +6,36 @@ import (
 	"testing"
 )
 
-func test_TokCtrtWithoutSplit_Register(t *testing.T, by *Account) *TokCtrtWithoutSplit {
+type tokCtrtTest struct {
+}
+
+var tcT tokCtrtTest
+
+func (tct *tokCtrtTest) newTokCtrtWithoutSplit(by *Account) (*TokCtrtWithoutSplit, error) {
+	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
+	if err != nil {
+		return nil, err
+	}
+	waitForBlock()
+	return tc, nil
+}
+
+func (tct *tokCtrtTest) newTokCtrtWithoutSplitWithTok(t *testing.T, by *Account) (*TokCtrtWithoutSplit, error) {
+	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
+	if err != nil {
+		return nil, err
+	}
+	waitForBlock()
+	resp, err := tc.Issue(by, 100, "attachment")
+	if err != nil {
+		return nil, err
+	}
+	waitForBlock()
+	assertTxSuccess(t, string(resp.Id))
+	return tc, nil
+}
+
+func (tct *tokCtrtTest) test_TokCtrtWithoutSplit_Register(t *testing.T, by *Account) *TokCtrtWithoutSplit {
 	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
 	if err != nil {
 		t.Fatal(err)
@@ -26,42 +55,10 @@ func test_TokCtrtWithoutSplit_Register(t *testing.T, by *Account) *TokCtrtWithou
 }
 
 func Test_TokCtrtWithoutSplit_Register(t *testing.T) {
-	test_TokCtrtWithoutSplit_Register(t, testAcnt0)
+	tcT.test_TokCtrtWithoutSplit_Register(t, testAcnt0)
 }
 
-func newTokCtrtWithoutSplit(by *Account) (*TokCtrtWithoutSplit, error) {
-	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
-	if err != nil {
-		return nil, err
-	}
-	waitForBlock()
-	return tc, nil
-}
-
-func newTokCtrtWithoutSplitWithTok(t *testing.T, by *Account) (*TokCtrtWithoutSplit, error) {
-	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
-	if err != nil {
-		return nil, err
-	}
-	waitForBlock()
-	resp, err := tc.Issue(by, 100, "attachment")
-	if err != nil {
-		return nil, err
-	}
-	waitForBlock()
-	assertTxSuccess(t, string(resp.Id))
-	return tc, nil
-}
-
-func Test_TokCtrtWithoutSplit_Issue(t *testing.T) {
-	tc, err := newTokCtrtWithoutSplit(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	test_TokCtrtWithoutSplit_Issue(t, testAcnt0, tc)
-}
-
-func test_TokCtrtWithoutSplit_Issue(t *testing.T, by *Account, tc *TokCtrtWithoutSplit) {
+func (tct *tokCtrtTest) test_TokCtrtWithoutSplit_Issue(t *testing.T, by *Account, tc *TokCtrtWithoutSplit) {
 	resp, err := tc.Issue(by, 100, "attachment")
 	if err != nil {
 		t.Fatal(err)
@@ -80,15 +77,15 @@ func test_TokCtrtWithoutSplit_Issue(t *testing.T, by *Account, tc *TokCtrtWithou
 	assert.Equal(t, 100, int(tokBal.Balance))
 }
 
-func Test_TokCtrtWithoutSplit_Send(t *testing.T) {
-	tc, err := newTokCtrtWithoutSplitWithTok(t, testAcnt0)
+func Test_TokCtrtWithoutSplit_Issue(t *testing.T) {
+	tc, err := tcT.newTokCtrtWithoutSplit(testAcnt0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	test_TokCtrtWithoutSplit_Send(t, testAcnt0, testAcnt1, tc)
+	tcT.test_TokCtrtWithoutSplit_Issue(t, testAcnt0, tc)
 }
 
-func test_TokCtrtWithoutSplit_Send(t *testing.T, sender, receiver *Account, tc *TokCtrtWithoutSplit) {
+func (tct *tokCtrtTest) test_TokCtrtWithoutSplit_Send(t *testing.T, sender, receiver *Account, tc *TokCtrtWithoutSplit) {
 	tokId, err := tc.CtrtId.GetTokId(0)
 	if err != nil {
 		t.Fatal(err)
@@ -123,15 +120,15 @@ func test_TokCtrtWithoutSplit_Send(t *testing.T, sender, receiver *Account, tc *
 	require.Equal(t, 100, int(tok_bal_acnt1.Balance))
 }
 
-func Test_TokCtrtWithoutSplit_Transfer(t *testing.T) {
-	tc, err := newTokCtrtWithoutSplitWithTok(t, testAcnt0)
+func Test_TokCtrtWithoutSplit_Send(t *testing.T) {
+	tc, err := tcT.newTokCtrtWithoutSplitWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	test_TokCtrtWithoutSplit_Transfer(t, testAcnt0, testAcnt1, tc)
+	tcT.test_TokCtrtWithoutSplit_Send(t, testAcnt0, testAcnt1, tc)
 }
 
-func test_TokCtrtWithoutSplit_Transfer(t *testing.T, sender, receiver *Account, tc *TokCtrtWithoutSplit) {
+func (tct *tokCtrtTest) test_TokCtrtWithoutSplit_Transfer(t *testing.T, sender, receiver *Account, tc *TokCtrtWithoutSplit) {
 	tokId, err := tc.CtrtId.GetTokId(0)
 	if err != nil {
 		t.Fatal(err)
@@ -166,15 +163,15 @@ func test_TokCtrtWithoutSplit_Transfer(t *testing.T, sender, receiver *Account, 
 	require.Equal(t, 100, int(tok_bal_receiver.Balance))
 }
 
-func Test_TokCtrtWithoutSplit_DepositWithdraw(t *testing.T) {
-	tc, err := newTokCtrtWithoutSplitWithTok(t, testAcnt0)
+func Test_TokCtrtWithoutSplit_Transfer(t *testing.T) {
+	tc, err := tcT.newTokCtrtWithoutSplitWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	test_TokCtrtWithoutSplit_DepositWithdraw(t, testAcnt0, tc)
+	tcT.test_TokCtrtWithoutSplit_Transfer(t, testAcnt0, testAcnt1, tc)
 }
 
-func test_TokCtrtWithoutSplit_DepositWithdraw(t *testing.T, by *Account, tc *TokCtrtWithoutSplit) {
+func (tct *tokCtrtTest) test_TokCtrtWithoutSplit_DepositWithdraw(t *testing.T, by *Account, tc *TokCtrtWithoutSplit) {
 	tokId, err := tc.CtrtId.GetTokId(0)
 	if err != nil {
 		t.Fatal(err)
@@ -224,15 +221,15 @@ func test_TokCtrtWithoutSplit_DepositWithdraw(t *testing.T, by *Account, tc *Tok
 	require.Equal(t, 0.0, depositedTokBal.Amount())
 }
 
-func Test_TokCtrtWithoutSplit_Supersede(t *testing.T) {
-	tc, err := newTokCtrtWithoutSplit(testAcnt0)
+func Test_TokCtrtWithoutSplit_DepositWithdraw(t *testing.T) {
+	tc, err := tcT.newTokCtrtWithoutSplitWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatal(err)
 	}
-	test_TokCtrtWithoutSplit_Supersede(t, testAcnt0, testAcnt1, tc)
+	tcT.test_TokCtrtWithoutSplit_DepositWithdraw(t, testAcnt0, tc)
 }
 
-func test_TokCtrtWithoutSplit_Supersede(t *testing.T, by, newIssuer *Account, tc *TokCtrtWithoutSplit) {
+func (tct *tokCtrtTest) test_TokCtrtWithoutSplit_Supersede(t *testing.T, by, newIssuer *Account, tc *TokCtrtWithoutSplit) {
 	resp, err := tc.Supersede(by, string(newIssuer.Addr.B58Str()), "")
 	if err != nil {
 		t.Fatal(err)
@@ -244,6 +241,14 @@ func test_TokCtrtWithoutSplit_Supersede(t *testing.T, by, newIssuer *Account, tc
 		t.Fatal(err)
 	}
 	assert.Equal(t, newIssuer.Addr, issuer)
+}
+
+func Test_TokCtrtWithoutSplit_Supersede(t *testing.T) {
+	tc, err := tcT.newTokCtrtWithoutSplit(testAcnt0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tcT.test_TokCtrtWithoutSplit_Supersede(t, testAcnt0, testAcnt1, tc)
 }
 
 func Test_TokCtrtWithoutSplit_AsWhole(t *testing.T) {

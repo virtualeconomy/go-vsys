@@ -18,7 +18,7 @@ func (v *vEscrowTest) ORDER_PERIOD() int64 {
 }
 
 func (v *vEscrowTest) newVEscrowCtrt_ForTest(t *testing.T, judge, maker, recipient *Account) *VEscrowCtrt {
-	tc, err := newTokCtrtWithTok(t, judge)
+	tc, err := asT.newTokCtrtWithTok(t, judge)
 	if err != nil {
 		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
 	}
@@ -141,7 +141,7 @@ func (v *vEscrowTest) test_Register(t *testing.T, acnt *Account, tc *TokCtrtWith
 }
 
 func Test_VEscrowCtrt_Register(t *testing.T) {
-	tc, err := newTokCtrtWithTok(t, testAcnt0)
+	tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
 	}
@@ -720,7 +720,7 @@ func Test_VEscrowCtrt_Collect(t *testing.T) {
 }
 
 func Test_VEscrowCtrt_AsWhole(t *testing.T) {
-	tc, err := newTokCtrtWithTok(t, testAcnt0)
+	tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
 	}
