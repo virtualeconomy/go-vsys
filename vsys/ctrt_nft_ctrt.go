@@ -11,7 +11,7 @@ type INFTCtrt interface {
 }
 
 // register is internal implementation for Register for NFT contracts.
-func register(ctrtMeta *CtrtMeta, by *Account, ctrtDescription string) (*CtrtId, error) {
+func iNFTCtrt_register(ctrtMeta *CtrtMeta, by *Account, ctrtDescription string) (*CtrtId, error) {
 	txReq := NewRegCtrtTxReq(
 		DataStack{},
 		ctrtMeta,
@@ -33,8 +33,8 @@ func register(ctrtMeta *CtrtMeta, by *Account, ctrtDescription string) (*CtrtId,
 	return cid, nil
 }
 
-// maker is internal implementation for Maker.
-func maker(n INFTCtrt, dbKey Bytes) (*Addr, error) {
+// iNFTCtrt_maker is internal implementation for Maker.
+func iNFTCtrt_maker(n INFTCtrt, dbKey Bytes) (*Addr, error) {
 	resp, err := n.QueryDBKey(
 		dbKey,
 	)
@@ -53,8 +53,8 @@ func maker(n INFTCtrt, dbKey Bytes) (*Addr, error) {
 	}
 }
 
-// issuer is internal implementation for Issuer.
-func issuer(n INFTCtrt, dbKey Bytes) (*Addr, error) {
+// iNFTCtrt_issuer is internal implementation for Issuer.
+func iNFTCtrt_issuer(n INFTCtrt, dbKey Bytes) (*Addr, error) {
 	resp, err := n.QueryDBKey(
 		dbKey,
 	)
@@ -73,8 +73,8 @@ func issuer(n INFTCtrt, dbKey Bytes) (*Addr, error) {
 	}
 }
 
-// lastIndex is internal implementation for LastIndex.
-func lastIndex(n INFTCtrt) (uint32, error) {
+// iNFTCtrt_lastIndex is internal implementation for LastIndex.
+func iNFTCtrt_lastIndex(n INFTCtrt) (uint32, error) {
 	res, err := n.chain().NodeAPI.GetLastIndex(string(n.ctrtId().B58Str()))
 	if err != nil {
 		return 0, fmt.Errorf("LastIndex: %w", err)
@@ -82,8 +82,8 @@ func lastIndex(n INFTCtrt) (uint32, error) {
 	return res.LastTokenIdx, nil
 }
 
-// issue is internal implementation for Issue.
-func issue(n INFTCtrt, funcIdx FuncIdx, by *Account, tokenDescription, attachment string) (*BroadcastExecuteTxResp, error) {
+// iNFTCtrt_issue is internal implementation for Issue.
+func iNFTCtrt_issue(n INFTCtrt, funcIdx FuncIdx, by *Account, tokenDescription, attachment string) (*BroadcastExecuteTxResp, error) {
 	txReq := NewExecCtrtFuncTxReq(
 		n.ctrtId(),
 		funcIdx,
@@ -101,8 +101,8 @@ func issue(n INFTCtrt, funcIdx FuncIdx, by *Account, tokenDescription, attachmen
 	return resp, nil
 }
 
-// send is internal implementation of Send functions.
-func send(n INFTCtrt, funcIdx FuncIdx, by *Account, recipient string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
+// iNFTCtrt_send is internal implementation of Send functions.
+func iNFTCtrt_send(n INFTCtrt, funcIdx FuncIdx, by *Account, recipient string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
 	rcpt_addr, err := NewAddrFromB58Str(recipient)
 	if err != nil {
 		return nil, fmt.Errorf("Send: %w", err)
@@ -132,8 +132,8 @@ func send(n INFTCtrt, funcIdx FuncIdx, by *Account, recipient string, tok_idx in
 	return resp, nil
 }
 
-// transfer is internal implementation of Transfer functions.
-func transfer(n INFTCtrt, funcIdx FuncIdx, by *Account, sender, recipient string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
+// iNFTCtrt_transfer is internal implementation of Transfer functions.
+func iNFTCtrt_transfer(n INFTCtrt, funcIdx FuncIdx, by *Account, sender, recipient string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
 	rcpt_addr, err := NewAddrFromB58Str(recipient)
 	if err != nil {
 		return nil, fmt.Errorf("Transfer: %w", err)
@@ -172,8 +172,8 @@ func transfer(n INFTCtrt, funcIdx FuncIdx, by *Account, sender, recipient string
 	return resp, nil
 }
 
-// deposit is internal implementation of Deposit functions.
-func deposit(
+// iNFTCtrt_deposit is internal implementation of Deposit functions.
+func iNFTCtrt_deposit(
 	n INFTCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -205,8 +205,8 @@ func deposit(
 	return resp, nil
 }
 
-// withdraw is internal implementation of Withdraw functions.
-func withdraw(n INFTCtrt, funcIdx FuncIdx, by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
+// iNFTCtrt_withdraw is internal implementation of Withdraw functions.
+func iNFTCtrt_withdraw(n INFTCtrt, funcIdx FuncIdx, by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
 	ctrtID, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
 		return nil, fmt.Errorf("Withdraw: %w", err)
@@ -265,7 +265,7 @@ func RegisterNFTCtrt(by *Account, ctrtDescription string) (*NFTCtrt, error) {
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrt: %w", err)
 	}
-	cid, err := register(ctrtMeta, by, ctrtDescription)
+	cid, err := iNFTCtrt_register(ctrtMeta, by, ctrtDescription)
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrt: %w", err)
 	}
@@ -293,42 +293,42 @@ func NewDBKeyNFTCtrtIssuer() Bytes {
 
 // Maker queries & returns the maker of the contract.
 func (n *NFTCtrt) Maker() (*Addr, error) {
-	return maker(n, NewDBKeyNFTCtrtMaker())
+	return iNFTCtrt_maker(n, NewDBKeyNFTCtrtMaker())
 }
 
 // Issuer queries & returns the issuer of the contract.
 func (n *NFTCtrt) Issuer() (*Addr, error) {
-	return issuer(n, NewDBKeyNFTCtrtIssuer())
+	return iNFTCtrt_issuer(n, NewDBKeyNFTCtrtIssuer())
 }
 
 // LastIndex returns the last index of the NFT contract.
 func (n *NFTCtrt) LastIndex() (uint32, error) {
-	return lastIndex(n)
+	return iNFTCtrt_lastIndex(n)
 }
 
 // Issue issues a token of the NFT contract.
 func (n *NFTCtrt) Issue(by *Account, tokenDescription, attachment string) (*BroadcastExecuteTxResp, error) {
-	return issue(n, FUNC_IDX_NFT_ISSUE, by, tokenDescription, attachment)
+	return iNFTCtrt_issue(n, FUNC_IDX_NFT_ISSUE, by, tokenDescription, attachment)
 }
 
 // Send sends the NFT token from the action taker to the recipient.
 func (n *NFTCtrt) Send(by *Account, recipient string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return send(n, FUNC_IDX_NFT_SEND, by, recipient, tok_idx, attachment)
+	return iNFTCtrt_send(n, FUNC_IDX_NFT_SEND, by, recipient, tok_idx, attachment)
 }
 
 // Transfer transfers the NFT token from the sender to the recipient.
 func (n *NFTCtrt) Transfer(by *Account, sender, recipient string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return transfer(n, FUNC_IDX_NFT_TRANSFER, by, sender, recipient, tokIdx, attachment)
+	return iNFTCtrt_transfer(n, FUNC_IDX_NFT_TRANSFER, by, sender, recipient, tokIdx, attachment)
 }
 
 // Deposit deposits the NFT token from the action taker to another contract.
 func (n *NFTCtrt) Deposit(by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return deposit(n, FUNC_IDX_NFT_DEPOSIT, by, ctrtId, tokIdx, attachment)
+	return iNFTCtrt_deposit(n, FUNC_IDX_NFT_DEPOSIT, by, ctrtId, tokIdx, attachment)
 }
 
 // Withdraw withdraws the token from another contract to the action taker.
 func (n *NFTCtrt) Withdraw(by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return withdraw(n, FUNC_IDX_NFT_WITHDRAW, by, ctrtId, tokIdx, attachment)
+	return iNFTCtrt_withdraw(n, FUNC_IDX_NFT_WITHDRAW, by, ctrtId, tokIdx, attachment)
 }
 
 // Supersede transfers the issuer role of the contract to a new account.
@@ -378,8 +378,8 @@ func NewDBKeyNFTCtrtV2ForCtrtInList(ctrtId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_NFTV2_IS_IN_LIST, NewDeCtrtAddrFromCtrtId(ctrtIdMd)).Serialize(), nil
 }
 
-// isInList queries & returns the status of whether the address is in the list for the given db_key.
-func isInList(t INFTCtrt, dbKey Bytes) (bool, error) {
+// iNFTCtrt_isInList queries & returns the status of whether the address is in the list for the given db_key.
+func iNFTCtrt_isInList(t INFTCtrt, dbKey Bytes) (bool, error) {
 	resp, err := t.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("isInList: %w", err)
@@ -397,8 +397,8 @@ func isInList(t INFTCtrt, dbKey Bytes) (bool, error) {
 	}
 }
 
-// regulator is internal implementation for Regulator.
-func regulator(t INFTCtrt) (*Addr, error) {
+// iNFTCtrt_regulator is internal implementation for Regulator.
+func iNFTCtrt_regulator(t INFTCtrt) (*Addr, error) {
 	resp, err := t.QueryDBKey(NewDBKeyNFTCtrtV2ForRegulator())
 	if err != nil {
 		return nil, fmt.Errorf("Regulator: %w", err)
@@ -416,9 +416,9 @@ func regulator(t INFTCtrt) (*Addr, error) {
 	}
 }
 
-// updateList updates the presence of the address within the given data entry in the list.
+// iNFTCtrt_updateList updates the presence of the address within the given data entry in the list.
 // It's the helper method for UpdateList*.
-func updateList(
+func iNFTCtrt_updateList(
 	n INFTCtrt,
 	by *Account,
 	addrDe DataEntry,
@@ -441,8 +441,8 @@ func updateList(
 	return resp, nil
 }
 
-// supersedeCtrtWithList is internal implementation of Supersede for contracts with lists.
-func supersedeCtrtWithList(
+// iNFTCtrt_supersedeCtrtWithList is internal implementation of Supersede for contracts with lists.
+func iNFTCtrt_supersedeCtrtWithList(
 	t INFTCtrt,
 	by *Account,
 	newIssuer string,
@@ -516,7 +516,7 @@ func RegisterNFTCtrtV2Whitelist(by *Account, ctrtDescription string) (*NFTCtrtV2
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrtV2Whitelist: %w", err)
 	}
-	cid, err := register(ctrtMeta, by, ctrtDescription)
+	cid, err := iNFTCtrt_register(ctrtMeta, by, ctrtDescription)
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrtV2Whitelist: %w", err)
 	}
@@ -530,47 +530,47 @@ func RegisterNFTCtrtV2Whitelist(by *Account, ctrtDescription string) (*NFTCtrtV2
 
 // Maker queries & returns the maker of the contract.
 func (n *NFTCtrtV2Whitelist) Maker() (*Addr, error) {
-	return maker(n, NewDBKeyNFTCtrtMaker())
+	return iNFTCtrt_maker(n, NewDBKeyNFTCtrtMaker())
 }
 
 // Issuer queries & returns the issuer of the contract.
 func (n *NFTCtrtV2Whitelist) Issuer() (*Addr, error) {
-	return issuer(n, NewDBKeyNFTCtrtIssuer())
+	return iNFTCtrt_issuer(n, NewDBKeyNFTCtrtIssuer())
 }
 
 // LastIndex returns the last index of the NFT contract.
 func (n *NFTCtrtV2Whitelist) LastIndex() (uint32, error) {
-	return lastIndex(n)
+	return iNFTCtrt_lastIndex(n)
 }
 
 // Issue issues a token of the NFT contract.
 func (n *NFTCtrtV2Whitelist) Issue(by *Account, tokenDescription, attachment string) (*BroadcastExecuteTxResp, error) {
-	return issue(n, FUNC_IDX_NFTV2_ISSUE, by, tokenDescription, attachment)
+	return iNFTCtrt_issue(n, FUNC_IDX_NFTV2_ISSUE, by, tokenDescription, attachment)
 }
 
 // Send sends the NFT token from the action taker to the recipient.
 func (n *NFTCtrtV2Whitelist) Send(by *Account, recipient string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return send(n, FUNC_IDX_NFTV2_SEND, by, recipient, tok_idx, attachment)
+	return iNFTCtrt_send(n, FUNC_IDX_NFTV2_SEND, by, recipient, tok_idx, attachment)
 }
 
 // Transfer transfers the NFT token from the sender to the recipient.
 func (n *NFTCtrtV2Whitelist) Transfer(by *Account, sender, recipient string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return transfer(n, FUNC_IDX_NFTV2_TRANSFER, by, sender, recipient, tokIdx, attachment)
+	return iNFTCtrt_transfer(n, FUNC_IDX_NFTV2_TRANSFER, by, sender, recipient, tokIdx, attachment)
 }
 
 // Deposit deposits the NFT token from the action taker to another contract.
 func (n *NFTCtrtV2Whitelist) Deposit(by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return deposit(n, FUNC_IDX_NFTV2_DEPOSIT, by, ctrtId, tokIdx, attachment)
+	return iNFTCtrt_deposit(n, FUNC_IDX_NFTV2_DEPOSIT, by, ctrtId, tokIdx, attachment)
 }
 
 // Withdraw withdraws the token from another contract to the action taker.
 func (n *NFTCtrtV2Whitelist) Withdraw(by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return withdraw(n, FUNC_IDX_NFTV2_WITHDRAW, by, ctrtId, tokIdx, attachment)
+	return iNFTCtrt_withdraw(n, FUNC_IDX_NFTV2_WITHDRAW, by, ctrtId, tokIdx, attachment)
 }
 
 // Regulator queries & returns the regulator of the contract.
 func (n *NFTCtrtV2Whitelist) Regulator() (*Addr, error) {
-	return regulator(n)
+	return iNFTCtrt_regulator(n)
 }
 
 // IsUserInList queries & returns the status of whether the user address in the whitelist.
@@ -579,7 +579,7 @@ func (n *NFTCtrtV2Whitelist) IsUserInList(addr string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("IsUserInList: %w", err)
 	}
-	return isInList(n, dbKey)
+	return iNFTCtrt_isInList(n, dbKey)
 }
 
 // IsCtrtInList queries & returns the status of whether the contract address in the whitelist.
@@ -588,7 +588,7 @@ func (n *NFTCtrtV2Whitelist) IsCtrtInList(ctrtId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("IsCtrtInList: %w", err)
 	}
-	return isInList(n, dbKey)
+	return iNFTCtrt_isInList(n, dbKey)
 }
 
 // UpdateListUser updates the presence of the user address in the list.
@@ -597,7 +597,7 @@ func (n *NFTCtrtV2Whitelist) UpdateListUser(by *Account, addr string, val bool, 
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListUser: %w", err)
 	}
-	return updateList(n, by, NewDeAddr(addrMd), val, attachment)
+	return iNFTCtrt_updateList(n, by, NewDeAddr(addrMd), val, attachment)
 }
 
 // UpdateListCtrt updates the presence of the contract address in the list.
@@ -606,12 +606,12 @@ func (n *NFTCtrtV2Whitelist) UpdateListCtrt(by *Account, ctrtId string, val bool
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListCtrt: %w", err)
 	}
-	return updateList(n, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
+	return iNFTCtrt_updateList(n, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
 }
 
 // Supersede transfers the issuer role of the contract to a new account.
 func (n *NFTCtrtV2Whitelist) Supersede(by *Account, newIssuer, newRegulator, attachment string) (*BroadcastExecuteTxResp, error) {
-	return supersedeCtrtWithList(n, by, newIssuer, newRegulator, attachment)
+	return iNFTCtrt_supersedeCtrtWithList(n, by, newIssuer, newRegulator, attachment)
 }
 
 type NFTCtrtV2Blacklist struct {
@@ -652,7 +652,7 @@ func RegisterNFTCtrtV2Blacklist(by *Account, ctrtDescription string) (*NFTCtrtV2
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrtV2Blacklist: %w", err)
 	}
-	cid, err := register(ctrtMeta, by, ctrtDescription)
+	cid, err := iNFTCtrt_register(ctrtMeta, by, ctrtDescription)
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrtV2Blacklist: %w", err)
 	}
@@ -666,47 +666,47 @@ func RegisterNFTCtrtV2Blacklist(by *Account, ctrtDescription string) (*NFTCtrtV2
 
 // Maker queries & returns the maker of the contract.
 func (n *NFTCtrtV2Blacklist) Maker() (*Addr, error) {
-	return maker(n, NewDBKeyNFTCtrtMaker())
+	return iNFTCtrt_maker(n, NewDBKeyNFTCtrtMaker())
 }
 
 // Issuer queries & returns the issuer of the contract.
 func (n *NFTCtrtV2Blacklist) Issuer() (*Addr, error) {
-	return issuer(n, NewDBKeyNFTCtrtIssuer())
+	return iNFTCtrt_issuer(n, NewDBKeyNFTCtrtIssuer())
 }
 
 // LastIndex returns the last index of the NFT contract.
 func (n *NFTCtrtV2Blacklist) LastIndex() (uint32, error) {
-	return lastIndex(n)
+	return iNFTCtrt_lastIndex(n)
 }
 
 // Issue issues a token of the NFT contract.
 func (n *NFTCtrtV2Blacklist) Issue(by *Account, tokenDescription, attachment string) (*BroadcastExecuteTxResp, error) {
-	return issue(n, FUNC_IDX_NFTV2_ISSUE, by, tokenDescription, attachment)
+	return iNFTCtrt_issue(n, FUNC_IDX_NFTV2_ISSUE, by, tokenDescription, attachment)
 }
 
 // Send sends the NFT token from the action taker to the recipient.
 func (n *NFTCtrtV2Blacklist) Send(by *Account, recipient string, tok_idx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return send(n, FUNC_IDX_NFTV2_SEND, by, recipient, tok_idx, attachment)
+	return iNFTCtrt_send(n, FUNC_IDX_NFTV2_SEND, by, recipient, tok_idx, attachment)
 }
 
 // Transfer transfers the NFT token from the sender to the recipient.
 func (n *NFTCtrtV2Blacklist) Transfer(by *Account, sender, recipient string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return transfer(n, FUNC_IDX_NFTV2_TRANSFER, by, sender, recipient, tokIdx, attachment)
+	return iNFTCtrt_transfer(n, FUNC_IDX_NFTV2_TRANSFER, by, sender, recipient, tokIdx, attachment)
 }
 
 // Deposit deposits the NFT token from the action taker to another contract.
 func (n *NFTCtrtV2Blacklist) Deposit(by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return deposit(n, FUNC_IDX_NFTV2_DEPOSIT, by, ctrtId, tokIdx, attachment)
+	return iNFTCtrt_deposit(n, FUNC_IDX_NFTV2_DEPOSIT, by, ctrtId, tokIdx, attachment)
 }
 
 // Withdraw withdraws the token from another contract to the action taker.
 func (n *NFTCtrtV2Blacklist) Withdraw(by *Account, ctrtId string, tokIdx int, attachment string) (*BroadcastExecuteTxResp, error) {
-	return withdraw(n, FUNC_IDX_NFTV2_WITHDRAW, by, ctrtId, tokIdx, attachment)
+	return iNFTCtrt_withdraw(n, FUNC_IDX_NFTV2_WITHDRAW, by, ctrtId, tokIdx, attachment)
 }
 
 // Regulator queries & returns the regulator of the contract.
 func (n *NFTCtrtV2Blacklist) Regulator() (*Addr, error) {
-	return regulator(n)
+	return iNFTCtrt_regulator(n)
 }
 
 // IsUserInList queries & returns the status of whether the user address in the black list.
@@ -715,7 +715,7 @@ func (n *NFTCtrtV2Blacklist) IsUserInList(addr string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("IsUserInList: %w", err)
 	}
-	return isInList(n, dbKey)
+	return iNFTCtrt_isInList(n, dbKey)
 }
 
 // IsCtrtInList queries & returns the status of whether the contract address in the blacklist.
@@ -724,7 +724,7 @@ func (n *NFTCtrtV2Blacklist) IsCtrtInList(ctrtId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("IsCtrtInList: %w", err)
 	}
-	return isInList(n, dbKey)
+	return iNFTCtrt_isInList(n, dbKey)
 }
 
 // UpdateListUser updates the presence of the user address in the list.
@@ -733,7 +733,7 @@ func (n *NFTCtrtV2Blacklist) UpdateListUser(by *Account, addr string, val bool, 
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListUser: %w", err)
 	}
-	return updateList(n, by, NewDeAddr(addrMd), val, attachment)
+	return iNFTCtrt_updateList(n, by, NewDeAddr(addrMd), val, attachment)
 }
 
 // UpdateListCtrt updates the presence of the contract address in the list.
@@ -742,10 +742,10 @@ func (n *NFTCtrtV2Blacklist) UpdateListCtrt(by *Account, ctrtId string, val bool
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListCtrt: %w", err)
 	}
-	return updateList(n, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
+	return iNFTCtrt_updateList(n, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
 }
 
 // Supersede transfers the issuer role of the contract to a new account.
 func (n *NFTCtrtV2Blacklist) Supersede(by *Account, newIssuer, newRegulator, attachment string) (*BroadcastExecuteTxResp, error) {
-	return supersedeCtrtWithList(n, by, newIssuer, newRegulator, attachment)
+	return iNFTCtrt_supersedeCtrtWithList(n, by, newIssuer, newRegulator, attachment)
 }

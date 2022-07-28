@@ -11,7 +11,7 @@ type ITokCtrt interface {
 }
 
 // internal implementation for Issuer function.
-func issuer(t ITokCtrt, dbKey Bytes) (*Addr, error) {
+func iTokCtrt_issuer(t ITokCtrt, dbKey Bytes) (*Addr, error) {
 	resp, err := t.QueryDBKey(dbKey)
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
@@ -30,7 +30,7 @@ func issuer(t ITokCtrt, dbKey Bytes) (*Addr, error) {
 }
 
 // Maker queries and returns maker Addr of the contract.
-func maker(t ITokCtrt, dbKey Bytes) (*Addr, error) {
+func iTokCtrt_maker(t ITokCtrt, dbKey Bytes) (*Addr, error) {
 	resp, err := t.QueryDBKey(dbKey)
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
@@ -57,8 +57,8 @@ func tokId(t ITokCtrt) (*TokenId, error) {
 	return tokId, nil
 }
 
-// supersede is internal implementation for Supersede.
-func supersede(
+// iTokCtrt_supersede is internal implementation for Supersede.
+func iTokCtrt_supersede(
 	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -88,8 +88,8 @@ func supersede(
 	return resp, nil
 }
 
-// issue is internal implementation for Issue.
-func issue(
+// iTokCtrt_issue is internal implementation for Issue.
+func iTokCtrt_issue(
 	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -125,7 +125,7 @@ func issue(
 }
 
 // send is internal implementation for Send.
-func send(
+func iTokCtrt_send(
 	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -174,7 +174,7 @@ func send(
 }
 
 // destroy is internal implementation for Destroy.
-func destroy(
+func iTokCtrt_destroy(
 	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -210,8 +210,8 @@ func destroy(
 	return resp, nil
 }
 
-// Transfer transfers tokens from sender to recipient.
-func transfer(
+// iTokCtrt_transfer internal implementation of Transfer function.
+func iTokCtrt_transfer(
 	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -267,8 +267,8 @@ func transfer(
 	return resp, nil
 }
 
-// deposit is internal implementation for Deposit.
-func deposit(
+// iTokCtrt_deposit is internal implementation for Deposit.
+func iTokCtrt_deposit(
 	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -312,8 +312,8 @@ func deposit(
 	return resp, nil
 }
 
-// withdraw is internal implementation for Withdraw.
-func withdraw(
+// iTokCtrt_withdraw is internal implementation for Withdraw.
+func iTokCtrt_withdraw(
 	t ITokCtrt,
 	funcIdx FuncIdx,
 	by *Account,
@@ -436,10 +436,10 @@ func NewDBKeyTokCtrtWithoutSplitIssuer() Bytes {
 
 // Issuer queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplit) Issuer() (*Addr, error) {
-	return issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
 }
 func (t *TokCtrtWithoutSplit) Maker() (*Addr, error) {
-	return maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
 }
 
 // TokId returns TokenId of the contract.
@@ -484,37 +484,37 @@ func (t *TokCtrtWithoutSplit) Unit() (Unit, error) {
 
 // Supersede transfers the issuing right of the contract to another account.
 func (t *TokCtrtWithoutSplit) Supersede(by *Account, newIssuer string, attachment string) (*BroadcastExecuteTxResp, error) {
-	return supersede(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_SUPERSEDE, by, newIssuer, attachment)
+	return iTokCtrt_supersede(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_SUPERSEDE, by, newIssuer, attachment)
 }
 
 // Issue issues new Tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplit) Issue(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return issue(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_ISSUE, by, amount, attachment)
+	return iTokCtrt_issue(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_ISSUE, by, amount, attachment)
 }
 
 // Send sends tokens to another account.
 func (t *TokCtrtWithoutSplit) Send(by *Account, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return send(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_SEND, by, recipient, amount, attachment)
+	return iTokCtrt_send(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_SEND, by, recipient, amount, attachment)
 }
 
 // Destroy destroys an amount of tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplit) Destroy(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return destroy(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_DESTROY, by, amount, attachment)
+	return iTokCtrt_destroy(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_DESTROY, by, amount, attachment)
 }
 
 // Transfer transfers tokens from sender to recipient.
 func (t *TokCtrtWithoutSplit) Transfer(by *Account, sender, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return transfer(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_TRANSFER, by, sender, recipient, amount, attachment)
+	return iTokCtrt_transfer(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_TRANSFER, by, sender, recipient, amount, attachment)
 }
 
 // Deposit deposits the tokens into the contract.
 func (t *TokCtrtWithoutSplit) Deposit(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return deposit(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_DEPOSIT, by, ctrtId, amount, attachment)
+	return iTokCtrt_deposit(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_DEPOSIT, by, ctrtId, amount, attachment)
 }
 
 // Withdraw withdraws tokens from another contract.
 func (t *TokCtrtWithoutSplit) Withdraw(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return withdraw(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_WITHDRAW, by, ctrtId, amount, attachment)
+	return iTokCtrt_withdraw(t, FUNC_IDX_TOK_CTRT_WITHOUT_SPLIT_WITHDRAW, by, ctrtId, amount, attachment)
 }
 
 type TokCtrtWithSplit struct {
@@ -599,10 +599,10 @@ func NewDBKeyTokCtrtWithSplitIssuer() Bytes {
 
 // Issuer queries and returns issuer Addr of the contract.
 func (t *TokCtrtWithSplit) Issuer() (*Addr, error) {
-	return issuer(t, NewDBKeyTokCtrtWithSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithSplitIssuer())
 }
 func (t *TokCtrtWithSplit) Maker() (*Addr, error) {
-	return maker(t, NewDBKeyTokCtrtWithSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithSplitMaker())
 }
 
 // TokId returns TokenId of the contract.
@@ -646,37 +646,37 @@ func (t *TokCtrtWithSplit) Unit() (Unit, error) {
 
 // Supersede transfers the issuing right of the contract to another account.
 func (t *TokCtrtWithSplit) Supersede(by *Account, newIssuer string, attachment string) (*BroadcastExecuteTxResp, error) {
-	return supersede(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_SUPERSEDE, by, newIssuer, attachment)
+	return iTokCtrt_supersede(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_SUPERSEDE, by, newIssuer, attachment)
 }
 
 // Issue issues new Tokens by account who has the issuing right.
 func (t *TokCtrtWithSplit) Issue(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return issue(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_ISSUE, by, amount, attachment)
+	return iTokCtrt_issue(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_ISSUE, by, amount, attachment)
 }
 
 // Send sends tokens to another account.
 func (t *TokCtrtWithSplit) Send(by *Account, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return send(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_SEND, by, recipient, amount, attachment)
+	return iTokCtrt_send(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_SEND, by, recipient, amount, attachment)
 }
 
 // Destroy destroys an amount of tokens by account who has the issuing right.
 func (t *TokCtrtWithSplit) Destroy(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return destroy(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_DESTROY, by, amount, attachment)
+	return iTokCtrt_destroy(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_DESTROY, by, amount, attachment)
 }
 
 // Transfer transfers tokens from sender to recipient.
 func (t *TokCtrtWithSplit) Transfer(by *Account, sender, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return transfer(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_TRANSFER, by, sender, recipient, amount, attachment)
+	return iTokCtrt_transfer(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_TRANSFER, by, sender, recipient, amount, attachment)
 }
 
 // Deposit deposits the tokens into the contract.
 func (t *TokCtrtWithSplit) Deposit(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return deposit(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_DEPOSIT, by, ctrtId, amount, attachment)
+	return iTokCtrt_deposit(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_DEPOSIT, by, ctrtId, amount, attachment)
 }
 
 // Withdraw withdraws tokens from another contract.
 func (t *TokCtrtWithSplit) Withdraw(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return withdraw(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_WITHDRAW, by, ctrtId, amount, attachment)
+	return iTokCtrt_withdraw(t, FUNC_IDX_TOK_CTRT_WITH_SPLIT_WITHDRAW, by, ctrtId, amount, attachment)
 }
 
 // Split updates the unit of the token contract.
@@ -703,7 +703,7 @@ func (t *TokCtrtWithSplit) Split(by *Account, newUnit uint64, attachment string)
 
 // General functions for Token Contracts with Lists
 
-func isInList(t ITokCtrt, dbKey Bytes) (bool, error) {
+func iTokCtrt_isInList(t ITokCtrt, dbKey Bytes) (bool, error) {
 	resp, err := t.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("isInList: %w", err)
@@ -722,8 +722,8 @@ func isInList(t ITokCtrt, dbKey Bytes) (bool, error) {
 }
 
 // updateList updates the presence of the address within the given data entry in the list.
-//        It's the helper method for UpdateList*.
-func updateList(
+// It's the helper method for UpdateList*.
+func iTokCtrt_updateList(
 	t ITokCtrt,
 	by *Account,
 	addrDe DataEntry,
@@ -746,8 +746,8 @@ func updateList(
 	return resp, nil
 }
 
-// supersedeCtrtWithList is internal implementation of Supersede for contracts with lists.
-func supersedeCtrtWithList(t ITokCtrt,
+// iTokCtrt_supersedeCtrtWithList is internal implementation of Supersede for contracts with lists.
+func iTokCtrt_supersedeCtrtWithList(t ITokCtrt,
 	by *Account,
 	newIssuer string,
 	newRegulator string,
@@ -867,8 +867,8 @@ func NewDBKeyTokCtrtV2Regulator() Bytes {
 	return STATE_VAR_TOK_CTRT_V2_REGULATOR.Serialize()
 }
 
-// regulator is internal implementation for Regulator.
-func regulator(t ITokCtrt) (*Addr, error) {
+// iTokCtrt_regulator is internal implementation for Regulator.
+func iTokCtrt_regulator(t ITokCtrt) (*Addr, error) {
 	resp, err := t.QueryDBKey(NewDBKeyTokCtrtV2Regulator())
 	if err != nil {
 		return nil, fmt.Errorf("Regulator: %w", err)
@@ -917,7 +917,7 @@ func (t *TokCtrtWithoutSplitV2Whitelist) Unit() (Unit, error) {
 
 // Regulator queries & returns the regulator of the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Regulator() (*Addr, error) {
-	return regulator(t)
+	return iTokCtrt_regulator(t)
 }
 
 // IsUserInList queries & returns the status of whether the user address in the whitelist.
@@ -926,7 +926,7 @@ func (t *TokCtrtWithoutSplitV2Whitelist) IsUserInList(addr string) (bool, error)
 	if err != nil {
 		return false, fmt.Errorf("IsUserInList: %w", err)
 	}
-	return isInList(t, dbKey)
+	return iTokCtrt_isInList(t, dbKey)
 }
 
 // IsCtrtInList queries & returns the status of whether the contract address in the whitelist.
@@ -935,7 +935,7 @@ func (t *TokCtrtWithoutSplitV2Whitelist) IsCtrtInList(ctrtId string) (bool, erro
 	if err != nil {
 		return false, fmt.Errorf("IsCtrtInList: %w", err)
 	}
-	return isInList(t, dbKey)
+	return iTokCtrt_isInList(t, dbKey)
 }
 
 // UpdateListUser updates the presence of the user address in the list.
@@ -944,7 +944,7 @@ func (t *TokCtrtWithoutSplitV2Whitelist) UpdateListUser(by *Account, addr string
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListUser: %w", err)
 	}
-	return updateList(t, by, NewDeAddr(addrMd), val, attachment)
+	return iTokCtrt_updateList(t, by, NewDeAddr(addrMd), val, attachment)
 }
 
 // UpdateListCtrt updates the presence of the contract address in the list.
@@ -953,22 +953,22 @@ func (t *TokCtrtWithoutSplitV2Whitelist) UpdateListCtrt(by *Account, ctrtId stri
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListCtrt: %w", err)
 	}
-	return updateList(t, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
+	return iTokCtrt_updateList(t, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
 }
 
 // Supersede transfers the issuer role of the contract to a new account.
 func (t *TokCtrtWithoutSplitV2Whitelist) Supersede(by *Account, newIssuer, newRegulator string, attachment string) (*BroadcastExecuteTxResp, error) {
-	return supersedeCtrtWithList(t, by, newIssuer, newRegulator, attachment)
+	return iTokCtrt_supersedeCtrtWithList(t, by, newIssuer, newRegulator, attachment)
 }
 
 // Issuer queries and returns issuer Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Issuer() (*Addr, error) {
-	return issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
 }
 
 // Maker queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Maker() (*Addr, error) {
-	return maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
 }
 
 // GetTokBal queries & returns the balance of the token of the contract belonging to the user address.
@@ -987,32 +987,32 @@ func (t *TokCtrtWithoutSplitV2Whitelist) GetTokBal(addr string) (*Token, error) 
 
 // Issue issues new Tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplitV2Whitelist) Issue(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return issue(t, FUNC_IDX_TOK_CTRT_V2_ISSUE, by, amount, attachment)
+	return iTokCtrt_issue(t, FUNC_IDX_TOK_CTRT_V2_ISSUE, by, amount, attachment)
 }
 
 // Send sends tokens to another account.
 func (t *TokCtrtWithoutSplitV2Whitelist) Send(by *Account, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return send(t, FUNC_IDX_TOK_CTRT_V2_SEND, by, recipient, amount, attachment)
+	return iTokCtrt_send(t, FUNC_IDX_TOK_CTRT_V2_SEND, by, recipient, amount, attachment)
 }
 
 // Destroy destroys an amount of tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplitV2Whitelist) Destroy(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return destroy(t, FUNC_IDX_TOK_CTRT_V2_DESTROY, by, amount, attachment)
+	return iTokCtrt_destroy(t, FUNC_IDX_TOK_CTRT_V2_DESTROY, by, amount, attachment)
 }
 
 // Transfer transfers tokens from sender to recipient.
 func (t *TokCtrtWithoutSplitV2Whitelist) Transfer(by *Account, sender, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return transfer(t, FUNC_IDX_TOK_CTRT_V2_TRANSFER, by, sender, recipient, amount, attachment)
+	return iTokCtrt_transfer(t, FUNC_IDX_TOK_CTRT_V2_TRANSFER, by, sender, recipient, amount, attachment)
 }
 
 // Deposit deposits the tokens into the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Deposit(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return deposit(t, FUNC_IDX_TOK_CTRT_V2_DEPOSIT, by, ctrtId, amount, attachment)
+	return iTokCtrt_deposit(t, FUNC_IDX_TOK_CTRT_V2_DEPOSIT, by, ctrtId, amount, attachment)
 }
 
 // Withdraw withdraws tokens from another contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Withdraw(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return withdraw(t, FUNC_IDX_TOK_CTRT_V2_WITHDRAW, by, ctrtId, amount, attachment)
+	return iTokCtrt_withdraw(t, FUNC_IDX_TOK_CTRT_V2_WITHDRAW, by, ctrtId, amount, attachment)
 }
 
 // TokCtrtWithoutSplitV2Blacklist is the struct for Token Contract V2 with Blacklist.
@@ -1111,7 +1111,7 @@ func (t *TokCtrtWithoutSplitV2Blacklist) Unit() (Unit, error) {
 
 // Regulator queries & returns the regulator of the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Regulator() (*Addr, error) {
-	return regulator(t)
+	return iTokCtrt_regulator(t)
 }
 
 // IsUserInList queries & returns the status of whether the user address in the Blacklist.
@@ -1120,7 +1120,7 @@ func (t *TokCtrtWithoutSplitV2Blacklist) IsUserInList(addr string) (bool, error)
 	if err != nil {
 		return false, fmt.Errorf("IsUserInList: %w", err)
 	}
-	return isInList(t, dbKey)
+	return iTokCtrt_isInList(t, dbKey)
 }
 
 // IsCtrtInList queries & returns the status of whether the contract address in the Blacklist.
@@ -1129,7 +1129,7 @@ func (t *TokCtrtWithoutSplitV2Blacklist) IsCtrtInList(ctrtId string) (bool, erro
 	if err != nil {
 		return false, fmt.Errorf("IsCtrtInList: %w", err)
 	}
-	return isInList(t, dbKey)
+	return iTokCtrt_isInList(t, dbKey)
 }
 
 // UpdateListUser updates the presence of the user address in the list.
@@ -1138,7 +1138,7 @@ func (t *TokCtrtWithoutSplitV2Blacklist) UpdateListUser(by *Account, addr string
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListUser: %w", err)
 	}
-	return updateList(t, by, NewDeAddr(addrMd), val, attachment)
+	return iTokCtrt_updateList(t, by, NewDeAddr(addrMd), val, attachment)
 }
 
 // UpdateListCtrt updates the presence of the contract address in the list.
@@ -1147,22 +1147,22 @@ func (t *TokCtrtWithoutSplitV2Blacklist) UpdateListCtrt(by *Account, ctrtId stri
 	if err != nil {
 		return nil, fmt.Errorf("UpdateListCtrt: %w", err)
 	}
-	return updateList(t, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
+	return iTokCtrt_updateList(t, by, NewDeCtrtAddrFromCtrtId(ctrtIdMd), val, attachment)
 }
 
 // Supersede transfers the issuer role of the contract to a new account.
 func (t *TokCtrtWithoutSplitV2Blacklist) Supersede(by *Account, newIssuer, newRegulator string, attachment string) (*BroadcastExecuteTxResp, error) {
-	return supersedeCtrtWithList(t, by, newIssuer, newRegulator, attachment)
+	return iTokCtrt_supersedeCtrtWithList(t, by, newIssuer, newRegulator, attachment)
 }
 
 // Issuer queries and returns issuer Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Issuer() (*Addr, error) {
-	return issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
 }
 
 // Maker queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Maker() (*Addr, error) {
-	return maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
 }
 
 // GetTokBal queries & returns the balance of the token of the contract belonging to the user address.
@@ -1181,30 +1181,30 @@ func (t *TokCtrtWithoutSplitV2Blacklist) GetTokBal(addr string) (*Token, error) 
 
 // Issue issues new Tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplitV2Blacklist) Issue(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return issue(t, FUNC_IDX_TOK_CTRT_V2_ISSUE, by, amount, attachment)
+	return iTokCtrt_issue(t, FUNC_IDX_TOK_CTRT_V2_ISSUE, by, amount, attachment)
 }
 
 // Send sends tokens to another account.
 func (t *TokCtrtWithoutSplitV2Blacklist) Send(by *Account, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return send(t, FUNC_IDX_TOK_CTRT_V2_SEND, by, recipient, amount, attachment)
+	return iTokCtrt_send(t, FUNC_IDX_TOK_CTRT_V2_SEND, by, recipient, amount, attachment)
 }
 
 // Destroy destroys an amount of tokens by account who has the issuing right.
 func (t *TokCtrtWithoutSplitV2Blacklist) Destroy(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return destroy(t, FUNC_IDX_TOK_CTRT_V2_DESTROY, by, amount, attachment)
+	return iTokCtrt_destroy(t, FUNC_IDX_TOK_CTRT_V2_DESTROY, by, amount, attachment)
 }
 
 // Transfer transfers tokens from sender to recipient.
 func (t *TokCtrtWithoutSplitV2Blacklist) Transfer(by *Account, sender, recipient string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return transfer(t, FUNC_IDX_TOK_CTRT_V2_TRANSFER, by, sender, recipient, amount, attachment)
+	return iTokCtrt_transfer(t, FUNC_IDX_TOK_CTRT_V2_TRANSFER, by, sender, recipient, amount, attachment)
 }
 
 // Deposit deposits the tokens into the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Deposit(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return deposit(t, FUNC_IDX_TOK_CTRT_V2_DEPOSIT, by, ctrtId, amount, attachment)
+	return iTokCtrt_deposit(t, FUNC_IDX_TOK_CTRT_V2_DEPOSIT, by, ctrtId, amount, attachment)
 }
 
 // Withdraw withdraws tokens from another contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Withdraw(by *Account, ctrtId string, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
-	return withdraw(t, FUNC_IDX_TOK_CTRT_V2_WITHDRAW, by, ctrtId, amount, attachment)
+	return iTokCtrt_withdraw(t, FUNC_IDX_TOK_CTRT_V2_WITHDRAW, by, ctrtId, amount, attachment)
 }
