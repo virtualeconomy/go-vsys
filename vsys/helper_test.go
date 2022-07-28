@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -40,8 +40,11 @@ func waitForBlock() {
 }
 
 func assertTxStatus(t *testing.T, txId, status string) {
-	tx, _ := testApi.GetTxInfo(txId)
-	assert.Equal(t, tx.GetTxGeneral().Status.Str(), status)
+	tx, err := testApi.GetTxInfo(txId)
+	if err != nil {
+		t.Log(err)
+	}
+	require.Equal(t, status, tx.GetTxGeneral().Status.Str())
 }
 
 func assertTxSuccess(t *testing.T, txId string) {

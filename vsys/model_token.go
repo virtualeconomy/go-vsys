@@ -15,7 +15,7 @@ func NewToken(data Amount, unit Unit) *Token {
 func NewTokenForAmount(amount float64, unit uint64) (*Token, error) {
 	data := amount * float64(unit)
 	if float64(int(data)) < data {
-		return nil, fmt.Errorf("NewTokenForAmount: The minimal valid granularity is %f", 1/unit)
+		return nil, fmt.Errorf("NewTokenForAmount: The minimal valid granularity is %f", 1/float64(unit))
 	}
 	return &Token{Amount(data), Unit(unit)}, nil
 }

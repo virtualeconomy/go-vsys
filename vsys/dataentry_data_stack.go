@@ -5,15 +5,16 @@ import (
 )
 
 var idxMap = map[int]func([]byte) (DataEntry, error){
-	1: NewDePubKeyFromBytesGeneric,
-	2: NewDeAddrFromBytesGeneric,
-	5: NewDeStrFromBytesGeneric,
+	1:  NewDePubKeyFromBytesGeneric,
+	2:  NewDeAddrFromBytesGeneric,
+	5:  NewDeStrFromBytesGeneric,
+	11: NewDeBytesFromBytesGeneric,
 }
 
 type DataStack []DataEntry
 
 func NewDataStackFromBytes(b []byte) (DataStack, error) {
-	entriesCnt, err := UnpackUInt16(b)
+	entriesCnt, err := UnpackUInt16(b[:2])
 	if err != nil {
 		return nil, fmt.Errorf("NewDataStackFromBytes: %w", err)
 	}
@@ -27,7 +28,10 @@ func NewDataStackFromBytes(b []byte) (DataStack, error) {
 			return nil, fmt.Errorf("NewDataStackFromBytes: %w", err)
 		}
 
-		deserializer := idxMap[int(idx)]
+		deserializer, ok := idxMap[int(idx)]
+		if !ok {
+			return nil, fmt.Errorf("NewDataStackFromBytes: DataEntry type not identified. Byte %v at position %d", idx, i)
+		}
 		de, err := deserializer(b)
 		if err != nil {
 			return nil, fmt.Errorf("NewDataStackFromBytes: %w", err)

@@ -18,6 +18,14 @@ func NewDeBytes(b Bytes) *DeBytes {
 	}
 }
 
+func NewDeBytesFromBytesGeneric(b []byte) (DataEntry, error) {
+	size, err := UnpackUInt16(b[1:3])
+	if err != nil {
+		return nil, fmt.Errorf("NewDeBytesFromBytesGeneric: %w", err)
+	}
+	return NewDeBytes(b[3 : 3+size]), nil
+}
+
 func (b *DeBytes) IdxBytes() Bytes {
 	return b.Idx.Serialize()
 }
@@ -44,7 +52,7 @@ func (b *DeBytes) Serialize() Bytes {
 }
 
 func (b *DeBytes) Size() int {
-	return 1 + len(b.DataBytes())
+	return 3 + len(b.DataBytes())
 }
 
 func (b *DeBytes) String() string {
