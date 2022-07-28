@@ -181,3 +181,22 @@ func (na *NodeAPI) GetTokBal(addr, tokenId string) (*TokBalResp, error) {
 	}
 	return res, nil
 }
+
+type LastTokenIdxResp struct {
+	CtrtId       Str    `json:"contractId"`
+	LastTokenIdx uint32 `json:"lastTokenIndex"`
+}
+
+func (na *NodeAPI) GetLastIndex(ctrtId string) (*LastTokenIdxResp, error) {
+	res := &LastTokenIdxResp{}
+	resp, err := na.R().Get(
+		fmt.Sprintf("/contract/lastTokenIndex/%s", ctrtId),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("GetLastIndex: %w", err)
+	}
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GetLastIndex: %s", resp.String())
+	}
+	return res, nil
+}
