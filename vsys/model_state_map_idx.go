@@ -23,7 +23,10 @@ const (
 	STATE_MAP_IDX_ATOMIC_SWAP_STATUS
 )
 
-// Constatns for V Escrow Contract state map indexes.
+const (
+	STATE_MAP_IDX_TOK_CTRT_V2_IS_IN_LIST = StateMapIdx(iota)
+)
+
 const (
 	STATE_MAP_IDX_V_ESCROW_CONTRACT_BALANCE = StateMapIdx(iota)
 	STATE_MAP_IDX_V_ESCROW_ORDER_PAYER
