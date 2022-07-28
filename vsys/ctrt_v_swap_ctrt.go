@@ -527,7 +527,7 @@ func (vs *VSwapCtrt) TokBCtrt() (BaseTokCtrt, error) {
 }
 
 func (vs *VSwapCtrt) LiqTokCtrt() (BaseTokCtrt, error) {
-	if vs.tokBCtrt == nil {
+	if vs.liqTokCtrt == nil {
 		liqTokId, err := vs.LiqTokId()
 		if err != nil {
 			return nil, fmt.Errorf("LiqTokCtrt: %w", err)
