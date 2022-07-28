@@ -1210,6 +1210,8 @@ func SignImpl(secretKey []uint8, msg []uint8, opt_random []uint8) []uint8 {
 	return signature
 }
 
+// CAUTION: this function produces different verification result from
+// the Python lib axolotl_curve25519 sometimes.
 func VerifyImpl(publicKey []uint8, msg []uint8, signature []uint8) int {
 	var sm = make([]uint8, 64+len(msg))
 	var m = make([]uint8, 64+len(msg))
@@ -1221,6 +1223,7 @@ func VerifyImpl(publicKey []uint8, msg []uint8, signature []uint8) int {
 	for i := 0; i < len(msg); i++ {
 		sm[i+64] = msg[i]
 	}
+
 	if curve25519_sign_open(m, sm, len(sm), publicKey) >= 0 {
 		return 1
 	} else {
