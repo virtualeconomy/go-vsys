@@ -72,7 +72,7 @@ func NewDBKeyAtomicSwapMaker() Bytes {
 	return STATE_VAR_ATOMIC_SWAP_MAKER.Serialize()
 }
 
-// Maker queries and returns maker Addr of Atomic Swap Contract.
+// Maker queries and returns iNFTCtrt_maker Addr of Atomic Swap Contract.
 func (a *AtomicSwapCtrt) Maker() (*Addr, error) {
 	resp, err := a.QueryDBKey(
 		NewDBKeyAtomicSwapMaker(),
