@@ -2,6 +2,7 @@ package vsys
 
 import "fmt"
 
+// VStableSwapCtrt is the struct for VSYS Stable Swap Contract.
 type VStableSwapCtrt struct {
 	*Ctrt
 	baseTokId     *TokenId
@@ -10,6 +11,7 @@ type VStableSwapCtrt struct {
 	targetTokCtrt BaseTokCtrt
 }
 
+// NewVStableSwapCtrt creates instance of VStableSwapCtrt from given contract id.
 func NewVStableSwapCtrt(ctrtId string, chain *Chain) (*VStableSwapCtrt, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
@@ -24,6 +26,7 @@ func NewVStableSwapCtrt(ctrtId string, chain *Chain) (*VStableSwapCtrt, error) {
 	}, nil
 }
 
+// RegisterVStableSwapCtrt registers a Stable Swap Contract.
 func RegisterVStableSwapCtrt(
 	by *Account,
 	baseTokId, targetTokId string,
@@ -78,6 +81,7 @@ func RegisterVStableSwapCtrt(
 	}, nil
 }
 
+// Supersede transfers the ownership of the contract to another account.
 func (v *VStableSwapCtrt) Supersede(by *Account, newOwner string, attachment string) (*BroadcastExecuteTxResp, error) {
 	newOwnerMd, err := NewAddrFromB58Str(newOwner)
 	if err != nil {
@@ -102,6 +106,7 @@ func (v *VStableSwapCtrt) Supersede(by *Account, newOwner string, attachment str
 	return resp, nil
 }
 
+// SetOrder creates the order.
 func (v *VStableSwapCtrt) SetOrder(
 	by *Account,
 	feeBase, feeTarget, minBase, maxBase, minTarget, maxTarget, priceBase, priceTarget, baseDeposit, targetDeposit float64,
@@ -193,6 +198,7 @@ func (v *VStableSwapCtrt) SetOrder(
 	return resp, nil
 }
 
+// UpdateOrder updates the order settings.
 func (v *VStableSwapCtrt) UpdateOrder(
 	by *Account,
 	feeBase, feeTarget, minBase, maxBase, minTarget, maxTarget, priceBase, priceTarget, baseDeposit, targetDeposit float64,
@@ -284,6 +290,7 @@ func (v *VStableSwapCtrt) UpdateOrder(
 	return resp, nil
 }
 
+// OrderDeposit locks the tokens.
 func (v *VStableSwapCtrt) OrderDeposit(
 	by *Account,
 	orderId string,
@@ -328,6 +335,7 @@ func (v *VStableSwapCtrt) OrderDeposit(
 	return resp, nil
 }
 
+// OrderWithdraw unlocks the tokens.
 func (v *VStableSwapCtrt) OrderWithdraw(
 	by *Account,
 	orderId string,
@@ -372,6 +380,7 @@ func (v *VStableSwapCtrt) OrderWithdraw(
 	return resp, nil
 }
 
+// CloseOrder closes the order.
 func (v *VStableSwapCtrt) CloseOrder(by *Account, orderId, attachment string) (*BroadcastExecuteTxResp, error) {
 	b, err := NewBytesFromB58Str(orderId)
 	if err != nil {
@@ -393,6 +402,7 @@ func (v *VStableSwapCtrt) CloseOrder(by *Account, orderId, attachment string) (*
 	return resp, nil
 }
 
+// SwapBaseToTarget swaps base token to target token.
 func (v *VStableSwapCtrt) SwapBaseToTarget(
 	by *Account,
 	orderId string,
@@ -442,6 +452,7 @@ func (v *VStableSwapCtrt) SwapBaseToTarget(
 	return resp, nil
 }
 
+// SwapTargetToBase swaps target token to base token.
 func (v *VStableSwapCtrt) SwapTargetToBase(
 	by *Account,
 	orderId string,
@@ -491,6 +502,7 @@ func (v *VStableSwapCtrt) SwapTargetToBase(
 	return resp, nil
 }
 
+// Maker queries & returns the maker of the contract.
 func (v *VStableSwapCtrt) Maker() (*Addr, error) {
 	resp, err := v.QueryDBKey(
 		NewDBKeyVSwapForMaker(),
@@ -510,6 +522,7 @@ func (v *VStableSwapCtrt) Maker() (*Addr, error) {
 	}
 }
 
+// BaseTokUnit queries & returns the base token id.
 func (v *VStableSwapCtrt) BaseTokUnit() (Unit, error) {
 	tc, err := v.BaseTokCtrt()
 	if err != nil {
@@ -517,6 +530,8 @@ func (v *VStableSwapCtrt) BaseTokUnit() (Unit, error) {
 	}
 	return tc.Unit()
 }
+
+// TargetTokUnit queries & returns the target token id.
 func (v *VStableSwapCtrt) TargetTokUnit() (Unit, error) {
 	tc, err := v.TargetTokCtrt()
 	if err != nil {
@@ -525,6 +540,7 @@ func (v *VStableSwapCtrt) TargetTokUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// BaseTokCtrt returns the token contract instance for base token.
 func (v *VStableSwapCtrt) BaseTokCtrt() (BaseTokCtrt, error) {
 	if v.baseTokCtrt == nil {
 		// Note that this BaseTokId() is not related to Base token of VStableSwap
@@ -541,6 +557,7 @@ func (v *VStableSwapCtrt) BaseTokCtrt() (BaseTokCtrt, error) {
 	return v.baseTokCtrt, nil
 }
 
+// TargetTokCtrt returns the token contract instance for target token.
 func (v *VStableSwapCtrt) TargetTokCtrt() (BaseTokCtrt, error) {
 	if v.targetTokCtrt == nil {
 		// Note that this BaseTokId() is not related to Base token of VStableSwap
@@ -565,6 +582,7 @@ func NewDBKeyVStableSwapTargetTokId() Bytes {
 	return STATE_VAR_V_STABLE_SWAP_TARGET_TOKEN_ID.Serialize()
 }
 
+// BaseTokId returns token id of base token.
 func (v *VStableSwapCtrt) BaseTokId() (*TokenId, error) {
 	if v.baseTokId == nil {
 		resp, err := v.QueryDBKey(NewDBKeyVStableSwapBaseTokId())
@@ -586,6 +604,7 @@ func (v *VStableSwapCtrt) BaseTokId() (*TokenId, error) {
 	return v.baseTokId, nil
 }
 
+// TargetTokId returns token id of target token.
 func (v *VStableSwapCtrt) TargetTokId() (*TokenId, error) {
 	if v.targetTokId == nil {
 		resp, err := v.QueryDBKey(NewDBKeyVStableSwapTargetTokId())
@@ -614,6 +633,7 @@ func NewDBKeyVStableSwapTargetPriceUnit() Bytes {
 	return STATE_VAR_V_STABLE_SWAP_UNIT_PRICE_TARGET.Serialize()
 }
 
+// BasePriceUnit queries & returns the price unit of base token.
 func (v *VStableSwapCtrt) BasePriceUnit() (Unit, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVStableSwapBasePriceUnit())
 	if err != nil {
@@ -627,6 +647,7 @@ func (v *VStableSwapCtrt) BasePriceUnit() (Unit, error) {
 	}
 }
 
+// TargetPriceUnit  queries & returns the price unit of target token.
 func (v *VStableSwapCtrt) TargetPriceUnit() (Unit, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVStableSwapTargetPriceUnit())
 	if err != nil {
@@ -644,6 +665,7 @@ func NewDBKeyVStableSwapMaxOrderPerUser() Bytes {
 	return STATE_VAR_V_STABLE_SWAP_MAX_ORDER_PER_USER.Serialize()
 }
 
+// MaxOrderPerUser queries & returns the maximum order number that each user can create.
 func (v *VStableSwapCtrt) MaxOrderPerUser() (int, error) {
 	resp, err := v.QueryDBKey(
 		NewDBKeyVStableSwapMaxOrderPerUser(),
@@ -668,6 +690,7 @@ func NewDBKeyVStableSwapBaseTokenBalance(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_BASE_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// GetBaseTokBal queries & returns the balance of the available base tokens.
 func (v *VStableSwapCtrt) GetBaseTokBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapBaseTokenBalance(addr)
 	if err != nil {
@@ -698,6 +721,7 @@ func NewDBKeyVStableSwapTargetTokenBalance(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_TARGET_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// GetTargetTokBal queries & returns the balance of the available target tokens.
 func (v *VStableSwapCtrt) GetTargetTokBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapTargetTokenBalance(addr)
 	if err != nil {
@@ -728,6 +752,7 @@ func NewDBKeyVStableSwapGetUserOrders(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_USER_ORDERS, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// GetUserOrders queries & returns the number of user orders.
 func (v *VStableSwapCtrt) GetUserOrders(addr string) (int, error) {
 	dbKey, err := NewDBKeyVStableSwapGetUserOrders(addr)
 	if err != nil {
@@ -753,6 +778,7 @@ func NewDBKeyVStableSwapOrderOwner(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_ORDER_OWNER, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetOrderOwner queries & returns the address of the order owner.
 func (v *VStableSwapCtrt) GetOrderOwner(orderId string) (*Addr, error) {
 	dbKey, err := NewDBKeyVStableSwapOrderOwner(orderId)
 	if err != nil {
@@ -782,6 +808,7 @@ func NewDBKeyVStableSwapFeeBase(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_FEE_BASE, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetFeeBase queries & returns the base fee.
 func (v *VStableSwapCtrt) GetFeeBase(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapFeeBase(orderId)
 	if err != nil {
@@ -811,6 +838,7 @@ func NewDBKeyVStableSwapFeeTarget(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_FEE_TARGET, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetFeeTarget queries and returns target fee.
 func (v *VStableSwapCtrt) GetFeeTarget(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapFeeTarget(orderId)
 	if err != nil {
@@ -840,6 +868,7 @@ func NewDBKeyVStableSwapMinBase(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MIN_BASE, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetMinBase queries & returns the minimum amount of base token.
 func (v *VStableSwapCtrt) GetMinBase(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapMinBase(orderId)
 	if err != nil {
@@ -869,6 +898,7 @@ func NewDBKeyVStableSwapMinTarget(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MIN_TARGET, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetMinTarget  queries & returns the minimum amount of target token.
 func (v *VStableSwapCtrt) GetMinTarget(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapMinTarget(orderId)
 	if err != nil {
@@ -898,6 +928,7 @@ func NewDBKeyVStableSwapMaxBase(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MAX_BASE, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetMaxBase  queries & returns the maximum amount of base token.
 func (v *VStableSwapCtrt) GetMaxBase(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapMaxBase(orderId)
 	if err != nil {
@@ -927,6 +958,7 @@ func NewDBKeyVStableSwapMaxTarget(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MAX_TARGET, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetMaxTarget  queries & returns the maximum amount of target token.
 func (v *VStableSwapCtrt) GetMaxTarget(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapMaxTarget(orderId)
 	if err != nil {
@@ -955,6 +987,7 @@ func NewDBKeyVStableSwapPriceBase(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_PRICE_BASE, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetPriceBase  queries & returns the price of base token.
 func (v *VStableSwapCtrt) GetPriceBase(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapPriceBase(orderId)
 	if err != nil {
@@ -984,6 +1017,7 @@ func NewDBKeyVStableSwapPriceTarget(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_PRICE_TARGET, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetPriceTarget  queries & returns the price of the target token.
 func (v *VStableSwapCtrt) GetPriceTarget(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapPriceTarget(orderId)
 	if err != nil {
@@ -1013,6 +1047,7 @@ func NewDBKeyVStableSwapBaseTokenLocked(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_BASE_TOKEN_LOCKED, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetBaseTokLocked  queries & returns the amount of locked base tokens.
 func (v *VStableSwapCtrt) GetBaseTokLocked(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapBaseTokenLocked(orderId)
 	if err != nil {
@@ -1042,6 +1077,7 @@ func NewDBKeyVStableSwapTargetTokenLocked(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_TARGET_TOKEN_LOCKED, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetTargetTokLocked  queries & returns the amount of locked target tokens.
 func (v *VStableSwapCtrt) GetTargetTokLocked(orderId string) (*Token, error) {
 	dbKey, err := NewDBKeyVStableSwapTargetTokenLocked(orderId)
 	if err != nil {
@@ -1071,6 +1107,7 @@ func NewDBKeyVStableSwapOrderStatus(orderId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_ORDER_STATUS, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetOrderStatus  queries & returns the status of the order.
 func (v *VStableSwapCtrt) GetOrderStatus(orderId string) (bool, error) {
 	dbKey, err := NewDBKeyVStableSwapOrderStatus(orderId)
 	if err != nil {
