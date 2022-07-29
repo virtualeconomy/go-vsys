@@ -512,7 +512,7 @@ func NewNFTCtrtV2Whitelist(ctrtId string, chain *Chain) (*NFTCtrtV2Whitelist, er
 
 // RegisterNFTCtrtV2Whitelist registers nft contract.
 func RegisterNFTCtrtV2Whitelist(by *Account, ctrtDescription string) (*NFTCtrtV2Whitelist, error) {
-	ctrtMeta, err := NewCtrtMetaForNFTCtrt()
+	ctrtMeta, err := NewCtrtMetaForNFTCtrtV2Whitelist()
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrtV2Whitelist: %w", err)
 	}
@@ -648,7 +648,7 @@ func NewNFTCtrtV2Blacklist(ctrtId string, chain *Chain) (*NFTCtrtV2Blacklist, er
 
 // RegisterNFTCtrtV2Blacklist registers nft contract.
 func RegisterNFTCtrtV2Blacklist(by *Account, ctrtDescription string) (*NFTCtrtV2Blacklist, error) {
-	ctrtMeta, err := NewCtrtMetaForNFTCtrt()
+	ctrtMeta, err := NewCtrtMetaForNFTCtrtV2Blacklist()
 	if err != nil {
 		return nil, fmt.Errorf("RegisterNFTCtrtV2Blacklist: %w", err)
 	}
