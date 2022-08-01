@@ -252,13 +252,13 @@ func Test_TokCtrtWithoutSplit_Supersede(t *testing.T) {
 }
 
 func Test_TokCtrtWithoutSplit_AsWhole(t *testing.T) {
-	tc := test_NFTCtrt_Register(t, testAcnt0)
-	test_NFTCtrt_Issue(t, testAcnt0, tc)
+	tc := tcT.test_TokCtrtWithoutSplit_Register(t, testAcnt0)
+	tcT.test_TokCtrtWithoutSplit_Issue(t, testAcnt0, tc)
 
-	test_NFTCtrt_Send(t, testAcnt0, testAcnt1, tc)
-	test_NFTCtrt_Transfer(t, testAcnt1, testAcnt0, tc)
-	test_NFTCtrt_DepositWithdraw(t, testAcnt0, tc)
-	test_NFTCtrt_Supersede(t, testAcnt0, testAcnt1, tc)
+	tcT.test_TokCtrtWithoutSplit_Send(t, testAcnt0, testAcnt1, tc)
+	tcT.test_TokCtrtWithoutSplit_Transfer(t, testAcnt1, testAcnt0, tc)
+	tcT.test_TokCtrtWithoutSplit_DepositWithdraw(t, testAcnt0, tc)
+	tcT.test_TokCtrtWithoutSplit_Supersede(t, testAcnt0, testAcnt1, tc)
 }
 
 // Do not test same functions for other Token Contracts since implementation is same.

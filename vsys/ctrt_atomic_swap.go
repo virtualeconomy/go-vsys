@@ -136,7 +136,7 @@ func (a AtomicSwapCtrt) Unit() (Unit, error) {
 	if a.tokCtrt == nil {
 		_, err := a.TokCtrt() // TokCtrt sets a.TokCtrt
 		if err != nil {
-			return 0, err
+			return 0, fmt.Errorf("Unit: %w", err)
 		}
 	}
 	return a.tokCtrt.Unit()

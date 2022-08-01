@@ -45,17 +45,25 @@ func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
 		}
 		return n, nil
-	//TODO: add other contracts
 	case "NFTContractWithBlacklist":
-		return nil, fmt.Errorf("not implemented!")
+		n, err := NewNFTCtrtV2Blacklist(ctrtInfo.CtrtId.Str(), chain)
+		if err != nil {
+			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+		}
+		return n, nil
 	case "NFTContractWithWhitelist":
-		return nil, fmt.Errorf("not implemented!")
+		n, err := NewNFTCtrtV2Whitelist(ctrtInfo.CtrtId.Str(), chain)
+		if err != nil {
+			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+		}
+		return n, nil
 	case "TokenContract":
 		n, err := NewTokCtrtWithoutSplit(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
 			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
 		}
 		return n, nil
+	//TODO: add other contracts
 	case "TokenContractWithSplit":
 		return nil, fmt.Errorf("not implemented!")
 	case "TokenContractWithWhitelist":
