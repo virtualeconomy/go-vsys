@@ -201,9 +201,15 @@ func (v *VStableSwapCtrt) SetOrder(
 // UpdateOrder updates the order settings.
 func (v *VStableSwapCtrt) UpdateOrder(
 	by *Account,
-	feeBase, feeTarget, minBase, maxBase, minTarget, maxTarget, priceBase, priceTarget, baseDeposit, targetDeposit float64,
+	orderId string,
+	feeBase, feeTarget, minBase, maxBase, minTarget, maxTarget, priceBase, priceTarget float64,
 	attachment string,
 ) (*BroadcastExecuteTxResp, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("UpdateOrder: %w", err)
+	}
+
 	baseUnit, err := v.BaseTokUnit()
 	if err != nil {
 		return nil, fmt.Errorf("UpdateOrder: %w", err)
@@ -254,19 +260,12 @@ func (v *VStableSwapCtrt) UpdateOrder(
 	if err != nil {
 		return nil, fmt.Errorf("UpdateOrder: %w", err)
 	}
-	de9, err := NewDeAmountForTokAmount(baseDeposit, uint64(baseUnit))
-	if err != nil {
-		return nil, fmt.Errorf("UpdateOrder: %w", err)
-	}
-	de10, err := NewDeAmountForTokAmount(targetDeposit, uint64(targetUnit))
-	if err != nil {
-		return nil, fmt.Errorf("UpdateOrder: %w", err)
-	}
 
 	txReq := NewExecCtrtFuncTxReq(
 		v.CtrtId,
-		FUNC_IDX_V_STABLE_SWAP_SET_ORDER,
+		FUNC_IDX_V_STABLE_SWAP_UPDATE_ORDER,
 		DataStack{
+			NewDeBytes(b),
 			de1,
 			de2,
 			de3,
@@ -275,8 +274,6 @@ func (v *VStableSwapCtrt) UpdateOrder(
 			de6,
 			de7,
 			de8,
-			de9,
-			de10,
 		},
 		NewVSYSTimestampForNow(),
 		Str(attachment),
