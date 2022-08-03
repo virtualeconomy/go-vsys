@@ -54,7 +54,7 @@ func RegisterAtomicSwapCtrt(by *Account, tokenId, ctrtDescription string) (*Atom
 
 	cid, err := NewCtrtIdFromB58Str(resp.CtrtId.Str())
 	if err != nil {
-		return nil, fmt.Errorf("RegisterNFTCtrt: %w", err)
+		return nil, fmt.Errorf("RegisterAtomicSwapCtrt: %w", err)
 	}
 
 	return &AtomicSwapCtrt{
@@ -120,11 +120,11 @@ func (a *AtomicSwapCtrt) TokCtrt() (BaseTokCtrt, error) {
 	if a.tokCtrt == nil {
 		tokId, err := a.TokId()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("TokCtrt: %w", err)
 		}
 		instance, err := GetCtrtFromTokId(tokId, a.Chain)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("TokCtrt: %w", err)
 		}
 		a.tokCtrt = instance
 	}
@@ -136,7 +136,7 @@ func (a AtomicSwapCtrt) Unit() (Unit, error) {
 	if a.tokCtrt == nil {
 		_, err := a.TokCtrt() // TokCtrt sets a.TokCtrt
 		if err != nil {
-			return 0, err
+			return 0, fmt.Errorf("Unit: %w", err)
 		}
 	}
 	return a.tokCtrt.Unit()
