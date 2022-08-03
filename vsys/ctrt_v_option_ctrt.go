@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// VOptionCtrt is the struct for VSYS Option Contract.
 type VOptionCtrt struct {
 	*Ctrt
 	baseTokId   *TokenId
@@ -17,6 +18,7 @@ type VOptionCtrt struct {
 	proofTokCtrt  BaseTokCtrt
 }
 
+// NewVOptionCtrt creates instance of VOptionCtrt from given contract id.
 func NewVOptionCtrt(ctrtId string, chain *Chain) (*VOptionCtrt, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
@@ -31,6 +33,7 @@ func NewVOptionCtrt(ctrtId string, chain *Chain) (*VOptionCtrt, error) {
 	}, nil
 }
 
+// RegisterVOptionCtrt registers V Option Contract.
 func RegisterVOptionCtrt(
 	by *Account,
 	baseTokId, targetTokId, optionTokId, proofTokId string,
@@ -150,6 +153,7 @@ func (v *VOptionCtrt) Activate(
 	return resp, nil
 }
 
+// Mint locks target tokens into the pool to get option tokens and proof tokens.
 func (v *VOptionCtrt) Mint(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	targetUnit, err := v.TargetTokUnit()
 	if err != nil {
@@ -177,6 +181,7 @@ func (v *VOptionCtrt) Mint(by *Account, amount float64, attachment string) (*Bro
 	return resp, nil
 }
 
+// Unlock gets the remaining option tokens and proof tokens from the pool before the execute time.
 func (v *VOptionCtrt) Unlock(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	targetUnit, err := v.TargetTokUnit()
 	if err != nil {
@@ -204,6 +209,7 @@ func (v *VOptionCtrt) Unlock(by *Account, amount float64, attachment string) (*B
 	return resp, nil
 }
 
+// Execute executes the V Option contract to get target token after execute time.
 func (v *VOptionCtrt) Execute(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	targetUnit, err := v.TargetTokUnit()
 	if err != nil {
@@ -231,6 +237,7 @@ func (v *VOptionCtrt) Execute(by *Account, amount float64, attachment string) (*
 	return resp, nil
 }
 
+// Collect collects the base tokens or/and target tokens from the pool depending on the amount of proof tokens after execute deadline.
 func (v *VOptionCtrt) Collect(by *Account, amount float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	optionUnit, err := v.OptionTokUnit()
 	if err != nil {
@@ -262,6 +269,7 @@ func NewDBKeyVOptionForMaker() Bytes {
 	return STATE_VAR_V_OPTION_MAKER.Serialize()
 }
 
+// Maker queries & returns the maker of the contract.
 func (v *VOptionCtrt) Maker() (*Addr, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForMaker())
 	if err != nil {
@@ -279,6 +287,7 @@ func (v *VOptionCtrt) Maker() (*Addr, error) {
 	}
 }
 
+// BaseTokUnit queries & return the unit of base token.
 func (v *VOptionCtrt) BaseTokUnit() (Unit, error) {
 	tc, err := v.BaseTokCtrt()
 	if err != nil {
@@ -287,6 +296,7 @@ func (v *VOptionCtrt) BaseTokUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// BaseTokCtrt returns the token contract instance for base token.
 func (v *VOptionCtrt) BaseTokCtrt() (BaseTokCtrt, error) {
 	if v.baseTokCtrt == nil {
 		baseTokId, err := v.BaseTokId()
@@ -306,6 +316,7 @@ func NewDBKeyVOptionCtrtBaseTokId() Bytes {
 	return STATE_VAR_V_OPTION_BASE_TOKEN_ID.Serialize()
 }
 
+// BaseTokId queries & returns the base token id.
 func (v *VOptionCtrt) BaseTokId() (*TokenId, error) {
 	if v.baseTokId == nil {
 		resp, err := v.QueryDBKey(NewDBKeyVOptionCtrtBaseTokId())
@@ -327,6 +338,7 @@ func (v *VOptionCtrt) BaseTokId() (*TokenId, error) {
 	return v.baseTokId, nil
 }
 
+// TargetTokUnit queries & return the unit of target token.
 func (v *VOptionCtrt) TargetTokUnit() (Unit, error) {
 	tc, err := v.TargetTokCtrt()
 	if err != nil {
@@ -335,6 +347,7 @@ func (v *VOptionCtrt) TargetTokUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// TargetTokCtrt returns the token contract instance for target token.
 func (v *VOptionCtrt) TargetTokCtrt() (BaseTokCtrt, error) {
 	if v.targetTokCtrt == nil {
 		targetTokId, err := v.TargetTokId()
@@ -354,6 +367,7 @@ func NewDBKeyVOptionCtrtTargetTokId() Bytes {
 	return STATE_VAR_V_OPTION_TARGET_TOKEN_ID.Serialize()
 }
 
+// TargetTokId  queries & returns the target token id.
 func (v *VOptionCtrt) TargetTokId() (*TokenId, error) {
 	if v.targetTokId == nil {
 		resp, err := v.QueryDBKey(NewDBKeyVOptionCtrtTargetTokId())
@@ -375,6 +389,7 @@ func (v *VOptionCtrt) TargetTokId() (*TokenId, error) {
 	return v.targetTokId, nil
 }
 
+// OptionTokUnit queries & return the unit of option token.
 func (v *VOptionCtrt) OptionTokUnit() (Unit, error) {
 	tc, err := v.OptionTokCtrt()
 	if err != nil {
@@ -383,6 +398,7 @@ func (v *VOptionCtrt) OptionTokUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// OptionTokCtrt returns the token contract instance for option token.
 func (v *VOptionCtrt) OptionTokCtrt() (BaseTokCtrt, error) {
 	if v.optionTokCtrt == nil {
 		optionTokId, err := v.OptionTokId()
@@ -402,6 +418,7 @@ func NewDBKeyVOptionCtrtOptionTokId() Bytes {
 	return STATE_VAR_V_OPTION_OPTION_TOKEN_ID.Serialize()
 }
 
+// OptionTokId  queries & returns the option token id.
 func (v *VOptionCtrt) OptionTokId() (*TokenId, error) {
 	if v.optionTokId == nil {
 		resp, err := v.QueryDBKey(NewDBKeyVOptionCtrtOptionTokId())
@@ -423,6 +440,7 @@ func (v *VOptionCtrt) OptionTokId() (*TokenId, error) {
 	return v.optionTokId, nil
 }
 
+// ProofTokUnit queries & return the unit of proof token.
 func (v *VOptionCtrt) ProofTokUnit() (Unit, error) {
 	tc, err := v.ProofTokCtrt()
 	if err != nil {
@@ -431,6 +449,7 @@ func (v *VOptionCtrt) ProofTokUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// ProofTokCtrt returns the token contract instance for proof token.
 func (v *VOptionCtrt) ProofTokCtrt() (BaseTokCtrt, error) {
 	if v.proofTokCtrt == nil {
 		proofTokId, err := v.ProofTokId()
@@ -450,6 +469,7 @@ func NewDBKeyVOptionCtrtProofTokId() Bytes {
 	return STATE_VAR_V_OPTION_PROOF_TOKEN_ID.Serialize()
 }
 
+// ProofTokId  queries & returns the proof token id.
 func (v *VOptionCtrt) ProofTokId() (*TokenId, error) {
 	if v.proofTokId == nil {
 		resp, err := v.QueryDBKey(NewDBKeyVOptionCtrtProofTokId())
@@ -475,6 +495,7 @@ func NewDBKeyVOptionCtrtForExecuteTime() Bytes {
 	return STATE_VAR_V_OPTION_EXECUTE_TIME.Serialize()
 }
 
+// ExecuteTime queries & returns the execute time.
 func (v *VOptionCtrt) ExecuteTime() (VSYSTimestamp, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionCtrtForExecuteTime())
 	if err != nil {
@@ -493,6 +514,7 @@ func NewDBKeyVOptionCtrtForExecuteDeadline() Bytes {
 	return STATE_VAR_V_OPTION_EXECUTE_DEADLINE.Serialize()
 }
 
+// ExecuteDeadline queries & returns the execute deadline.
 func (v *VOptionCtrt) ExecuteDeadline() (VSYSTimestamp, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionCtrtForExecuteDeadline())
 	if err != nil {
@@ -511,6 +533,7 @@ func NewDBKeyVOptionForOptionStatus() Bytes {
 	return STATE_VAR_V_OPTION_OPTION_STATUS.Serialize()
 }
 
+// OptionStatus queries & returns the option contract's status.
 func (v *VOptionCtrt) OptionStatus() (bool, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForOptionStatus())
 	if err != nil {
@@ -529,6 +552,7 @@ func NewDBKeyVOptionForMaxIssueNum() Bytes {
 	return STATE_VAR_V_OPTION_MAX_ISSUE_NUM.Serialize()
 }
 
+// MaxIssueNum queries & returns the maximum issue of the option tokens.
 func (v *VOptionCtrt) MaxIssueNum() (*Token, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForMaxIssueNum())
 	if err != nil {
@@ -550,6 +574,7 @@ func NewDBKeyVOptionForReservedOption() Bytes {
 	return STATE_VAR_V_OPTION_RESERVED_OPTION.Serialize()
 }
 
+// ReservedOption queries & returns the reserved option tokens remaining in the pool.
 func (v *VOptionCtrt) ReservedOption() (*Token, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForReservedOption())
 	if err != nil {
@@ -571,6 +596,7 @@ func NewDBKeyVOptionForReservedProof() Bytes {
 	return STATE_VAR_V_OPTION_RESERVED_PROOF.Serialize()
 }
 
+// ReservedProof queries & returns the reserved proof tokens remaining in the pool.
 func (v *VOptionCtrt) ReservedProof() (*Token, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForReservedProof())
 	if err != nil {
@@ -592,6 +618,7 @@ func NewDBKeyVOptionForPrice() Bytes {
 	return STATE_VAR_V_OPTION_PRICE.Serialize()
 }
 
+// Price queries & returns the price of the contract creator.
 func (v *VOptionCtrt) Price() (*Token, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForPrice())
 	if err != nil {
@@ -609,6 +636,7 @@ func NewDBKeyVOptionForPriceUnit() Bytes {
 	return STATE_VAR_V_OPTION_PRICE_UNIT.Serialize()
 }
 
+// PriceUnit queries & returns the price unit of the contract creator.
 func (v *VOptionCtrt) PriceUnit() (*Token, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForPriceUnit())
 	if err != nil {
@@ -626,6 +654,7 @@ func NewDBKeyVOptionForTokenLocked() Bytes {
 	return STATE_VAR_V_OPTION_TOKEN_LOCKED.Serialize()
 }
 
+// TokenLocked queries & returns the locked token amount.
 func (v *VOptionCtrt) TokenLocked() (*Token, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForTokenLocked())
 	if err != nil {
@@ -647,6 +676,7 @@ func NewDBKeyVOptionForTokenCollected() Bytes {
 	return STATE_VAR_V_OPTION_TOKEN_COLLECTED.Serialize()
 }
 
+// TokenCollected queries & returns the amount of the base tokens in the pool.
 func (v *VOptionCtrt) TokenCollected() (*Token, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForTokenCollected())
 	if err != nil {
@@ -672,6 +702,7 @@ func NewDBKeyVOptionCtrtForBaseTokenBalance(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_OPTION_BASE_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// GetBaseTokBal queries & returns the balance of the available base tokens.
 func (v *VOptionCtrt) GetBaseTokBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVOptionCtrtForBaseTokenBalance(addr)
 	if err != nil {
@@ -701,6 +732,7 @@ func NewDBKeyVOptionCtrtForTargetTokBalance(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_OPTION_TARGET_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// GetTargetTokBal queries & returns the balance of the available target tokens.
 func (v *VOptionCtrt) GetTargetTokBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVOptionCtrtForTargetTokBalance(addr)
 	if err != nil {
@@ -730,6 +762,7 @@ func NewDBKeyVOptionCtrtForOptionTokBalance(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_OPTION_OPTION_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// GetOptionTokBal queries & returns the balance of the available option tokens.
 func (v *VOptionCtrt) GetOptionTokBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVOptionCtrtForOptionTokBalance(addr)
 	if err != nil {
@@ -759,6 +792,7 @@ func NewDBKeyVOptionCtrtForProofTokBalance(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_OPTION_PROOF_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// GetProofTokBal queries & returns the balance of the available proof tokens.
 func (v *VOptionCtrt) GetProofTokBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVOptionCtrtForProofTokBalance(addr)
 	if err != nil {
