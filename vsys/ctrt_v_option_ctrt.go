@@ -447,7 +447,7 @@ func (v *VOptionCtrt) ProofTokCtrt() (BaseTokCtrt, error) {
 }
 
 func NewDBKeyVOptionCtrtProofTokId() Bytes {
-	return STATE_VAR_V_OPTION_OPTION_TOKEN_ID.Serialize()
+	return STATE_VAR_V_OPTION_PROOF_TOKEN_ID.Serialize()
 }
 
 func (v *VOptionCtrt) ProofTokId() (*TokenId, error) {
@@ -644,7 +644,7 @@ func (v *VOptionCtrt) TokenLocked() (*Token, error) {
 }
 
 func NewDBKeyVOptionForTokenCollected() Bytes {
-	return STATE_VAR_V_OPTION_TOKEN_LOCKED.Serialize()
+	return STATE_VAR_V_OPTION_TOKEN_COLLECTED.Serialize()
 }
 
 func (v *VOptionCtrt) TokenCollected() (*Token, error) {

@@ -963,12 +963,22 @@ func (t *TokCtrtWithoutSplitV2Whitelist) Supersede(by *Account, newIssuer, newRe
 
 // Issuer queries and returns issuer Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Issuer() (*Addr, error) {
-	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtV2Issuer())
+}
+
+// NewDBKeyTokCtrtWithoutSplitMaker returns DB key for querying maker of the contract.
+func NewDBKeyTokCtrtV2Maker() Bytes {
+	return STATE_VAR_TOK_CTRT_V2_MAKER.Serialize()
+}
+
+// NewDBKeyTokCtrtWithoutSplitIssuer returns DB key for querying issuer of the contract.
+func NewDBKeyTokCtrtV2Issuer() Bytes {
+	return STATE_VAR_TOK_CTRT_V2_ISSUER.Serialize()
 }
 
 // Maker queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Maker() (*Addr, error) {
-	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtV2Maker())
 }
 
 // GetTokBal queries & returns the balance of the token of the contract belonging to the user address.
@@ -1157,12 +1167,12 @@ func (t *TokCtrtWithoutSplitV2Blacklist) Supersede(by *Account, newIssuer, newRe
 
 // Issuer queries and returns issuer Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Issuer() (*Addr, error) {
-	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtV2Issuer())
 }
 
 // Maker queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Maker() (*Addr, error) {
-	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtV2Maker())
 }
 
 // GetTokBal queries & returns the balance of the token of the contract belonging to the user address.
