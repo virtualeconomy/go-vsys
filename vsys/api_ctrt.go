@@ -66,6 +66,10 @@ type BroadcastExecuteTxResp struct {
 	Attachment Str     `json:"attachment"`
 }
 
+func (b *BroadcastExecuteTxResp) String() string {
+	return fmt.Sprintf("%T(%+v)", b, *b)
+}
+
 func (na *NodeAPI) BroadcastExecute(p *BroadcastExecutePayload) (*BroadcastExecuteTxResp, error) {
 	res := &BroadcastExecuteTxResp{}
 	resp, err := na.R().
