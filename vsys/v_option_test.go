@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
+	"sync"
 	"testing"
 	"time"
 )
@@ -33,16 +34,20 @@ func (v *vOptionTest) EXEC_DDL_DELTA() int64 {
 
 var voT *vOptionTest
 
-func (v *vOptionTest) newTokCtrt(t *testing.T) (*TokCtrtWithoutSplit, error) {
+func (v *vOptionTest) newTokCtrt(t *testing.T, mu *sync.Mutex) (*TokCtrtWithoutSplit, error) {
+	mu.Lock()
 	tc, err := RegisterTokCtrtWithoutSplit(testAcnt0, 1000, 1, "", "")
 	if err != nil {
 		return nil, fmt.Errorf("newTokCtrt: %w", err)
 	}
+	mu.Unlock()
 	waitForBlock()
+	mu.Lock()
 	resp, err := tc.Issue(testAcnt0, 1000, "")
 	if err != nil {
 		return nil, fmt.Errorf("newTokCtrt: %w", err)
 	}
+	mu.Unlock()
 	waitForBlock()
 	assertTxSuccess(t, resp.Id.Str())
 	return tc, nil
@@ -50,23 +55,25 @@ func (v *vOptionTest) newTokCtrt(t *testing.T) (*TokCtrtWithoutSplit, error) {
 
 func (v *vOptionTest) newVOptionCtrt(t *testing.T) *VOptionCtrt {
 	g := new(errgroup.Group)
+	var mu sync.Mutex
 	var (
 		baseTc, targetTc, optionTc, proofTc *TokCtrtWithoutSplit
 	)
+	var err error
 	g.Go(func() (err error) {
-		baseTc, err = voT.newTokCtrt(t)
+		baseTc, err = voT.newTokCtrt(t, &mu)
 		return
 	})
 	g.Go(func() (err error) {
-		targetTc, err = voT.newTokCtrt(t)
+		targetTc, err = voT.newTokCtrt(t, &mu)
 		return
 	})
 	g.Go(func() (err error) {
-		optionTc, err = voT.newTokCtrt(t)
+		optionTc, err = voT.newTokCtrt(t, &mu)
 		return
 	})
 	g.Go(func() (err error) {
-		proofTc, err = voT.newTokCtrt(t)
+		proofTc, err = voT.newTokCtrt(t, &mu)
 		return
 	})
 	if err := g.Wait(); err != nil {
