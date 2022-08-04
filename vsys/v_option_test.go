@@ -54,19 +54,19 @@ func (v *vOptionTest) newVOptionCtrt(t *testing.T) *VOptionCtrt {
 		baseTc, targetTc, optionTc, proofTc *TokCtrtWithoutSplit
 	)
 	g.Go(func() (err error) {
-		baseTc, err = v.newTokCtrt(t)
+		baseTc, err = voT.newTokCtrt(t)
 		return
 	})
 	g.Go(func() (err error) {
-		targetTc, err = v.newTokCtrt(t)
+		targetTc, err = voT.newTokCtrt(t)
 		return
 	})
 	g.Go(func() (err error) {
-		optionTc, err = v.newTokCtrt(t)
+		optionTc, err = voT.newTokCtrt(t)
 		return
 	})
 	g.Go(func() (err error) {
-		proofTc, err = v.newTokCtrt(t)
+		proofTc, err = voT.newTokCtrt(t)
 		return
 	})
 	if err := g.Wait(); err != nil {
@@ -96,8 +96,8 @@ func (v *vOptionTest) newVOptionCtrt(t *testing.T) *VOptionCtrt {
 		targetTokId.B58Str().Str(),
 		optionTokId.B58Str().Str(),
 		proofTokId.B58Str().Str(),
-		time.Now().Unix()+v.EXEC_TIME_DELTA(),
-		time.Now().Unix()+v.EXEC_DDL_DELTA(),
+		time.Now().Unix()+voT.EXEC_TIME_DELTA(),
+		time.Now().Unix()+voT.EXEC_DDL_DELTA(),
 		"",
 	)
 	waitForBlock()
@@ -112,8 +112,8 @@ func (v *vOptionTest) newVOptionCtrt(t *testing.T) *VOptionCtrt {
 }
 
 func (v *vOptionTest) newVOptionCtrtActivated(t *testing.T) *VOptionCtrt {
-	vo := v.newVOptionCtrt(t)
-	resp, err := vo.Activate(testAcnt0, v.MAX_ISSUE_AMOUNT(), 10, 1, "")
+	vo := voT.newVOptionCtrt(t)
+	resp, err := vo.Activate(testAcnt0, voT.MAX_ISSUE_AMOUNT(), 10, 1, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +125,7 @@ func (v *vOptionTest) newVOptionCtrtActivated(t *testing.T) *VOptionCtrt {
 func (v *vOptionTest) newVOptionCtrtActivatedAndMinted(t *testing.T) *VOptionCtrt {
 	vo := voT.newVOptionCtrtActivated(t)
 
-	resp, err := vo.Mint(testAcnt0, v.MINT_AMOUNT(), "")
+	resp, err := vo.Mint(testAcnt0, voT.MINT_AMOUNT(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
