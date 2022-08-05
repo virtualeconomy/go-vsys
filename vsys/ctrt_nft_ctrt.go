@@ -528,14 +528,22 @@ func RegisterNFTCtrtV2Whitelist(by *Account, ctrtDescription string) (*NFTCtrtV2
 	}, nil
 }
 
+func NewDBKeyNFTCtrtV2Maker() Bytes {
+	return STATE_VAR_NFTV2_MAKER.Serialize()
+}
+
+func NewDBKeyNFTCtrtV2Issuer() Bytes {
+	return STATE_VAR_NFTV2_ISSUER.Serialize()
+}
+
 // Maker queries & returns the maker of the contract.
 func (n *NFTCtrtV2Whitelist) Maker() (*Addr, error) {
-	return iNFTCtrt_maker(n, NewDBKeyNFTCtrtMaker())
+	return iNFTCtrt_maker(n, NewDBKeyNFTCtrtV2Maker())
 }
 
 // Issuer queries & returns the issuer of the contract.
 func (n *NFTCtrtV2Whitelist) Issuer() (*Addr, error) {
-	return iNFTCtrt_issuer(n, NewDBKeyNFTCtrtIssuer())
+	return iNFTCtrt_issuer(n, NewDBKeyNFTCtrtV2Issuer())
 }
 
 // LastIndex returns the last index of the NFT contract.
