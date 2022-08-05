@@ -407,7 +407,7 @@ func (p *PayChanCtrt) Unit() (Unit, error) {
 // NewDBKeyPayChanGetCtrtBal returns DB key for querying the contract balance for given address.
 func NewDBKeyPayChanGetCtrtBal(addr *Addr) Bytes {
 	return NewStateMap(
-		STATE_MAP_IDX_ATOMIC_SWAP_CONTRACT_BALANCE,
+		STATE_MAP_IDX_PAY_CHAN_CONTRACT_BALANCE,
 		NewDeAddr(addr)).Serialize()
 }
 

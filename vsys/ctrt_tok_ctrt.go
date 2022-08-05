@@ -363,6 +363,10 @@ type TokCtrtWithoutSplit struct {
 	tokId *TokenId
 }
 
+func (t *TokCtrtWithoutSplit) chain() *Chain {
+	return t.Chain
+}
+
 // NewTokCtrtWithoutSplit creates an instance of TokCtrtWithoutSplit from given contract id.
 func NewTokCtrtWithoutSplit(ctrtId string, chain *Chain) (*TokCtrtWithoutSplit, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
@@ -520,6 +524,10 @@ func (t *TokCtrtWithoutSplit) Withdraw(by *Account, ctrtId string, amount float6
 type TokCtrtWithSplit struct {
 	*Ctrt
 	tokId *TokenId
+}
+
+func (t *TokCtrtWithSplit) chain() *Chain {
+	return t.Chain
 }
 
 // NewTokCtrtWithSplit creates an instance of TokCtrtWithSplit from given contract id.
@@ -804,6 +812,10 @@ type TokCtrtWithoutSplitV2Whitelist struct {
 	tokId *TokenId
 }
 
+func (t *TokCtrtWithoutSplitV2Whitelist) chain() *Chain {
+	return t.Chain
+}
+
 // NewTokCtrtWithoutSplitV2Whitelist creates an instance of TokCtrtWithoutSplitV2Whitelist from given contract id.
 func NewTokCtrtWithoutSplitV2Whitelist(ctrtId string, ch *Chain) (*TokCtrtWithoutSplitV2Whitelist, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
@@ -963,12 +975,22 @@ func (t *TokCtrtWithoutSplitV2Whitelist) Supersede(by *Account, newIssuer, newRe
 
 // Issuer queries and returns issuer Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Issuer() (*Addr, error) {
-	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtV2Issuer())
+}
+
+// NewDBKeyTokCtrtWithoutSplitMaker returns DB key for querying maker of the contract.
+func NewDBKeyTokCtrtV2Maker() Bytes {
+	return STATE_VAR_TOK_CTRT_V2_MAKER.Serialize()
+}
+
+// NewDBKeyTokCtrtWithoutSplitIssuer returns DB key for querying issuer of the contract.
+func NewDBKeyTokCtrtV2Issuer() Bytes {
+	return STATE_VAR_TOK_CTRT_V2_ISSUER.Serialize()
 }
 
 // Maker queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Whitelist) Maker() (*Addr, error) {
-	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtV2Maker())
 }
 
 // GetTokBal queries & returns the balance of the token of the contract belonging to the user address.
@@ -1019,6 +1041,10 @@ func (t *TokCtrtWithoutSplitV2Whitelist) Withdraw(by *Account, ctrtId string, am
 type TokCtrtWithoutSplitV2Blacklist struct {
 	*Ctrt
 	tokId *TokenId
+}
+
+func (t *TokCtrtWithoutSplitV2Blacklist) chain() *Chain {
+	return t.Chain
 }
 
 // NewTokCtrtWithoutSplitV2Blacklist creates an instance of TokCtrtWithoutSplitV2Blacklist from given contract id.
@@ -1157,12 +1183,12 @@ func (t *TokCtrtWithoutSplitV2Blacklist) Supersede(by *Account, newIssuer, newRe
 
 // Issuer queries and returns issuer Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Issuer() (*Addr, error) {
-	return iTokCtrt_issuer(t, NewDBKeyTokCtrtWithoutSplitIssuer())
+	return iTokCtrt_issuer(t, NewDBKeyTokCtrtV2Issuer())
 }
 
 // Maker queries and returns maker Addr of the contract.
 func (t *TokCtrtWithoutSplitV2Blacklist) Maker() (*Addr, error) {
-	return iTokCtrt_maker(t, NewDBKeyTokCtrtWithoutSplitMaker())
+	return iTokCtrt_maker(t, NewDBKeyTokCtrtV2Maker())
 }
 
 // GetTokBal queries & returns the balance of the token of the contract belonging to the user address.

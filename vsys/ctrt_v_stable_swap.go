@@ -499,10 +499,14 @@ func (v *VStableSwapCtrt) SwapTargetToBase(
 	return resp, nil
 }
 
+func NewDBKeyVStableSwapForMaker() Bytes {
+	return STATE_VAR_V_STABLE_SWAP_MAKER.Serialize()
+}
+
 // Maker queries & returns the maker of the contract.
 func (v *VStableSwapCtrt) Maker() (*Addr, error) {
 	resp, err := v.QueryDBKey(
-		NewDBKeyVSwapForMaker(),
+		NewDBKeyVStableSwapForMaker(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
