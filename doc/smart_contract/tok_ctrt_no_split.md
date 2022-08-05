@@ -224,8 +224,6 @@ fmt.Println(resp)
 
 Example output
 
-feeScale: 100,
-
 ```
 *vsys.BroadcastExecuteTxResp({TxBasic:{Type:vsys.TxType(9) Id:vsys.Str(J6yh6tMTbsGFpt9DqTLpHW85vRYRuxtcauFyVjp9QVqQ) Fee:vsys.VSYS(30000000) FeeScale:vsys.VSYS(100) Timestamp:vsys.VSYSTimestamp(1659680117946222000) Proofs:[{ProofType:vsys.Str(Curve25519) PubKey:vsys.Str(6VH5QC2ktUA5UK4j6c4hxQTZi4cm9jdNYhnCQV2rT4Wv) Addr:vsys.Str(AU8xJNjE5RNo8hmPYA1bSgQzPKYNgejytiP) Signature:vsys.Str(iRWrSQzwej9FsFzyGaUNGPcfN2mMij2BjKTuamPQftpUfpy6HDSL7QKRxrd7wGbEsMT1yNTkX8YM8qEvpyHnNSU)}]} CtrtId:vsys.Str(CFEHr5mAEheq89XS3HqXQbVFuNYsQa5Pp3w) FuncIdx:vsys.FuncIdx(1) FuncData:vsys.Str(14JDCrdo1xwsuu) Attachment:vsys.Str(6UZYuvjBHC18dZ)})
 ```
