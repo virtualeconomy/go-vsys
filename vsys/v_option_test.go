@@ -241,6 +241,7 @@ func Test_VOptionCtrt_ExecuteAndCollect(t *testing.T) {
 	voT.test_ExecuteAndCollect(t, vo)
 }
 
+// TODO: test supersede
 func Test_VOptionCtrt_AsWhole(t *testing.T) {
 	vo := voT.newVOptionCtrtActivatedAndMinted(t)
 	voT.test_Register(t, vo)

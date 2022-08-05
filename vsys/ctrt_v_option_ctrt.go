@@ -637,16 +637,16 @@ func NewDBKeyVOptionForPriceUnit() Bytes {
 }
 
 // PriceUnit queries & returns the price unit of the contract creator.
-func (v *VOptionCtrt) PriceUnit() (*Token, error) {
+func (v *VOptionCtrt) PriceUnit() (Unit, error) {
 	resp, err := v.QueryDBKey(NewDBKeyVOptionForPriceUnit())
 	if err != nil {
-		return nil, fmt.Errorf("PriceUnit: %w", err)
+		return 0, fmt.Errorf("PriceUnit: %w", err)
 	}
 	switch priceUnit := resp.Val.(type) {
 	case float64:
-		return NewToken(Amount(priceUnit), 1), nil
+		return Unit(priceUnit), nil
 	default:
-		return nil, fmt.Errorf("PriceUnit: CtrtDataResp.Val is %T but float64 was expected", tokId)
+		return 0, fmt.Errorf("PriceUnit: CtrtDataResp.Val is %T but float64 was expected", tokId)
 	}
 }
 
