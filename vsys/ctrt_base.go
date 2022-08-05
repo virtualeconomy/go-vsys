@@ -65,11 +65,23 @@ func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 		return n, nil
 	//TODO: add other contracts
 	case "TokenContractWithSplit":
-		return nil, fmt.Errorf("not implemented!")
+		n, err := NewTokCtrtWithSplit(ctrtInfo.CtrtId.Str(), chain)
+		if err != nil {
+			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+		}
+		return n, nil
 	case "TokenContractWithWhitelist":
-		return nil, fmt.Errorf("not implemented!")
+		n, err := NewTokCtrtWithoutSplitV2Whitelist(ctrtInfo.CtrtId.Str(), chain)
+		if err != nil {
+			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+		}
+		return n, nil
 	case "TokenContractWithBlacklist":
-		return nil, fmt.Errorf("not implemented!")
+		n, err := NewTokCtrtWithoutSplitV2Blacklist(ctrtInfo.CtrtId.Str(), chain)
+		if err != nil {
+			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+		}
+		return n, nil
 	default:
 		return nil, fmt.Errorf("contract type unexpected: %s", ctrtInfo.Type)
 	}

@@ -363,6 +363,10 @@ type TokCtrtWithoutSplit struct {
 	tokId *TokenId
 }
 
+func (t *TokCtrtWithoutSplit) chain() *Chain {
+	return t.Chain
+}
+
 // NewTokCtrtWithoutSplit creates an instance of TokCtrtWithoutSplit from given contract id.
 func NewTokCtrtWithoutSplit(ctrtId string, chain *Chain) (*TokCtrtWithoutSplit, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
@@ -520,6 +524,10 @@ func (t *TokCtrtWithoutSplit) Withdraw(by *Account, ctrtId string, amount float6
 type TokCtrtWithSplit struct {
 	*Ctrt
 	tokId *TokenId
+}
+
+func (t *TokCtrtWithSplit) chain() *Chain {
+	return t.Chain
 }
 
 // NewTokCtrtWithSplit creates an instance of TokCtrtWithSplit from given contract id.
@@ -804,6 +812,10 @@ type TokCtrtWithoutSplitV2Whitelist struct {
 	tokId *TokenId
 }
 
+func (t *TokCtrtWithoutSplitV2Whitelist) chain() *Chain {
+	return t.Chain
+}
+
 // NewTokCtrtWithoutSplitV2Whitelist creates an instance of TokCtrtWithoutSplitV2Whitelist from given contract id.
 func NewTokCtrtWithoutSplitV2Whitelist(ctrtId string, ch *Chain) (*TokCtrtWithoutSplitV2Whitelist, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
@@ -1019,6 +1031,10 @@ func (t *TokCtrtWithoutSplitV2Whitelist) Withdraw(by *Account, ctrtId string, am
 type TokCtrtWithoutSplitV2Blacklist struct {
 	*Ctrt
 	tokId *TokenId
+}
+
+func (t *TokCtrtWithoutSplitV2Blacklist) chain() *Chain {
+	return t.Chain
 }
 
 // NewTokCtrtWithoutSplitV2Blacklist creates an instance of TokCtrtWithoutSplitV2Blacklist from given contract id.
