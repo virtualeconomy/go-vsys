@@ -1,6 +1,6 @@
-# NFT Contract V1
+# NFT Contract V2
 
-- [NFT Contract V1](#nft-contract-v1)
+- [NFT Contract V2](#nft-contract-v2)
   - [Introduction](#introduction)
   - [Usage with Go SDK](#usage-with-go-sdk)
     - [Registration](#registration)
@@ -8,7 +8,10 @@
     - [Querying](#querying)
       - [Issuer](#issuer)
       - [Maker](#maker)
+      - [Regulator](#regulator)
       - [Unit](#unit)
+      - [Is user in the list](#is-user-in-the-list)
+      - [Is contract in the list](#is-contract-in-the-list)
     - [Actions](#actions)
       - [Issue](#issue)
       - [Send](#send)
@@ -16,28 +19,30 @@
       - [Deposit](#deposit)
       - [Withdraw](#withdraw)
       - [Supersede](#supersede)
+      - [Add/remove a user from the list](#addremove-a-user-from-the-list)
+      - [Add/remove a contract from the list](#addremove-a-contract-from-the-list)
 
 ## Introduction
 
-NFT contract supports defining & managing [NFTs(Non-Fungible Tokens)](https://en.wikipedia.org/wiki/Non-fungible_token).
-NFT can be thought of as a special kind of custom token where
+NFT contract V2 adds additional whitelist/blacklist regulation feature upon [NFT contract V1](./nft_ctrt.md).
 
-- The unit is fixed to 1 and cannot be updated
-- The max issuing amount for a kind of token is fixed to 1.
+For the whitelist flavor, only users & contracts included in the list can interact with the NFT contract instance.
 
-Note that a NFT contract instance on the VSYS blockchain supports defining multiple NFTs (unlike Token contact which supports defining only 1 kind of token per contract instance).
+For the blacklist flavor, only users & contracts excluded from the list can interact with the NFT contract instance.
 
 ## Usage with Go SDK
+
+Examples of NFT contract V2 with whitelist are shown below. The usage of the blacklist one is very similar.
 
 ### Registration
 
 ```go
-s// acnt: *vsys.Account
+// acnt: *vsys.Account
 
 // Register a new NFT contract
-nc, err := vsys.RegisterNFTCtrt(acnt, "ctrtDescription")
+nc, err := RegisterNFTCtrtV2Whitelist(acnt, "ctrtDescription")
 if err != nil {
-    log.Fatalln(err)
+   log.Fatal(err)
 }
 fmt.Println(nc.CtrtId)
 ```
@@ -45,16 +50,17 @@ fmt.Println(nc.CtrtId)
 Example output
 
 ```
-*vsys.CtrtId(vsys.Str(CF3cK7TJFfw1AcPk74osKyGeGxee6u5VNXD))
+*vsys.CtrtId(vsys.Str(CF5xGQwkj1bkiRFuRzF53LmM9Wk6ghDU8jk))
 ```
 
 ### From Existing Contract
 
 ```go
+// acnt: *vsys.Account
 // ch: *vsys.Chain
 
-ncId := "CF3cK7TJFfw1AcPk74osKyGeGxee6u5VNXD";
-nc, err := vsys.NewNFTCtrt(ncId, ch)
+ncId := "CF46ab6o5HTfyLwgyBhwrhkEmLxbaLkSJ8a";
+nc, err = vsys.NewNFTCtrtV2Whitelist(ncId, ch);
 ```
 
 ### Querying
@@ -64,7 +70,7 @@ nc, err := vsys.NewNFTCtrt(ncId, ch)
 The address that has the issuing right of the NFT contract instance.
 
 ```go
-// nc: *vsys.NFTCtrt
+// nc: *vsys.NFTCtrtV2Whitelist
 
 issuer, err := nc.Issuer()
 if err != nil {
@@ -84,13 +90,33 @@ Example output
 The address that made this NFT contract instance.
 
 ```go
-// nc: *vsys.NFTCtrt
+// nc: *vsys.NFTCtrtV2Whitelist
 
 maker, err := nc.Maker()
 if err != nil {
     log.Fatalln(err)
 }
 fmt.Println(maker)
+```
+
+Example output
+
+```
+*vsys.Addr(vsys.Str(AU8xJNjE5RNo8hmPYA1bSgQzPKYNgejytiP))
+```
+
+#### Regulator
+
+The address that serves as the regulator of the NFT contract instance.
+
+```go
+// nc: *vsys.NFTCtrtV2Whitelist
+
+regulator, err := nc.Regulator()
+if err != nil {
+    log.Fatalln(err)
+}
+fmt.Println(regulator)
 ```
 
 Example output
@@ -106,7 +132,7 @@ The unit of tokens defined in this NFT contract instance.
 As the unit is obviously fixed to 1 for NFTs, the support of querying unit of NFT is for the compatibility with other token-defining contracts.
 
 ```go
-// nc: *vsys.NFTCtrt
+// nc: *vsys.NFTCtrtV2Whitelist
 unit, err := nc.Unit()
 if err != nil {
     log.Fatalln(err)
@@ -120,6 +146,48 @@ Example output
 vsys.Unit(1)
 ```
 
+#### Is user in the list
+
+Check if the user is in the whitelist/blacklist
+
+```go
+// acnt: *vsys.Account
+// nc: *vsys.NFTCtrtV2Whitelist
+
+inList, err := nc.IsUserInList(acnt.Addr.B58Str().Str())
+if err != nil {
+    log.Fatalln(err)
+}
+fmt.Println(inList)
+```
+
+Example output
+
+```
+false
+```
+
+#### Is contract in the list
+
+Check if the user is in the whitelist/blacklist
+
+```go
+// nc: *vsys.NFTCtrtV2Whitelist
+arbitraryCtrtId = 'CEsGmTPZMvPkkG7g5gyqgRcXRVc2ZcVXz9J';
+
+inList, err := nc.IsCtrtInList(arbitraryCtrtId)
+if err != nil {
+    log.Fatalln(err)
+}
+fmt.Println(inList)
+```
+
+Example output
+
+```
+false
+```
+
 ### Actions
 
 #### Issue
@@ -128,7 +196,7 @@ Define a new NFT and issue it. Only the issuer of the contract instance can take
 
 ```go
 // acnt: *vsys.Account
-// nc: *vsys.NFTCtrt
+// nc: *vsys.NFTCtrtV2Whitelist
 
 resp, err := nc.Issue(acnt, "description", "attachment")
 if err != nil {
@@ -148,15 +216,15 @@ Example output
 Send an NFT to another user.
 
 ```go
-// acnt0: Account
-// acnt1: Account
-// nc: *vsys.NFTCtrt
+// acnt0: *vsys.Account
+// acnt1: *vsys.Account
+// nc: *vsys.NFTCtrtV2Whitelist
 
 resp, err := nc.Send(
-	acnt0, // by
-	string(acnt1.Addr.B58Str()), // receiver
-	0, // tokIdx
-	"sending nft", // attachment
+    acnt0, // by
+    string(acnt1.Addr.B58Str()), // receiver
+    0, // tokIdx
+    "sending nft", // attachment
 )
 if err != nil {
     log.Fatalln(err)
@@ -178,14 +246,14 @@ Transfer the ownership of an NFT to another account(e.g. user or contract).
 ```go
 // acnt0: *vsys.Account
 // acnt1: *vsys.Account
-// nc: *vsys.NFTCtrt
+// nc: *vsys.NFTCtrtV2Whitelist
 
 resp, err := nc.Transfer(
 	acnt0, // by
 	string(acnt0.Addr.B58Str()), // from
 	string(acnt1.Addr.B58Str()), // to
 	0, // tokIdx
-	"sending nft", // attachment
+	"transfering nft", // attachment
 )
 if err != nil {
    log.Fatalln(err)
@@ -206,15 +274,15 @@ Deposit an NFT to a token-holding contract instance(e.g. lock contract).
 Note that only the token defined in the token-holding contract instance can be deposited into it.
 
 ```go
-// by: *vsysAccount
-// lc: *vsys.LockCtrt
-// nc: *vsys.NFTCtrt
+// by: *vsys.Account
+// nc: *vsys.NFTCtrtV2Whitelist
+// lc: *vsys.LockCtrt or any other Ctrt
 
 resp, err := nc.Deposit(
-	by, //by
-	string(lc.CtrtId.B58Str()), // ctrtId
-	0, // tokIdx
-	"", // ctrtId
+    by, //by
+    string(lc.CtrtId.B58Str()), // ctrtId
+    0, // tokIdx
+    "", // ctrtId
 )
 if err != nil {
     log.Fatalln(err)
@@ -259,16 +327,23 @@ Example output
 
 #### Supersede
 
-Transfer the issuer role of the contract to a new user.
-The maker of the contract has the privilege to take this action.
+Transfer the issuer & regulator role of the contract to a new user.
+
+Note that only the contract maker has the privilege to take this action.
 
 ```go
-// by, newIssuer: *vsys.Account
-// nc: *vsys.NFTCtrt
+// by: *vsys.Account
+// newIssuer: *vsys.Account
+// newRegulator: *vsys.Account
+// nc: *vsys.NFTCtrtV2Whitelist
 
-resp, err := nc.Supersede(by, string(newIssuer.Addr.B58Str()), "attachment")
+resp, err := nc.Supersede(
+	by,
+	newIssuer.Addr.B58Str().Str(),
+	newRegulator.Addr.B58Str().Str(),
+	"")
 if err != nil {
-    log.Fatal(err)
+    log.Fatalln(err)
 }
 fmt.Println(resp)
 ```
@@ -276,5 +351,63 @@ fmt.Println(resp)
 Example output
 
 ```
-*vsys.BroadcastExecuteTxResp({TxBasic:{Type:vsys.TxType(9) Id:vsys.Str(7P5NuriZqtpLCusCn2ajAvktjre4xVeoEd1H4b6i21Td) Fee:vsys.VSYS(30000000) FeeScale:vsys.VSYS(100) Timestamp:vsys.VSYSTimestamp(1659668629905596000) Proofs:[{ProofType:vsys.Str(Curve25519) PubKey:vsys.Str(6VH5QC2ktUA5UK4j6c4hxQTZi4cm9jdNYhnCQV2rT4Wv) Addr:vsys.Str(AU8xJNjE5RNo8hmPYA1bSgQzPKYNgejytiP) Signature:vsys.Str(3Nunp6SZwh81syZ3bbpDeKWQ91zhYbc6SYPVkysuEpRdZJMMmQVzTUZF65YpKHKT1UXAhrWQduTjS9owkifwMtuN)}]} CtrtId:vsys.Str(CF118RwdUAtrxCSRTB9X3dv7ZvhA1or18qv) FuncIdx:vsys.FuncIdx(0) FuncData:vsys.Str(1bscu1qPwSQ3dpRTmcaVU6cR8yjTQpcJx7S1jy) Attachment:vsys.Str()})
+*vsys.BroadcastExecuteTxResp({TxBasic:{Type:vsys.TxType(9) Id:vsys.Str(EakdyUdoxZ4uCZZRY12pULNUnCoR1PCabBmPG3UkKsSM) Fee:vsys.VSYS(30000000) FeeScale:vsys.VSYS(100) Timestamp:vsys.VSYSTimestamp(1659669688440816000) Proofs:[{ProofType:vsys.Str(Curve25519) PubKey:vsys.Str(6VH5QC2ktUA5UK4j6c4hxQTZi4cm9jdNYhnCQV2rT4Wv) Addr:vsys.Str(AU8xJNjE5RNo8hmPYA1bSgQzPKYNgejytiP) Signature:vsys.Str(DyMYGrm3zgJVPvJRWb59GuAHBudahou8oBhFitkKNpN2CpGyZp2wYPLpHbtp1XaQA3VeLTGaFm1beFBcAQ3cDtR)}]} CtrtId:vsys.Str(CF6bKccG5zAcmwE6ZPmWn3FN23AtR7dBEq7) FuncIdx:vsys.FuncIdx(0) FuncData:vsys.Str(1iSiatNyb1DDH9BaTyxhnTrAyermNcUxPmyevchWCMt14uT4NN8T6rL24sBegdGdpgmRhZVE1du) Attachment:vsys.Str()})
+```
+
+#### Add/remove a user from the list
+
+Add/remove a user from the whitelist/blacklist.
+
+Note the regulator has the privilege to take this action.
+
+```go
+// by: *vsys.Account
+// newUser: *vsys.Account
+// nc: *vsys.NFTCtrtV2Whitelist
+
+resp, err := nc.UpdateListUser(
+	by,
+	newUser.Addr.B58Str().Str(),
+	true,
+	"",
+)
+if err != nil {
+	log.Fatalln(err)
+}
+fmt.Println(resp)
+```
+
+Example output
+
+```
+*vsys.BroadcastExecuteTxResp({TxBasic:{Type:vsys.TxType(9) Id:vsys.Str(4TGHNyGWU6vDmQzj163yCWXiTDQYjYvydHxzUxTmoDiL) Fee:vsys.VSYS(30000000) FeeScale:vsys.VSYS(100) Timestamp:vsys.VSYSTimestamp(1659669824735864000) Proofs:[{ProofType:vsys.Str(Curve25519) PubKey:vsys.Str(6VH5QC2ktUA5UK4j6c4hxQTZi4cm9jdNYhnCQV2rT4Wv) Addr:vsys.Str(AU8xJNjE5RNo8hmPYA1bSgQzPKYNgejytiP) Signature:vsys.Str(39dUeak5jH6GcutYVv79L72pKW5iPpLh4bF3hGEW5Thu186YEgbkwvRhQr2AvEKAztwqqFQcY6W2e8StCc85MuCt)}]} CtrtId:vsys.Str(CFDeuUNXceiMsMarEv6RgayrKMMhR5s8E4K) FuncIdx:vsys.FuncIdx(2) FuncData:vsys.Str(1QLRyQ2bdPeXxwK1NwyjTTKNjvUy4Ft5CsmXqwBZi) Attachment:vsys.Str()})
+```
+
+#### Add/remove a contract from the list
+
+Add/remove a contract from the whitelist/blacklist.
+
+Note the regulator has the privilege to take this action.
+
+```go
+// acnt0: *vsys.Account
+// acnt1: *vsys.Account
+// nc: *vsys.NFTCtrtV2Whitelist
+
+resp, err = nc.UpdateListCtrt(
+	by, // by
+	ctrtId, // ctrtId
+	false, // value
+	"", // attachment
+)
+if err != nil {
+	t.Fatal(err)
+}
+fmt.Println(resp)
+```
+
+Example output
+
+```
+*vsys.BroadcastExecuteTxResp({TxBasic:{Type:vsys.TxType(9) Id:vsys.Str(6bZJvj2wtNxtCWLJBMRgNd8XPfjzAoNaQcdYPDR5ob1N) Fee:vsys.VSYS(30000000) FeeScale:vsys.VSYS(100) Timestamp:vsys.VSYSTimestamp(1659669964098182000) Proofs:[{ProofType:vsys.Str(Curve25519) PubKey:vsys.Str(6VH5QC2ktUA5UK4j6c4hxQTZi4cm9jdNYhnCQV2rT4Wv) Addr:vsys.Str(AU8xJNjE5RNo8hmPYA1bSgQzPKYNgejytiP) Signature:vsys.Str(4nKD2eyMzgxbARr3ipY4Y9fyhGns7nyQCTneTFHqbP7waPNWEai94JmFqpNxJd15ge5guhvBKSEmUcG67bfrFGLc)}]} CtrtId:vsys.Str(CFBVhETZHJt83qCV2edGDa8EMaeoJnGkcpd) FuncIdx:vsys.FuncIdx(2) FuncData:vsys.Str(1QWyS19bRamf9yjJbDQDrENYE2gyzKqxSchVRsW87) Attachment:vsys.Str()})
 ```
