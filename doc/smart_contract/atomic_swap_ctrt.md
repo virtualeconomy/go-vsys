@@ -17,7 +17,7 @@
       - [Swap Expiration Time](#swap-expiration-time)
       - [Swap Status](#swap-status)
     - [Actions](#actions)
-      - [lock](#lock)
+      - [Lock](#lock)
       - [solve](#solve)
       - [Withdraw after expiration](#withdraw-after-expiration)
 
