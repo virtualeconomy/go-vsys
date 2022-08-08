@@ -52,5 +52,5 @@ func Sign(priKey, msg []byte) ([]byte, error) {
 
 func Verify(pubKey, msg, sig []byte) bool {
 	res := VerifyImpl(pubKey, msg, sig)
-	return res == 0
+	return res == 1
 }
