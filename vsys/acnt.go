@@ -85,6 +85,18 @@ func NewAccount(c *Chain, pri *PriKey) (*Account, error) {
 	}, nil
 }
 
+func NewAccountFromStrPriKey(c *Chain, pri string) (*Account, error) {
+	priKey, err := NewPriKeyFromB58Str(pri)
+	if err != nil {
+		return nil, fmt.Errorf("NewAccountFromStrPriKey: %w", err)
+	}
+	acnt, err := NewAccount(c, priKey)
+	if err != nil {
+		return nil, fmt.Errorf("NewAccountFromStrPriKey: %w", err)
+	}
+	return acnt, nil
+}
+
 func (a *Account) API() *NodeAPI {
 	return a.Chain.NodeAPI
 }
