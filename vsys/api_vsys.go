@@ -23,6 +23,7 @@ type BroadcastPaymentTxResp struct {
 	Attachment Str  `json:"attachment"`
 }
 
+// BroadcastPayment broadcasts the request for payment of VSYS coins.
 func (na *NodeAPI) BroadcastPayment(p *BroadcastPaymentPayload) (*BroadcastPaymentTxResp, error) {
 	res := &BroadcastPaymentTxResp{}
 	resp, err := na.R().
