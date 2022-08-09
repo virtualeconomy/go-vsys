@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-// BlockHeightResp is the result of GET /blocks/height
-type CurBlockHeightResp struct {
+// BlockHeightResp is the result of GETting height.
+type BlockHeightResp struct {
 	Height Height `json:"height"`
 }
 
 // GetCurBlockHeight gets the current block height of chain.
-func (na *NodeAPI) GetCurBlockHeight() (*CurBlockHeightResp, error) {
-	res := &CurBlockHeightResp{}
+func (na *NodeAPI) GetCurBlockHeight() (*BlockHeightResp, error) {
+	res := &BlockHeightResp{}
 	resp, err := na.R().SetResult(res).Get("/blocks/height")
 	if err != nil {
 		return nil, fmt.Errorf("GetCurBlockHeight: %w", err)
@@ -23,6 +23,20 @@ func (na *NodeAPI) GetCurBlockHeight() (*CurBlockHeightResp, error) {
 	return res, nil
 }
 
+// GetHeightBySignature gets the height of a block as per its signature.
+func (na *NodeAPI) GetHeightBySignature(sig string) (*BlockHeightResp, error) {
+	res := &BlockHeightResp{}
+	resp, err := na.R().SetResult(res).Get(fmt.Sprintf("/blocks/height/%s", sig))
+	if err != nil {
+		return nil, fmt.Errorf("GetHeightBySignature: %w", err)
+	}
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GetHeightBySignature: %s", resp.String())
+	}
+	return res, nil
+}
+
+// BlockResp is a struct representing response of GETting block or array of blocks.
 type BlockResp struct {
 	Version       int           `json:"version"`
 	Timestamp     VSYSTimestamp `json:"timestamp"`
@@ -57,6 +71,7 @@ type BlockResp struct {
 	TransactionCount int    `json:"transaction count"`
 }
 
+// GetLast gets the last block of the chain.
 func (na *NodeAPI) GetLast() (*BlockResp, error) {
 	res := &BlockResp{}
 	resp, err := na.R().SetResult(res).Get("/blocks/last")
@@ -69,6 +84,7 @@ func (na *NodeAPI) GetLast() (*BlockResp, error) {
 	return res, nil
 }
 
+// GetBlockAt gets the block at the given height.
 func (na *NodeAPI) GetBlockAt(h int) (*BlockResp, error) {
 	res := &BlockResp{}
 	resp, err := na.R().SetResult(res).Get(fmt.Sprintf("/blocks/at/%d", h))
@@ -81,6 +97,7 @@ func (na *NodeAPI) GetBlockAt(h int) (*BlockResp, error) {
 	return res, nil
 }
 
+// GetBlocksWithin gets blocks fall in the given range.
 func (na *NodeAPI) GetBlocksWithin(start, end int) ([]*BlockResp, error) {
 	res := make([]*BlockResp, 0)
 	resp, err := na.R().Get(fmt.Sprintf("/blocks/seq/%d/%d", start, end))
@@ -99,4 +116,22 @@ func (na *NodeAPI) GetBlocksWithin(start, end int) ([]*BlockResp, error) {
 
 func (b *BlockResp) String() string {
 	return fmt.Sprintf("%T(%+v)", b, *b)
+}
+
+// AvgDelayResp is response struct for GET /blocks/delay/{sig}/{num}
+type AvgDelayResp struct {
+	Delay int64 `json:"delay"`
+}
+
+// GetAvgDelay gets the average delay in milliseconds for a few blocks starting from the block of which the signature is given.
+func (na *NodeAPI) GetAvgDelay(sig string, num int) (*AvgDelayResp, error) {
+	res := &AvgDelayResp{}
+	resp, err := na.R().SetResult(res).Get(fmt.Sprintf("/blocks/delay/%s/%d", sig, num))
+	if err != nil {
+		return nil, fmt.Errorf("GetAvgDelay: %w", err)
+	}
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GetAvgDelay: %s", resp.String())
+	}
+	return res, nil
 }
