@@ -98,7 +98,7 @@ The address that made this contract instance.
 ```go
 // voc: *vsys.VOptionCtrt
 
-maker, err := nc.Maker()
+maker, err := voc.Maker()
 if err != nil {
     log.Fatalln(err)
 }
@@ -118,7 +118,7 @@ The base token ID.
 ```go
 // voc: VOptionCtrt
 
-tokId, err := vec.BaseTokId()
+tokId, err := voc.BaseTokId()
 if err != nil {
     log.Fatalln(err)
 }

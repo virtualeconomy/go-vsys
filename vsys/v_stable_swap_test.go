@@ -1,6 +1,7 @@
 package vsys
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -48,22 +49,22 @@ func (v *vStableSwapTest) newStableCtrt(t *testing.T, by *Account) *VStableSwapC
 	baseTokId, _ := baseTc.TokId()
 	targetTokId, _ := targetTc.TokId()
 
-	ac, err := RegisterVStableSwapCtrt(by, baseTokId.B58Str().Str(), targetTokId.B58Str().Str(), 5, 1, 1, "")
+	vss, err := RegisterVStableSwapCtrt(by, baseTokId.B58Str().Str(), targetTokId.B58Str().Str(), 5, 1, 1, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	waitForBlock()
-	_, err = baseTc.Deposit(by, ac.CtrtId.B58Str().Str(), 1000, "")
+	_, err = baseTc.Deposit(by, vss.CtrtId.B58Str().Str(), 1000, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = targetTc.Deposit(by, ac.CtrtId.B58Str().Str(), 1000, "")
+	_, err = targetTc.Deposit(by, vss.CtrtId.B58Str().Str(), 1000, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	waitForBlock()
 
-	return ac
+	return vss
 }
 
 func Test_VStableSwapCtrt_Register(t *testing.T) {
@@ -179,6 +180,7 @@ func (v *vStableSwapTest) test_Swap(t *testing.T, vss *VStableSwapCtrt, orderId 
 	if err != nil {
 		t.Fatal(err)
 	}
+	fmt.Println(resp)
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 
@@ -197,6 +199,7 @@ func (v *vStableSwapTest) test_Swap(t *testing.T, vss *VStableSwapCtrt, orderId 
 	if err != nil {
 		t.Fatal(err)
 	}
+	fmt.Println(resp)
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 
