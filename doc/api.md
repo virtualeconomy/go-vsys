@@ -137,6 +137,15 @@ Example output
 #### API Group: Contract
 The group of APIs that share the prefix `/contract` in file `api_ctrt.go`.
 
+* GetTokId
+* BroadcastRegister
+* BroadcastExecute
+* GetCtrtData
+* GetCtrtInfo
+* GetTokBal
+* GetTokInfo
+* GetLatestIndex
+
 ```go
 // api: *vsys.NodeAPI
 
