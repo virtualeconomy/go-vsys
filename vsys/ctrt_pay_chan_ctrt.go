@@ -80,7 +80,10 @@ func (p *PayChanCtrt) CreateAndLoad(
 	if err != nil {
 		return nil, fmt.Errorf("CreateAndLoad: %w", err)
 	}
-	rcptMd.MustOn(p.Chain)
+	err = rcptMd.MustOn(p.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("CreateAndLoad: %w", err)
+	}
 
 	unit, err := p.Unit()
 	if err != nil {

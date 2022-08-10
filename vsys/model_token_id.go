@@ -23,7 +23,7 @@ func NewTokenId(b []byte) (*TokenId, error) {
 			tokId.NonChecksumBytes(),
 		),
 	)[:TOKEN_ID_CHECKSUM_BYTES_LEN]
-	if bytes.Compare(checksum, tokId.Checksum()) != 0 {
+	if bytes.Compare(checksum, tokId.Checksum()) != 0 { //nolint:gosimple
 		return nil, fmt.Errorf("NewTokenId: TokenId has invalid checksum")
 	}
 

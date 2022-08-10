@@ -1,6 +1,7 @@
 package vsys
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -448,18 +449,19 @@ func newNFTCtrtV2WhitelistWithTok(t *testing.T, by *Account) (*NFTCtrtV2Whitelis
 		return nil, err
 	}
 	waitForBlock()
-	resp, err := nc.UpdateListUser(by, string(by.Addr.B58Str()), true, "")
-	resp, err = nc.UpdateListUser(by, string(testAcnt1.Addr.B58Str()), true, "")
+	resp, err := nc.UpdateListUser(by, string(by.Addr.B58Str()), true, "") //nolint:staticcheck
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("newNFTCtrtV2WhitelistWithTok: %w", err)
 	}
-	resp1, err := nc.Issue(by, "description", "attachment")
+	_, err = nc.UpdateListUser(by, string(testAcnt1.Addr.B58Str()), true, "")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("newNFTCtrtV2WhitelistWithTok: %w", err)
 	}
+	resp1, err := nc.Issue(by, "description", "attachment") //nolint:staticcheck
+	t.Fatal(err)
 	waitForBlock()
-	assertTxSuccess(t, string(resp.Id))
-	assertTxSuccess(t, string(resp1.Id))
+	assertTxSuccess(t, resp.Id.Str())
+	assertTxSuccess(t, resp1.Id.Str())
 	return nc, nil
 }
 
