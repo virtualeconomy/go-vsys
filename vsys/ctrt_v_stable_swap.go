@@ -408,7 +408,13 @@ func (v *VStableSwapCtrt) SwapBaseToTarget(
 	attachment string,
 ) (*BroadcastExecuteTxResp, error) {
 	baseUnit, err := v.BaseTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("SwapBaseToTarget: %w", err)
+	}
 	basePriceUnit, err := v.BasePriceUnit()
+	if err != nil {
+		return nil, fmt.Errorf("SwapBaseToTarget: %w", err)
+	}
 
 	deAmount, err := NewDeAmountForTokAmount(amount, uint64(baseUnit))
 	if err != nil {
@@ -458,7 +464,13 @@ func (v *VStableSwapCtrt) SwapTargetToBase(
 	attachment string,
 ) (*BroadcastExecuteTxResp, error) {
 	targetUnit, err := v.TargetTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("SwapTargetToBase: %w", err)
+	}
 	targetPriceUnit, err := v.TargetPriceUnit()
+	if err != nil {
+		return nil, fmt.Errorf("SwapTargetToBase: %w", err)
+	}
 
 	deAmount, err := NewDeAmountForTokAmount(amount, uint64(targetUnit))
 	if err != nil {

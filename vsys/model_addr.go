@@ -28,7 +28,7 @@ func NewAddr(b []byte) (*Addr, error) {
 			addr.NonChecksumBytes(),
 		),
 	)[:ADDR_CHECKSUM_BYTES_LEN]
-	if bytes.Compare(checksum, addr.Checksum()) != 0 {
+	if bytes.Compare(checksum, addr.Checksum()) != 0 { //nolint:gosimple
 		return nil, fmt.Errorf("NewAddr: Addr has invalid checksum")
 	}
 

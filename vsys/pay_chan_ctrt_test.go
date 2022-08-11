@@ -309,6 +309,9 @@ func (p *payChanTest) test_OffchainPayAndCollectPayment(t *testing.T, pc *PayCha
 	}
 	require.Equal(t, p.INIT_LOAD(), accumPay.Amount())
 	acnt1Bal, err := pc.GetCtrtBal(testAcnt1.Addr.B58Str().Str())
+	if err != nil {
+		t.Fatal(err)
+	}
 	require.Equal(t, p.INIT_LOAD(), acnt1Bal.Amount())
 }
 
