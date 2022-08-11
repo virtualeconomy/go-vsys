@@ -26,6 +26,9 @@ func (l *lockCtrtTest) newTokCtrt(t *testing.T) *TokCtrtWithoutSplit {
 	waitForBlock()
 
 	_, err = tc.Issue(testAcnt0, l.TOK_MAX(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	waitForBlock()
 
 	return tc
@@ -38,6 +41,9 @@ func (l *lockCtrtTest) newCtrt(t *testing.T, tc *TokCtrtWithoutSplit) *LockCtrt 
 	}
 
 	lc, err := RegisterLockCtrt(testAcnt0, tokId.B58Str().Str(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	waitForBlock()
 	return lc
 }
@@ -54,6 +60,9 @@ func (l *lockCtrtTest) test_Register(t *testing.T, tc *TokCtrtWithoutSplit, lc *
 		t.Fatal(err)
 	}
 	tcTokId, err := tc.TokId()
+	if err != nil {
+		t.Fatal(err)
+	}
 	require.Equal(t, tcTokId, lcTokId)
 
 	bal, err := lc.GetCtrtBal(testAcnt0.Addr.B58Str().Str())

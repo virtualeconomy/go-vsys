@@ -80,7 +80,10 @@ func (p *PayChanCtrt) CreateAndLoad(
 	if err != nil {
 		return nil, fmt.Errorf("CreateAndLoad: %w", err)
 	}
-	rcptMd.MustOn(p.Chain)
+	err = rcptMd.MustOn(p.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("CreateAndLoad: %w", err)
+	}
 
 	unit, err := p.Unit()
 	if err != nil {
@@ -236,14 +239,13 @@ func (p *PayChanCtrt) CollectPayment(
 	amount float64,
 	signature, attachment string,
 ) (*BroadcastExecuteTxResp, error) {
-	// TODO: fix verify function. PySDK works.
-	//ok, err := p.VerifySig(chanId, amount, signature)
-	//if err != nil {
-	//	return nil, fmt.Errorf("CollectPayment: %w", err)
-	//}
-	//if !ok {
-	//	return nil, fmt.Errorf("CollectPayment: Invalid Payment Channel Contract payment signature")
-	//}
+	ok, err := p.VerifySig(chanId, amount, signature)
+	if err != nil {
+		return nil, fmt.Errorf("CollectPayment: %w", err)
+	}
+	if !ok {
+		return nil, fmt.Errorf("CollectPayment: Invalid Payment Channel Contract payment signature")
+	}
 
 	b, err := NewBytesFromB58Str(chanId)
 	if err != nil {

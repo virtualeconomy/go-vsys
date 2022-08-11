@@ -1,10 +1,43 @@
 package vsys
 
 import (
+	"github.com/stretchr/testify/require"
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+type accountTest struct {
+}
+
+var aT *accountTest
+
+func (a *accountTest) PRI_KEY() *PriKey {
+	key, _ := NewPriKeyFromB58Str("EV5stVcWZ1kEQhrS7qcfYQdHpMHM5jwkyRxi9n9kXteZ")
+	return key
+}
+
+func (a *accountTest) PUB_KEY() *PubKey {
+	key, _ := NewPubKeyFromB58Str("EV5stVcWZ1kEQhrS7qcfYQdHpMHM5jwkyRxi9n9kXteZ")
+	return key
+}
+
+func (a *accountTest) ADDR() *Addr {
+	addr, _ := NewAddrFromB58Str("EV5stVcWZ1kEQhrS7qcfYQdHpMHM5jwkyRxi9n9kXteZ")
+	return addr
+}
+
+func Test_Account_PriOnlyCons(t *testing.T) {
+	acnt, err := NewAccount(testCh, aT.PRI_KEY())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, aT.PRI_KEY(), acnt.PriKey)
+	assert.Equal(t, aT.PUB_KEY(), acnt.PubKey)
+	assert.Equal(t, aT.ADDR(), acnt.Addr)
+}
 
 func Test_Account_Pay(t *testing.T) {
 	t.Run("", func(t *testing.T) {
@@ -35,4 +68,37 @@ func Test_Account_Pay(t *testing.T) {
 		t.Log("gainExpected: ", testAcnt1GainExpected)
 		assert.Equal(t, testAcnt1GainActual, testAcnt1GainExpected)
 	})
+}
+
+func Test_Account_LeaseAndCancelLease(t *testing.T) {
+	effBalInit, err := testAcnt0.EffBal()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	amount, _ := NewVSYSForAmount(5)
+	resp, err := testAcnt0.Lease(SUPERNODE_ADDR, amount.Amount())
+	if err != nil {
+		log.Fatal(err)
+	}
+	waitForBlock()
+	leaseTxId := resp.Id.Str()
+	assertTxSuccess(t, leaseTxId)
+
+	effBalLease, err := testAcnt0.EffBal()
+	if err != nil {
+		log.Fatalf(err)
+	}
+	require.Equal(t, effBalInit-amount-FEE_LEASING, effBalLease)
+
+	resp2, err := testAcnt0.CancelLease(leaseTxId)
+	waitForBlock()
+	assertTxSuccess(t, resp.Id.Str())
+
+	effBalCancel, err := testAcnt0.EffBal()
+	if err != nil {
+		log.Fatalf(err)
+	}
+	require.Equal(t, effBalLease+amount-FEE_LEASING_CANCEL, effBalCancel)
+
 }

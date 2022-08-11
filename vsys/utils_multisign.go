@@ -82,6 +82,7 @@ func sha512Modq(s []byte) *big.Int {
 	)
 }
 
+// nolint:deadcode,unused
 func sha512Modp(s []byte) *big.Int {
 	h := sha512(s)
 	return big.NewInt(0).Mod(

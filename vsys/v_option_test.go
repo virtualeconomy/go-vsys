@@ -107,12 +107,15 @@ func (v *vOptionTest) newVOptionCtrt(t *testing.T) *VOptionCtrt {
 		time.Now().Unix()+voT.EXEC_DDL_DELTA(),
 		"",
 	)
+	if err != nil {
+		t.Fatal(err)
+	}
 	waitForBlock()
 
-	baseTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "")
-	targetTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "")
-	optionTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "")
-	proofTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "")
+	baseTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "")   //nolint:errcheck
+	targetTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "") //nolint:errcheck
+	optionTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "") //nolint:errcheck
+	proofTc.Deposit(testAcnt0, vo.CtrtId.B58Str().Str(), 1000, "")  //nolint:errcheck
 	waitForBlock()
 
 	return vo
@@ -241,6 +244,7 @@ func Test_VOptionCtrt_ExecuteAndCollect(t *testing.T) {
 	voT.test_ExecuteAndCollect(t, vo)
 }
 
+// TODO: test supersede
 func Test_VOptionCtrt_AsWhole(t *testing.T) {
 	vo := voT.newVOptionCtrtActivatedAndMinted(t)
 	voT.test_Register(t, vo)

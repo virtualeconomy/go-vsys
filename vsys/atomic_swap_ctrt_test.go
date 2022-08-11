@@ -188,6 +188,9 @@ func (ast *atomicSwapTest) test_Solve(t *testing.T, maker, taker *Account, maker
 		takerLockTimestamp,
 		"",
 	)
+	if err != nil {
+		t.Fatal(err)
+	}
 	waitForBlock()
 	assertTxSuccess(t, string(takerLockTxInfo.Id))
 
@@ -257,6 +260,9 @@ func (ast *atomicSwapTest) test_ExpWithdraw(t *testing.T, acnt0, acnt1 *Account,
 	assertTxSuccess(t, makerLockTxId)
 
 	bal_old, err := makerCtrt.GetCtrtBal(string(acnt0.Addr.B58Str()))
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	time.Sleep(6 * time.Second) // wait until lock expires
 

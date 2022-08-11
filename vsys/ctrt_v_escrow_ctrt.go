@@ -842,6 +842,9 @@ func (v *VEscrowCtrt) GetCtrtBal(addr string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		NewDBKeyVEscrowContractBalance(addrMd),
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtBal: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
@@ -912,6 +915,9 @@ func (v *VEscrowCtrt) GetOrderAmount(orderId string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderAmount: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderAmount: %w", err)
@@ -933,6 +939,9 @@ func (v *VEscrowCtrt) GetOrderRecipientDeposit(orderId string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderRecipientDeposit: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientDeposit: %w", err)
@@ -954,6 +963,9 @@ func (v *VEscrowCtrt) GetOrderJudgeDeposit(orderId string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderJudgeDeposit: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderJudgeDeposit: %w", err)
@@ -975,6 +987,9 @@ func (v *VEscrowCtrt) GetOrderFee(orderId string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderFee: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderFee: %w", err)
@@ -998,6 +1013,9 @@ func (v *VEscrowCtrt) GetOrderRecipientAmount(orderId string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderRecipientAmount: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientAmount: %w", err)
@@ -1021,6 +1039,9 @@ func (v *VEscrowCtrt) GetOrderRefund(orderId string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderRefund: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRefund: %w", err)
@@ -1044,6 +1065,9 @@ func (v *VEscrowCtrt) GetOrderRecipientRefund(orderId string) (*Token, error) {
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderRefund: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientRefund: %w", err)
@@ -1111,7 +1135,6 @@ func (v *VEscrowCtrt) GetOrderRecipientDepositStatus(orderId string) (bool, erro
 	if err != nil {
 		return false, fmt.Errorf("GetOrderRecipientDepositStatus: %w", err)
 	}
-
 	switch val := resp.Val.(type) {
 	case string:
 		return val == "true", nil
@@ -1191,6 +1214,9 @@ func (v *VEscrowCtrt) GetOrderRecipientLockedAmount(orderId string) (*Token, err
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderRecipientLockedAmount: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderRecipientLockedAmount: %w", err)
@@ -1213,6 +1239,9 @@ func (v *VEscrowCtrt) GetOrderJudgeLockedAmount(orderId string) (*Token, error) 
 	resp, err := v.QueryDBKey(
 		dbKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderJudgeLockedAmount: %w", err)
+	}
 	unit, err := v.Unit()
 	if err != nil {
 		return nil, fmt.Errorf("GetOrderJudgeLockedAmount: %w", err)
