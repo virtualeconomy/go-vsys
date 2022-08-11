@@ -57,8 +57,12 @@ If the public key is provided, it will be verified against the private key.
 
 ```go
 // ch: *vsys.Chain
-// TODO: implement in golang sdk
-acnt0 = pv.Account.from_pri_key_str(ch, 'your_private_key')
+
+acnt0, err := vsys.NewAccountFromPriKeyStr(ch, 'your_private_key')
+if err != nil {
+	log.Fatalln(err)
+}
+
 priKey, err := vsys.NewPriKeyFromB58Str('your private key in base 58 encoded format')
 if err != nil {
     log.Fatalln(err)
