@@ -1,10 +1,10 @@
 package vsys
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 type vStableSwapTest struct {
@@ -180,7 +180,6 @@ func (v *vStableSwapTest) test_Swap(t *testing.T, vss *VStableSwapCtrt, orderId 
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(resp)
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 
@@ -199,7 +198,6 @@ func (v *vStableSwapTest) test_Swap(t *testing.T, vss *VStableSwapCtrt, orderId 
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(resp)
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 

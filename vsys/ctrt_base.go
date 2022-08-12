@@ -63,7 +63,6 @@ func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
 		}
 		return n, nil
-	//TODO: add other contracts
 	case "TokenContractWithSplit":
 		n, err := NewTokCtrtWithSplit(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {

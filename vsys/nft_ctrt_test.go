@@ -2,9 +2,10 @@ package vsys
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 type iNFTtest interface {
@@ -458,7 +459,9 @@ func newNFTCtrtV2WhitelistWithTok(t *testing.T, by *Account) (*NFTCtrtV2Whitelis
 		return nil, fmt.Errorf("newNFTCtrtV2WhitelistWithTok: %w", err)
 	}
 	resp1, err := nc.Issue(by, "description", "attachment") //nolint:staticcheck
-	t.Fatal(err)
+	if err != nil {
+		t.Fatal(err)
+	}
 	waitForBlock()
 	assertTxSuccess(t, resp.Id.Str())
 	assertTxSuccess(t, resp1.Id.Str())

@@ -1,9 +1,10 @@
 package vsys
 
 import (
-	"github.com/stretchr/testify/require"
 	"log"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -19,12 +20,12 @@ func (a *accountTest) PRI_KEY() *PriKey {
 }
 
 func (a *accountTest) PUB_KEY() *PubKey {
-	key, _ := NewPubKeyFromB58Str("EV5stVcWZ1kEQhrS7qcfYQdHpMHM5jwkyRxi9n9kXteZ")
+	key, _ := NewPubKeyFromB58Str("4EyuJtDzQH15qAfnTPgqa8QB4ZU1dzqihdCs13UYEiV4")
 	return key
 }
 
 func (a *accountTest) ADDR() *Addr {
-	addr, _ := NewAddrFromB58Str("EV5stVcWZ1kEQhrS7qcfYQdHpMHM5jwkyRxi9n9kXteZ")
+	addr, _ := NewAddrFromB58Str("ATuQXbkZV4dCKsoFtXSCH5eKw92dMXQdUYU")
 	return addr
 }
 
@@ -79,7 +80,7 @@ func Test_Account_LeaseAndCancelLease(t *testing.T) {
 	amount, _ := NewVSYSForAmount(5)
 	resp, err := testAcnt0.Lease(SUPERNODE_ADDR, amount.Amount())
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 	waitForBlock()
 	leaseTxId := resp.Id.Str()
@@ -87,17 +88,17 @@ func Test_Account_LeaseAndCancelLease(t *testing.T) {
 
 	effBalLease, err := testAcnt0.EffBal()
 	if err != nil {
-		log.Fatalf(err)
+		t.Fatal(err)
 	}
 	require.Equal(t, effBalInit-amount-FEE_LEASING, effBalLease)
 
 	resp2, err := testAcnt0.CancelLease(leaseTxId)
 	waitForBlock()
-	assertTxSuccess(t, resp.Id.Str())
+	assertTxSuccess(t, resp2.Id.Str())
 
 	effBalCancel, err := testAcnt0.EffBal()
 	if err != nil {
-		log.Fatalf(err)
+		t.Fatal(err)
 	}
 	require.Equal(t, effBalLease+amount-FEE_LEASING_CANCEL, effBalCancel)
 
