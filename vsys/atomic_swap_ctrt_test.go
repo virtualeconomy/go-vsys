@@ -35,7 +35,7 @@ func (ast *atomicSwapTest) newTokCtrtWithTok(t *testing.T, by *Account) (*TokCtr
 }
 
 func (ast *atomicSwapTest) newAtomicSwap(t *testing.T, by *Account) (*AtomicSwapCtrt, error) {
-	token, err := asT.newTokCtrtWithTok(t, by)
+	token, err := ast.newTokCtrtWithTok(t, by)
 	if err != nil {
 		return nil, fmt.Errorf(": %w", err)
 	}

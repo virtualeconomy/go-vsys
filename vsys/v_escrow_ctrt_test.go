@@ -1,23 +1,26 @@
 package vsys
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 type vEscrowTest struct {
 }
 
-func (v *vEscrowTest) DURATION() int64 {
+var vecT *vEscrowTest
+
+func (vect *vEscrowTest) DURATION() int64 {
 	return 18
 }
 
-func (v *vEscrowTest) ORDER_PERIOD() int64 {
+func (vect *vEscrowTest) ORDER_PERIOD() int64 {
 	return 45
 }
 
-func (v *vEscrowTest) newVEscrowCtrt_ForTest(t *testing.T, judge, maker, recipient *Account) *VEscrowCtrt {
+func (vect *vEscrowTest) newVEscrowCtrt_ForTest(t *testing.T, judge, maker, recipient *Account) *VEscrowCtrt {
 	tc, err := asT.newTokCtrtWithTok(t, judge)
 	if err != nil {
 		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
@@ -35,7 +38,7 @@ func (v *vEscrowTest) newVEscrowCtrt_ForTest(t *testing.T, judge, maker, recipie
 	if err != nil {
 		t.Fatal(err)
 	}
-	vec, err := RegisterVEscrowCtrt(testAcnt0, string(tokId.B58Str()), vecT.DURATION(), vecT.DURATION(), "")
+	vec, err := RegisterVEscrowCtrt(testAcnt0, string(tokId.B58Str()), vect.DURATION(), vect.DURATION(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +61,7 @@ func (v *vEscrowTest) newVEscrowCtrt_ForTest(t *testing.T, judge, maker, recipie
 	return vec
 }
 
-func (v *vEscrowTest) createOrder(t *testing.T, vc *VEscrowCtrt, payer, recipient *Account, expireAt int64) (orderId string) {
+func (vect *vEscrowTest) createOrder(t *testing.T, vc *VEscrowCtrt, payer, recipient *Account, expireAt int64) (orderId string) {
 	resp, err := vc.Create(payer, string(recipient.Addr.B58Str()), 10, 2, 3, 4, 5, expireAt, "")
 	if err != nil {
 		t.Fatal(err)
@@ -69,7 +72,7 @@ func (v *vEscrowTest) createOrder(t *testing.T, vc *VEscrowCtrt, payer, recipien
 	return
 }
 
-func (v *vEscrowTest) depositToOrder(t *testing.T, vc *VEscrowCtrt, orderId string, recipient, judge *Account) {
+func (vect *vEscrowTest) depositToOrder(t *testing.T, vc *VEscrowCtrt, orderId string, recipient, judge *Account) {
 	resp1, err := vc.JudgeDeposit(judge, orderId, "")
 	if err != nil {
 		t.Fatal(err)
@@ -83,7 +86,7 @@ func (v *vEscrowTest) depositToOrder(t *testing.T, vc *VEscrowCtrt, orderId stri
 	assertTxSuccess(t, string(resp2.Id))
 }
 
-func (v *vEscrowTest) submitWork(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
+func (vect *vEscrowTest) submitWork(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
 	resp, err := vc.SubmitWork(recipient, orderId, "")
 	if err != nil {
 		t.Fatal(err)
@@ -92,14 +95,12 @@ func (v *vEscrowTest) submitWork(t *testing.T, vc *VEscrowCtrt, orderId string, 
 	assertTxSuccess(t, string(resp.Id))
 }
 
-var vecT *vEscrowTest
-
-func (v *vEscrowTest) test_Register(t *testing.T, acnt *Account, tc *TokCtrtWithoutSplit) *VEscrowCtrt {
+func (vect *vEscrowTest) test_Register(t *testing.T, acnt *Account, tc *TokCtrtWithoutSplit) *VEscrowCtrt {
 	tokId, err := tc.TokId()
 	if err != nil {
 		t.Fatal(err)
 	}
-	vec, err := RegisterVEscrowCtrt(acnt, string(tokId.B58Str()), vecT.DURATION(), vecT.DURATION(), "")
+	vec, err := RegisterVEscrowCtrt(acnt, string(tokId.B58Str()), vect.DURATION(), vect.DURATION(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +149,7 @@ func Test_VEscrowCtrt_Register(t *testing.T) {
 	vecT.test_Register(t, testAcnt0, tc)
 }
 
-func (v *vEscrowTest) test_Supersede(t *testing.T, vc *VEscrowCtrt, newJudge, oldJudge *Account) {
+func (vect *vEscrowTest) test_Supersede(t *testing.T, vc *VEscrowCtrt, newJudge, oldJudge *Account) {
 	judge, err := vc.Judge()
 	if err != nil {
 		t.Error(err)
@@ -175,9 +176,9 @@ func Test_VEscrowCtrt_Supersede(t *testing.T) {
 	vecT.test_Supersede(t, vc, testAcnt1, testAcnt0)
 }
 
-func (v *vEscrowTest) test_Create(t *testing.T, vc *VEscrowCtrt, payer, recipient *Account) string {
-	later := time.Now().Unix() + vecT.ORDER_PERIOD()
-	orderId := vecT.createOrder(t, vc, payer, recipient, later)
+func (vect *vEscrowTest) test_Create(t *testing.T, vc *VEscrowCtrt, payer, recipient *Account) string {
+	later := time.Now().Unix() + vect.ORDER_PERIOD()
+	orderId := vect.createOrder(t, vc, payer, recipient, later)
 
 	payerAddr, err := vc.GetOrderPayer(orderId)
 	if err != nil {
@@ -247,7 +248,7 @@ func Test_VEscrowCtrt_Create(t *testing.T) {
 	vecT.test_Create(t, vc, testAcnt1, testAcnt2)
 }
 
-func (v *vEscrowTest) test_RecipientDeposit(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
+func (vect *vEscrowTest) test_RecipientDeposit(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
 	orderRcptDepStatus, _ := vc.GetOrderRecipientDepositStatus(orderId)
 	require.Equal(t, false, orderRcptDepStatus)
 	rcptLockedAmount, _ := vc.GetOrderRecipientLockedAmount(orderId)
@@ -275,7 +276,7 @@ func Test_VEscrowCtrt_RecipientDeposit(t *testing.T) {
 	vecT.test_RecipientDeposit(t, vc, orderId, testAcnt2)
 }
 
-func (v *vEscrowTest) test_JudgeDeposit(t *testing.T, vc *VEscrowCtrt, orderId string, judge *Account) {
+func (vect *vEscrowTest) test_JudgeDeposit(t *testing.T, vc *VEscrowCtrt, orderId string, judge *Account) {
 	orderJudgeDepStatus, _ := vc.GetOrderJudgeDepositStatus(orderId)
 	require.Equal(t, false, orderJudgeDepStatus)
 	judgeLockedAmount, _ := vc.GetOrderJudgeLockedAmount(orderId)
@@ -303,7 +304,7 @@ func Test_VEscrowCtrt_JudgeDeposit(t *testing.T) {
 	vecT.test_JudgeDeposit(t, vc, orderId, testAcnt0)
 }
 
-func (v *vEscrowTest) test_PayerCancel(t *testing.T, vc *VEscrowCtrt, orderId string, payer *Account) {
+func (vect *vEscrowTest) test_PayerCancel(t *testing.T, vc *VEscrowCtrt, orderId string, payer *Account) {
 	orderStatus, _ := vc.GetOrderStatus(orderId)
 	require.Equal(t, true, orderStatus)
 
@@ -328,7 +329,7 @@ func Test_VEscrowCtrt_PayerCancel(t *testing.T) {
 	vecT.test_PayerCancel(t, vc, orderId, testAcnt1)
 }
 
-func (v *vEscrowTest) test_RecipientCancel(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
+func (vect *vEscrowTest) test_RecipientCancel(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
 	orderStatus, _ := vc.GetOrderStatus(orderId)
 	require.Equal(t, true, orderStatus)
 
@@ -352,7 +353,7 @@ func Test_VEscrowCtrt_RecipientCancel(t *testing.T) {
 	vecT.test_RecipientCancel(t, vc, orderId, testAcnt2)
 }
 
-func (v *vEscrowTest) test_JudgeCancel(t *testing.T, vc *VEscrowCtrt, orderId string, judge *Account) {
+func (vect *vEscrowTest) test_JudgeCancel(t *testing.T, vc *VEscrowCtrt, orderId string, judge *Account) {
 	orderStatus, _ := vc.GetOrderStatus(orderId)
 	require.Equal(t, true, orderStatus)
 
@@ -376,7 +377,7 @@ func Test_VEscrowCtrt_JudgeCancel(t *testing.T) {
 	vecT.test_JudgeCancel(t, vc, orderId, testAcnt0)
 }
 
-func (v *vEscrowTest) test_SubmitWork(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
+func (vect *vEscrowTest) test_SubmitWork(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account) {
 	orderStatus, _ := vc.GetOrderSubmitStatus(orderId)
 	require.Equal(t, false, orderStatus)
 
@@ -401,7 +402,7 @@ func Test_VEscrowCtrt_SubmitWork(t *testing.T) {
 	vecT.test_SubmitWork(t, vc, orderId, testAcnt2)
 }
 
-func (v *vEscrowTest) test_ApproveWork(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient, judge *Account) {
+func (vect *vEscrowTest) test_ApproveWork(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient, judge *Account) {
 	judgeBalOld, err := vc.GetCtrtBal(string(judge.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -446,7 +447,7 @@ func Test_VEscrowCtrt_ApproveWork(t *testing.T) {
 	vecT.test_ApproveWork(t, vc, orderId, testAcnt1, testAcnt2, testAcnt0)
 }
 
-func (v *vEscrowTest) test_ApplyToAndDoJudge(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient, judge *Account) {
+func (vect *vEscrowTest) test_ApplyToAndDoJudge(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient, judge *Account) {
 	payerBalOld, err := vc.GetCtrtBal(string(payer.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -505,7 +506,7 @@ func Test_VEscrowCtrt_ApplyToAndDoJudge(t *testing.T) {
 	vecT.test_ApplyToAndDoJudge(t, vc, orderId, testAcnt1, testAcnt2, testAcnt0)
 }
 
-func (v *vEscrowTest) test_SubmitPenalty(t *testing.T, vc *VEscrowCtrt, orderId string, payer, judge *Account) {
+func (vect *vEscrowTest) test_SubmitPenalty(t *testing.T, vc *VEscrowCtrt, orderId string, payer, judge *Account) {
 	payerBalOld, err := vc.GetCtrtBal(string(payer.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -555,7 +556,7 @@ func Test_VEscrowCtrt_SubmitPenalty(t *testing.T) {
 	vecT.test_SubmitPenalty(t, vc, orderId, testAcnt1, testAcnt0)
 }
 
-func (v *vEscrowTest) test_PayerRefund(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient *Account) {
+func (vect *vEscrowTest) test_PayerRefund(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient *Account) {
 	payerBalOld, err := vc.GetCtrtBal(string(payer.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -611,7 +612,7 @@ func Test_VEscrowCtrt_PayerRefund(t *testing.T) {
 	vecT.test_PayerRefund(t, vc, orderId, testAcnt1, testAcnt2)
 }
 
-func (v *vEscrowTest) test_RecipientRefund(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient *Account) {
+func (vect *vEscrowTest) test_RecipientRefund(t *testing.T, vc *VEscrowCtrt, orderId string, payer, recipient *Account) {
 	payerBalOld, err := vc.GetCtrtBal(string(payer.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -668,7 +669,7 @@ func Test_VEscrowCtrt_RecipientRefund(t *testing.T) {
 	vecT.test_RecipientRefund(t, vc, orderId, testAcnt1, testAcnt2)
 }
 
-func (v *vEscrowTest) test_Collect(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account, judge *Account) {
+func (vect *vEscrowTest) test_Collect(t *testing.T, vc *VEscrowCtrt, orderId string, recipient *Account, judge *Account) {
 	judgeBalOld, err := vc.GetCtrtBal(string(judge.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)

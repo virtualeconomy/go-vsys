@@ -1,7 +1,6 @@
 package vsys
 
 import (
-	"log"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -74,7 +73,7 @@ func Test_Account_Pay(t *testing.T) {
 func Test_Account_LeaseAndCancelLease(t *testing.T) {
 	effBalInit, err := testAcnt0.EffBal()
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	amount, _ := NewVSYSForAmount(5)

@@ -1,31 +1,32 @@
 package vsys
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 type lockCtrtTest struct{}
 
 var lcT *lockCtrtTest
 
-func (l *lockCtrtTest) TOK_MAX() float64 {
+func (lct *lockCtrtTest) TOK_MAX() float64 {
 	return 100
 }
 
-func (l *lockCtrtTest) TOK_UNIT() uint64 {
+func (lct *lockCtrtTest) TOK_UNIT() uint64 {
 	return 1
 }
 
-func (l *lockCtrtTest) newTokCtrt(t *testing.T) *TokCtrtWithoutSplit {
-	tc, err := RegisterTokCtrtWithoutSplit(testAcnt0, l.TOK_MAX(), l.TOK_UNIT(), "", "")
+func (lct *lockCtrtTest) newTokCtrt(t *testing.T) *TokCtrtWithoutSplit {
+	tc, err := RegisterTokCtrtWithoutSplit(testAcnt0, lct.TOK_MAX(), lct.TOK_UNIT(), "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	waitForBlock()
 
-	_, err = tc.Issue(testAcnt0, l.TOK_MAX(), "")
+	_, err = tc.Issue(testAcnt0, lct.TOK_MAX(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +35,7 @@ func (l *lockCtrtTest) newTokCtrt(t *testing.T) *TokCtrtWithoutSplit {
 	return tc
 }
 
-func (l *lockCtrtTest) newCtrt(t *testing.T, tc *TokCtrtWithoutSplit) *LockCtrt {
+func (lct *lockCtrtTest) newCtrt(t *testing.T, tc *TokCtrtWithoutSplit) *LockCtrt {
 	tokId, err := tc.TokId()
 	if err != nil {
 		t.Fatal(err)
@@ -48,7 +49,7 @@ func (l *lockCtrtTest) newCtrt(t *testing.T, tc *TokCtrtWithoutSplit) *LockCtrt 
 	return lc
 }
 
-func (l *lockCtrtTest) test_Register(t *testing.T, tc *TokCtrtWithoutSplit, lc *LockCtrt) {
+func (lct *lockCtrtTest) test_Register(t *testing.T, tc *TokCtrtWithoutSplit, lc *LockCtrt) {
 	maker, err := lc.Maker()
 	if err != nil {
 		t.Fatal(err)
@@ -85,8 +86,8 @@ func Test_LockCtrt_Register(t *testing.T) {
 	lcT.test_Register(t, tc, lc)
 }
 
-func (l *lockCtrtTest) test_Lock(t *testing.T, tc *TokCtrtWithoutSplit, lc *LockCtrt) {
-	resp, err := tc.Deposit(testAcnt0, lc.CtrtId.B58Str().Str(), lcT.TOK_MAX(), "")
+func (lct *lockCtrtTest) test_Lock(t *testing.T, tc *TokCtrtWithoutSplit, lc *LockCtrt) {
+	resp, err := tc.Deposit(testAcnt0, lc.CtrtId.B58Str().Str(), lct.TOK_MAX(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +98,7 @@ func (l *lockCtrtTest) test_Lock(t *testing.T, tc *TokCtrtWithoutSplit, lc *Lock
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, lcT.TOK_MAX(), bal.Amount())
+	require.Equal(t, lct.TOK_MAX(), bal.Amount())
 
 	later := time.Now().Unix() + 3*int64(avgBlockDelay.Seconds())
 	resp, err = lc.Lock(testAcnt0, later, "")
@@ -114,19 +115,19 @@ func (l *lockCtrtTest) test_Lock(t *testing.T, tc *TokCtrtWithoutSplit, lc *Lock
 	require.Equal(t, int64(later), lockTime.UnixTs())
 
 	// withdraw before expiration should fail
-	resp, _ = tc.Withdraw(testAcnt0, lc.CtrtId.B58Str().Str(), lcT.TOK_MAX(), "")
+	resp, _ = tc.Withdraw(testAcnt0, lc.CtrtId.B58Str().Str(), lct.TOK_MAX(), "")
 	waitForBlock()
 	assertTxStatus(t, string(resp.Id), "Failed")
 	bal, err = lc.GetCtrtBal(testAcnt0.Addr.B58Str().Str())
 	if err != nil {
 		t.Fatal(err)
 	}
-	require.Equal(t, lcT.TOK_MAX(), bal.Amount())
+	require.Equal(t, lct.TOK_MAX(), bal.Amount())
 
 	time.Sleep(time.Second*time.Duration(later-time.Now().Unix()) + avgBlockDelay)
 
 	// withdraw after expiration should succeed
-	resp, _ = tc.Withdraw(testAcnt0, lc.CtrtId.B58Str().Str(), lcT.TOK_MAX(), "")
+	resp, _ = tc.Withdraw(testAcnt0, lc.CtrtId.B58Str().Str(), lct.TOK_MAX(), "")
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 	bal, err = lc.GetCtrtBal(testAcnt0.Addr.B58Str().Str())
