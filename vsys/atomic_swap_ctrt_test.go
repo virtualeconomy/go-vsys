@@ -2,22 +2,27 @@ package vsys
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"golang.org/x/sync/errgroup"
+	"sync"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+	"golang.org/x/sync/errgroup"
 )
 
 type atomicSwapTest struct {
 }
 
 var asT *atomicSwapTest
+var mu sync.Mutex
 
 func (ast *atomicSwapTest) newTokCtrtWithTok(t *testing.T, by *Account) (*TokCtrtWithoutSplit, error) {
+	mu.Lock()
 	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
 	if err != nil {
 		return nil, fmt.Errorf("newMakerTokCtrtWithTok: %w", err)
 	}
+	mu.Unlock()
 	waitForBlock()
 
 	resp, err := tc.Issue(by, 1000, "")
@@ -30,7 +35,7 @@ func (ast *atomicSwapTest) newTokCtrtWithTok(t *testing.T, by *Account) (*TokCtr
 }
 
 func (ast *atomicSwapTest) newAtomicSwap(t *testing.T, by *Account) (*AtomicSwapCtrt, error) {
-	token, err := asT.newTokCtrtWithTok(t, by)
+	token, err := ast.newTokCtrtWithTok(t, by)
 	if err != nil {
 		return nil, fmt.Errorf(": %w", err)
 	}

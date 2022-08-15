@@ -10,7 +10,6 @@ type DeBytes struct {
 	Data Bytes
 }
 
-// TODO: other constructors/factories?
 func NewDeBytes(b Bytes) *DeBytes {
 	return &DeBytes{
 		Idx:  11,

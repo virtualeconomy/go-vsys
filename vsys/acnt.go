@@ -259,8 +259,6 @@ func (a *Account) ExecuteCtrt(txReq *ExecCtrtFuncTxReq) (*BroadcastExecuteTxResp
 	return resp, err
 }
 
-// TODO: DBPut
-
 func (a *Account) String() string {
 	return fmt.Sprintf("%T(%+v)", a, *a)
 }

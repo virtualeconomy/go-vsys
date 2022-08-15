@@ -1,37 +1,38 @@
 package vsys
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 type vSwapTest struct {
 }
 
-func (v *vSwapTest) TOK_MAX() float64 {
+func (vst *vSwapTest) TOK_MAX() float64 {
 	return 1_000_000_000
 }
-func (v *vSwapTest) TOK_UNIT() uint64 {
+func (vst *vSwapTest) TOK_UNIT() uint64 {
 	return 1_000
 }
-func (v *vSwapTest) MIN_LIQ() int {
+func (vst *vSwapTest) MIN_LIQ() int {
 	return 10
 }
-func (v *vSwapTest) INIT_AMOUNT() float64 {
+func (vst *vSwapTest) INIT_AMOUNT() float64 {
 	return 10_000
 }
 
 var vsT *vSwapTest
 
-func (v *vSwapTest) newCtrt(t *testing.T, acnt0, acnt1 *Account) *VSwapCtrt {
-	tca, tcb, tcl := v.newTokCtrts(t, acnt0)
+func (vst *vSwapTest) newCtrt(t *testing.T, acnt0, acnt1 *Account) *VSwapCtrt {
+	tca, tcb, tcl := vst.newTokCtrts(t, acnt0)
 
-	resp1, err := tca.Send(acnt0, string(acnt1.Addr.B58Str()), v.TOK_MAX()/2, "")
+	resp1, err := tca.Send(acnt0, string(acnt1.Addr.B58Str()), vst.TOK_MAX()/2, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	resp2, err := tcb.Send(acnt0, string(acnt1.Addr.B58Str()), v.TOK_MAX()/2, "")
+	resp2, err := tcb.Send(acnt0, string(acnt1.Addr.B58Str()), vst.TOK_MAX()/2, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,17 +44,17 @@ func (v *vSwapTest) newCtrt(t *testing.T, acnt0, acnt1 *Account) *VSwapCtrt {
 	tokIdB, _ := tcb.TokId()
 	tokIdL, _ := tcl.TokId()
 
-	vs, err := RegisterVSwapCtrt(acnt0, tokIdA.B58Str().Str(), tokIdB.B58Str().Str(), tokIdL.B58Str().Str(), v.MIN_LIQ(), "")
+	vs, err := RegisterVSwapCtrt(acnt0, tokIdA.B58Str().Str(), tokIdB.B58Str().Str(), tokIdL.B58Str().Str(), vst.MIN_LIQ(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	waitForBlock()
 
-	respa0, _ := tca.Deposit(acnt0, string(vs.CtrtId.B58Str()), v.TOK_MAX()/2, "")
-	respb0, _ := tcb.Deposit(acnt0, string(vs.CtrtId.B58Str()), v.TOK_MAX()/2, "")
-	respa1, _ := tca.Deposit(acnt1, string(vs.CtrtId.B58Str()), v.TOK_MAX()/2, "")
-	respb1, _ := tcb.Deposit(acnt1, string(vs.CtrtId.B58Str()), v.TOK_MAX()/2, "")
-	respl, _ := tcl.Deposit(acnt0, string(vs.CtrtId.B58Str()), v.TOK_MAX(), "")
+	respa0, _ := tca.Deposit(acnt0, string(vs.CtrtId.B58Str()), vst.TOK_MAX()/2, "")
+	respb0, _ := tcb.Deposit(acnt0, string(vs.CtrtId.B58Str()), vst.TOK_MAX()/2, "")
+	respa1, _ := tca.Deposit(acnt1, string(vs.CtrtId.B58Str()), vst.TOK_MAX()/2, "")
+	respb1, _ := tcb.Deposit(acnt1, string(vs.CtrtId.B58Str()), vst.TOK_MAX()/2, "")
+	respl, _ := tcl.Deposit(acnt0, string(vs.CtrtId.B58Str()), vst.TOK_MAX(), "")
 	waitForBlock()
 	assertTxSuccess(t, respa0.Id.Str())
 	assertTxSuccess(t, respb0.Id.Str())
@@ -64,18 +65,18 @@ func (v *vSwapTest) newCtrt(t *testing.T, acnt0, acnt1 *Account) *VSwapCtrt {
 	return vs
 }
 
-func (v *vSwapTest) newTokCtrts(t *testing.T, acnt *Account) (a, b, c *TokCtrtWithoutSplit) {
+func (vst *vSwapTest) newTokCtrts(t *testing.T, acnt *Account) (a, b, c *TokCtrtWithoutSplit) {
 	var toks [3]*TokCtrtWithoutSplit
 	var err error
-	toks[0], err = RegisterTokCtrtWithoutSplit(acnt, v.TOK_MAX(), v.TOK_UNIT(), "", "")
+	toks[0], err = RegisterTokCtrtWithoutSplit(acnt, vst.TOK_MAX(), vst.TOK_UNIT(), "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	toks[1], err = RegisterTokCtrtWithoutSplit(acnt, v.TOK_MAX(), v.TOK_UNIT(), "", "")
+	toks[1], err = RegisterTokCtrtWithoutSplit(acnt, vst.TOK_MAX(), vst.TOK_UNIT(), "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	toks[2], err = RegisterTokCtrtWithoutSplit(acnt, v.TOK_MAX(), v.TOK_UNIT(), "", "")
+	toks[2], err = RegisterTokCtrtWithoutSplit(acnt, vst.TOK_MAX(), vst.TOK_UNIT(), "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,7 +85,7 @@ func (v *vSwapTest) newTokCtrts(t *testing.T, acnt *Account) (a, b, c *TokCtrtWi
 	var resps [3]*BroadcastExecuteTxResp
 	var errs [3]error
 	for i, tc := range toks {
-		resps[i], errs[i] = tc.Issue(acnt, v.TOK_MAX(), "")
+		resps[i], errs[i] = tc.Issue(acnt, vst.TOK_MAX(), "")
 	}
 	for i, err := range errs {
 		if err != nil {
@@ -98,10 +99,10 @@ func (v *vSwapTest) newTokCtrts(t *testing.T, acnt *Account) (a, b, c *TokCtrtWi
 	return toks[0], toks[1], toks[2]
 }
 
-func (v *vSwapTest) newCtrtWithPool(t *testing.T) *VSwapCtrt {
-	vs := vsT.newCtrt(t, testAcnt0, testAcnt1)
+func (vst *vSwapTest) newCtrtWithPool(t *testing.T) *VSwapCtrt {
+	vs := vst.newCtrt(t, testAcnt0, testAcnt1)
 
-	resp, err := vs.SetSwap(testAcnt0, vsT.INIT_AMOUNT(), vsT.INIT_AMOUNT(), "")
+	resp, err := vs.SetSwap(testAcnt0, vst.INIT_AMOUNT(), vst.INIT_AMOUNT(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,7 +118,7 @@ func (v *vSwapTest) newCtrtWithPool(t *testing.T) *VSwapCtrt {
 	return vs
 }
 
-func (v *vSwapTest) test_Supersede(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_Supersede(t *testing.T, vs *VSwapCtrt) {
 	maker, err := vs.Maker()
 	if err != nil {
 		t.Fatal(err)
@@ -143,14 +144,14 @@ func Test_VSwapCtrt_Supersede(t *testing.T) {
 	vsT.test_Supersede(t, vs)
 }
 
-func (v *vSwapTest) test_SetSwap(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_SetSwap(t *testing.T, vs *VSwapCtrt) {
 	status, err := vs.IsSwapActive()
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.Equal(t, false, status)
 
-	resp, err := vs.SetSwap(testAcnt0, vsT.INIT_AMOUNT(), vsT.INIT_AMOUNT(), "")
+	resp, err := vs.SetSwap(testAcnt0, vst.INIT_AMOUNT(), vst.INIT_AMOUNT(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -170,7 +171,7 @@ func Test_VSwapCtrt_SetSwap(t *testing.T) {
 	vsT.test_SetSwap(t, vs)
 }
 
-func (v *vSwapTest) test_AddLiquidity(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_AddLiquidity(t *testing.T, vs *VSwapCtrt) {
 	const (
 		DELTA     = 10_000
 		DELTA_MIN = 9_000
@@ -228,7 +229,7 @@ func Test_VSwapCtrt_AddLiquidity(t *testing.T) {
 	vsT.test_AddLiquidity(t, vs)
 }
 
-func (v *vSwapTest) test_RemoveLiquidity(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_RemoveLiquidity(t *testing.T, vs *VSwapCtrt) {
 	const (
 		DELTA = 1_000
 	)
@@ -285,7 +286,7 @@ func Test_VSwapCtrt_RemoveLiquidity(t *testing.T) {
 	vsT.test_RemoveLiquidity(t, vs)
 }
 
-func (v *vSwapTest) test_SwapBForExactA(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_SwapBForExactA(t *testing.T, vs *VSwapCtrt) {
 	balAOld, err := vs.GetTokABal(string(testAcnt1.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -325,7 +326,7 @@ func Test_VSwapCtrt_SwapBForExactA(t *testing.T) {
 	vsT.test_SwapBForExactA(t, vs)
 }
 
-func (v *vSwapTest) test_SwapExactBForA(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_SwapExactBForA(t *testing.T, vs *VSwapCtrt) {
 	balAOld, err := vs.GetTokABal(string(testAcnt1.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -365,7 +366,7 @@ func Test_VSwapCtrt_SwapExactBForA(t *testing.T) {
 	vsT.test_SwapExactBForA(t, vs)
 }
 
-func (v *vSwapTest) test_SwapAForExactB(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_SwapAForExactB(t *testing.T, vs *VSwapCtrt) {
 	balAOld, err := vs.GetTokABal(string(testAcnt1.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)
@@ -405,7 +406,7 @@ func Test_VSwapCtrt_SwapAForExactB(t *testing.T) {
 	vsT.test_SwapAForExactB(t, vs)
 }
 
-func (v *vSwapTest) test_SwapExactAForB(t *testing.T, vs *VSwapCtrt) {
+func (vst *vSwapTest) test_SwapExactAForB(t *testing.T, vs *VSwapCtrt) {
 	balAOld, err := vs.GetTokABal(string(testAcnt1.Addr.B58Str()))
 	if err != nil {
 		t.Fatal(err)

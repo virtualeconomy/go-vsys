@@ -7,7 +7,6 @@ type Token struct {
 	Unit Unit
 }
 
-// TODO: Refactor carefully and add methods.
 func NewToken(data Amount, unit Unit) *Token {
 	return &Token{data, unit}
 }

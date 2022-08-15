@@ -1,10 +1,10 @@
 package vsys
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 type vStableSwapTest struct {
@@ -12,7 +12,7 @@ type vStableSwapTest struct {
 
 var vssT *vStableSwapTest
 
-func (v *vStableSwapTest) test_Register(t *testing.T, acnt *Account, newctrt *VStableSwapCtrt) *VStableSwapCtrt {
+func (vsst *vStableSwapTest) test_Register(t *testing.T, acnt *Account, newctrt *VStableSwapCtrt) *VStableSwapCtrt {
 	maker, err := newctrt.Maker()
 	if err != nil {
 		t.Error(err)
@@ -21,7 +21,7 @@ func (v *vStableSwapTest) test_Register(t *testing.T, acnt *Account, newctrt *VS
 	return newctrt
 }
 
-func (v *vStableSwapTest) newCtrtWithTok(by *Account) (*TokCtrtWithoutSplit, error) {
+func (vsst *vStableSwapTest) newCtrtWithTok(by *Account) (*TokCtrtWithoutSplit, error) {
 	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
 	if err != nil {
 		return nil, err
@@ -36,12 +36,12 @@ func (v *vStableSwapTest) newCtrtWithTok(by *Account) (*TokCtrtWithoutSplit, err
 	return tc, nil
 }
 
-func (v *vStableSwapTest) newStableCtrt(t *testing.T, by *Account) *VStableSwapCtrt {
-	baseTc, err := vssT.newCtrtWithTok(by)
+func (vsst *vStableSwapTest) newStableCtrt(t *testing.T, by *Account) *VStableSwapCtrt {
+	baseTc, err := vsst.newCtrtWithTok(by)
 	if err != nil {
 		t.Fatal(err)
 	}
-	targetTc, err := vssT.newCtrtWithTok(by)
+	targetTc, err := vsst.newCtrtWithTok(by)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +72,7 @@ func Test_VStableSwapCtrt_Register(t *testing.T) {
 	vssT.test_Register(t, testAcnt0, vss)
 }
 
-func (v *vStableSwapTest) test_SetAndUpdateOrder(t *testing.T, vss *VStableSwapCtrt) string {
+func (vsst *vStableSwapTest) test_SetAndUpdateOrder(t *testing.T, vss *VStableSwapCtrt) string {
 	resp, err := vss.SetOrder(testAcnt0, 1, 1, 0, 100, 0, 100, 2, 1, 500, 500, "")
 	if err != nil {
 		t.Fatal(err)
@@ -119,8 +119,8 @@ func Test_VStableSwapCtrt_SetAndUpdateOrder(t *testing.T) {
 	vssT.test_SetAndUpdateOrder(t, vss)
 }
 
-func (v *vStableSwapTest) newStableSwapCtrtWithOrder(t *testing.T) (*VStableSwapCtrt, string) {
-	vss := vssT.newStableCtrt(t, testAcnt0)
+func (vsst *vStableSwapTest) newStableSwapCtrtWithOrder(t *testing.T) (*VStableSwapCtrt, string) {
+	vss := vsst.newStableCtrt(t, testAcnt0)
 	resp, err := vss.SetOrder(testAcnt0, 1, 1, 0, 100, 0, 100, 1, 1, 500, 500, "")
 	if err != nil {
 		t.Fatal(err)
@@ -130,7 +130,7 @@ func (v *vStableSwapTest) newStableSwapCtrtWithOrder(t *testing.T) (*VStableSwap
 	return vss, string(resp.Id)
 }
 
-func (v *vStableSwapTest) test_DepositAndWithdraw(t *testing.T, vss *VStableSwapCtrt, orderId string) {
+func (vsst *vStableSwapTest) test_DepositAndWithdraw(t *testing.T, vss *VStableSwapCtrt, orderId string) {
 	resp, err := vss.OrderDeposit(testAcnt0, orderId, 200, 100, "")
 	if err != nil {
 		t.Fatal(err)
@@ -174,13 +174,12 @@ func Test_VStableSwapCtrt_DepositAndWithdraw(t *testing.T) {
 	vssT.test_DepositAndWithdraw(t, vss, order_id)
 }
 
-func (v *vStableSwapTest) test_Swap(t *testing.T, vss *VStableSwapCtrt, orderId string) {
+func (vsst *vStableSwapTest) test_Swap(t *testing.T, vss *VStableSwapCtrt, orderId string) {
 	deadline := time.Now().Unix() + 1500
 	resp, err := vss.SwapBaseToTarget(testAcnt0, orderId, 10, 1, 1, deadline, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(resp)
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 
@@ -199,7 +198,6 @@ func (v *vStableSwapTest) test_Swap(t *testing.T, vss *VStableSwapCtrt, orderId 
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(resp)
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
 
@@ -221,7 +219,7 @@ func Test_VStableSwapCtrt_Swap(t *testing.T) {
 	vssT.test_Swap(t, vss, order_id)
 }
 
-func (v *vStableSwapTest) test_CloseOrder(t *testing.T, vss *VStableSwapCtrt, orderId string) {
+func (vsst *vStableSwapTest) test_CloseOrder(t *testing.T, vss *VStableSwapCtrt, orderId string) {
 	status, err := vss.GetOrderStatus(orderId)
 	if err != nil {
 		t.Fatal(err)
