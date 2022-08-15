@@ -53,10 +53,8 @@ func Test_MultiSign_OneKey(t *testing.T) {
 	rawPub, _ := GenPubKey(mulT.PriKey1.PriKey)
 	assert.Equal(t, rawPub, mulPub)
 
-	// The public key, message, random pass the verification
-	// with the Python lib axolotl_curve25519 while fails here.
-	// valid := Verify(mulPub, mulT.Msg, mulSig)
-	// assert.True(t, valid)
+	valid := Verify(mulPub, mulT.Msg, mulSig)
+	assert.True(t, valid)
 }
 
 func Test_MultiSign_TwoKeys(t *testing.T) {
@@ -77,12 +75,13 @@ func Test_MultiSign_TwoKeys(t *testing.T) {
 	unionR := MultiSignGetUnionR(Rs)
 
 	subSig1 := mulT.PriKey1.Sign(mulT.Msg, mulT.Rand, unionA, unionR, allAs)
-	subSig2 := mulT.PriKey1.Sign(mulT.Msg, mulT.Rand, unionA, unionR, allAs)
+	subSig2 := mulT.PriKey2.Sign(mulT.Msg, mulT.Rand, unionA, unionR, allAs)
+
 	sigs := []*big.Int{subSig1, subSig2}
 	mulSig := MultiSignGetSig(unionA, unionR, sigs)
 
 	bpA1 := mulT.PriKey1.GetbpA(allAs)
-	bpA2 := mulT.PriKey1.GetbpA(allAs)
+	bpA2 := mulT.PriKey2.GetbpA(allAs)
 	bpAs := []*MultiSignPoint{bpA1, bpA2}
 	mulPub := MultiSignGetPub(bpAs)
 
