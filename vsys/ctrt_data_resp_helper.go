@@ -38,3 +38,12 @@ func ctrtDataRespToTokenId(resp *CtrtDataResp) (*TokenId, error) {
 		return nil, fmt.Errorf("ctrtDataRespToTokenId: CtrtDataResp.Val is %T but string was expected", tokId)
 	}
 }
+
+func ctrtDataRespToVSYSTimestamp(resp *CtrtDataResp) (VSYSTimestamp, error) {
+	switch timestamp := resp.Val.(type) {
+	case float64:
+		return VSYSTimestamp(timestamp), nil
+	default:
+		return 0, fmt.Errorf("ctrtDataRespToVSYSTimestamp: Val is %T but float64 was expected", timestamp)
+	}
+}

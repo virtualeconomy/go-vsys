@@ -331,12 +331,11 @@ func (p *PayChanCtrt) GetChanExpTime(chanId string) (VSYSTimestamp, error) {
 		return 0, fmt.Errorf("GetChanExpTime: %w", err)
 	}
 
-	switch val := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(val), nil
-	default:
-		return 0, fmt.Errorf("GetChanExpTime: CtrtDataResp.Val is %T but float64 was expected", val)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("GetChanExpTime: %w", err)
 	}
+	return ts, nil
 }
 
 func NewDBKeyPayChanCtrtChanStatus(chanId string) (Bytes, error) {

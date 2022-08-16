@@ -181,12 +181,11 @@ func (l *LockCtrt) GetCtrtLockTime(addr string) (VSYSTimestamp, error) {
 		return 0, fmt.Errorf("GetCtrtLockTime: %w", err)
 	}
 
-	switch val := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(val), nil
-	default:
-		return 0, fmt.Errorf("GetCtrtLockTime: CtrtDataResp.Val is %T but float64 was expected", val)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("GetCtrtLockTime: %w", err)
 	}
+	return ts, nil
 }
 
 // Lock locks the user's deposited tokens in the contract until the given timestamp.

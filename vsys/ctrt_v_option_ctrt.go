@@ -306,12 +306,11 @@ func (v *VOptionCtrt) ExecuteTime() (VSYSTimestamp, error) {
 		return 0, fmt.Errorf("ExecuteTime: %w", err)
 	}
 
-	switch timestamp := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(timestamp), nil
-	default:
-		return 0, fmt.Errorf("ExecuteTime: CtrtDataResp.Val is %T but float64 was expected", timestamp)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("ExecuteTime: %w", err)
 	}
+	return ts, nil
 }
 
 func NewDBKeyVOptionCtrtForExecuteDeadline() Bytes {
@@ -325,12 +324,11 @@ func (v *VOptionCtrt) ExecuteDeadline() (VSYSTimestamp, error) {
 		return 0, fmt.Errorf("ExecuteDeadline: %w", err)
 	}
 
-	switch timestamp := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(timestamp), nil
-	default:
-		return 0, fmt.Errorf("ExecuteDeadline: CtrtDataResp.Val is %T but float64 was expected", timestamp)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("ExecuteDeadline: %w", err)
 	}
+	return ts, nil
 }
 
 func NewDBKeyVOptionForOptionStatus() Bytes {

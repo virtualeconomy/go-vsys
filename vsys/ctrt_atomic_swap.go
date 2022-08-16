@@ -302,12 +302,11 @@ func (a *AtomicSwapCtrt) GetSwapExpiredTime(txId string) (VSYSTimestamp, error) 
 		return 0, fmt.Errorf("GetSwapExpiredTime: %w", err)
 	}
 
-	switch timestamp := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(timestamp), nil
-	default:
-		return 0, fmt.Errorf("GetSwapExpiredTime: CtrtDataResp.Val is %T but float64 was expected", timestamp)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("GetSwapExpiredTime: %w", err)
 	}
+	return ts, nil
 }
 
 // NewDBKeyAtomicSwapStatus returns DB key for querying current status of the swap.

@@ -294,12 +294,11 @@ func (v *VEscrowCtrt) Duration() (VSYSTimestamp, error) {
 	if err != nil {
 		return 0, fmt.Errorf("Duration: %w", err)
 	}
-	switch duration := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(duration), nil
-	default:
-		return 0, fmt.Errorf("Duration: CtrtDataResp.Val is %T but float64 was expected", duration)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("Duration: %w", err)
 	}
+	return ts, nil
 }
 
 // JudgeDuration queries & returns the duration where the judge can take actions in the contract.
@@ -310,12 +309,11 @@ func (v *VEscrowCtrt) JudgeDuration() (VSYSTimestamp, error) {
 	if err != nil {
 		return 0, fmt.Errorf("JudgeDuration: %w", err)
 	}
-	switch duration := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(duration), nil
-	default:
-		return 0, fmt.Errorf("JudgeDuration: CtrtDataResp.Val is %T but float64 was expected", duration)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("JudgeDuration: %w", err)
 	}
+	return ts, nil
 }
 
 // Unit queries and returns Unit of the token of contract.
@@ -572,12 +570,11 @@ func (v *VEscrowCtrt) GetOrderExpirationTime(orderId string) (VSYSTimestamp, err
 	if err != nil {
 		return 0, fmt.Errorf("NewDBKeyVEscrowExpirationTime: %w", err)
 	}
-	switch expTime := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(expTime), nil
-	default:
-		return 0, fmt.Errorf("JudgeDuration: CtrtDataResp.Val is %T but float64 was expected", expTime)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("GetOrderExpirationTime: %w", err)
 	}
+	return ts, nil
 }
 
 // GetOrderStatus queries & returns the status of the order.
