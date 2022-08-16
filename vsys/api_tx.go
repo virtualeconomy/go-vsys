@@ -17,6 +17,24 @@ type TxInfoResp interface {
 	GetTxGeneral() TxGeneral
 }
 
+// GenesisTxInfoResp struct representing response from /transactions/info/{txId}.
+// NOTE: Genesis Transaction (Type 1) doesn't have Proofs and FeeScale.
+type GenesisTxInfoResp struct {
+	TxGeneral
+	SlotId    int  `json:"slotId"`
+	Signature Str  `json:"signature"`
+	Recipient Str  `json:"recipient"`
+	Amount    VSYS `json:"amount"`
+}
+
+func (g *GenesisTxInfoResp) GetTxGeneral() TxGeneral {
+	return g.TxGeneral
+}
+
+func (g *GenesisTxInfoResp) String() string {
+	return fmt.Sprintf("%T(%+v)", g, *g)
+}
+
 type PaymentTxInfoResp struct {
 	TxGeneral
 
@@ -31,6 +49,98 @@ func (p *PaymentTxInfoResp) GetTxGeneral() TxGeneral {
 
 func (p *PaymentTxInfoResp) String() string {
 	return fmt.Sprintf("%T(%+v)", p, *p)
+}
+
+type LeaseTxInfoResp struct {
+	TxGeneral
+
+	Amount      VSYS `json:"amount"`
+	Recipient   Str  `json:"recipient"`
+	LeaseStatus Str  `json:"leaseStatus"`
+}
+
+func (l *LeaseTxInfoResp) GetTxGeneral() TxGeneral {
+	return l.TxGeneral
+}
+
+func (l *LeaseTxInfoResp) String() string {
+	return fmt.Sprintf("%T(%+v)", l, *l)
+}
+
+type LeaseCancelTxInfoResp struct {
+	TxGeneral
+	LeaseId Str `json:"leaseId"`
+	Lease   struct {
+		TxBasic
+		Amount    VSYS `json:"amount"`
+		Recipient Str  `json:"recipient"`
+	} `json:"lease"`
+}
+
+func (l *LeaseCancelTxInfoResp) GetTxGeneral() TxGeneral {
+	return l.TxGeneral
+}
+
+func (l *LeaseCancelTxInfoResp) String() string {
+	return fmt.Sprintf("%T(%+v)", l, *l)
+}
+
+type MintTxInfoResp struct {
+	TxGeneral
+
+	Recipient          Str    `json:"recipient"`
+	Amount             VSYS   `json:"amount"`
+	CurrentBlockHeight Height `json:"currentBlockHeight"`
+}
+
+func (m *MintTxInfoResp) GetTxGeneral() TxGeneral {
+	return m.TxGeneral
+}
+
+func (m *MintTxInfoResp) String() string {
+	return fmt.Sprintf("%T(%+v)", m, *m)
+}
+
+type ContentSlotsTxInfoResp struct {
+	TxGeneral
+	SlotId int `json:"slotId"`
+}
+
+func (c *ContentSlotsTxInfoResp) GetTxGeneral() TxGeneral {
+	return c.TxGeneral
+}
+
+func (c *ContentSlotsTxInfoResp) String() string {
+	return fmt.Sprintf("%T(%+v)", c, *c)
+}
+
+type ReleaseSlotsTxInfoResp struct {
+	TxGeneral
+	ContractId string `json:"contractId"`
+	Contract   struct {
+		LanguageCode    string   `json:"languageCode"`
+		LanguageVersion int      `json:"languageVersion"`
+		Triggers        []string `json:"triggers"`
+		Descriptors     []string `json:"descriptors"`
+		StateVariables  []string `json:"stateVariables"`
+		StateMaps       []string `json:"stateMaps"`
+		Textual         struct {
+			Triggers       string `json:"triggers"`
+			Descriptors    string `json:"descriptors"`
+			StateVariables string `json:"stateVariables"`
+			StateMaps      string `json:"stateMaps"`
+		} `json:"textual"`
+	} `json:"contract"`
+	InitData    string `json:"initData"`
+	Description string `json:"description"`
+}
+
+func (r *ReleaseSlotsTxInfoResp) String() string {
+	return fmt.Sprintf("%T(%+v)", r, *r)
+}
+
+func (r *ReleaseSlotsTxInfoResp) GetTxGeneral() TxGeneral {
+	return r.TxGeneral
 }
 
 type RegCtrtTxInfoResp struct {
@@ -67,71 +177,21 @@ func (e *ExecCtrtFuncTxInfoResp) String() string {
 	return fmt.Sprintf("%T(%+v)", e, *e)
 }
 
-type LeaseTxInfoResp struct {
+type DbPutTxInfoResp struct {
 	TxGeneral
-
-	Amount      VSYS `json:"amount"`
-	Recipient   Str  `json:"recipient"`
-	LeaseStatus Str  `json:"leaseStatus"`
+	DbKey string `json:"dbKey"`
+	Entry struct {
+		Data string `json:"data"`
+		Type string `json:"type"`
+	} `json:"entry"`
 }
 
-func (l *LeaseTxInfoResp) GetTxGeneral() TxGeneral {
-	return l.TxGeneral
+func (d *DbPutTxInfoResp) GetTxGeneral() TxGeneral {
+	return d.TxGeneral
 }
 
-func (l *LeaseTxInfoResp) String() string {
-	return fmt.Sprintf("%T(%+v)", l, *l)
-}
-
-type MintTxInfoResp struct {
-	TxGeneral
-
-	Recipient          Str    `json:"recipient"`
-	Amount             VSYS   `json:"amount"`
-	CurrentBlockHeight Height `json:"currentBlockHeight"`
-}
-
-func (m *MintTxInfoResp) GetTxGeneral() TxGeneral {
-	return m.TxGeneral
-}
-
-func (m *MintTxInfoResp) String() string {
-	return fmt.Sprintf("%T(%+v)", m, *m)
-}
-
-type LeaseCancelTxInfoResp struct {
-	TxGeneral
-	LeaseId Str `json:"leaseId"`
-	Lease   struct {
-		TxBasic
-		Amount    VSYS `json:"amount"`
-		Recipient Str  `json:"recipient"`
-	} `json:"lease"`
-}
-
-func (l *LeaseCancelTxInfoResp) GetTxGeneral() TxGeneral {
-	return l.TxGeneral
-}
-
-func (l *LeaseCancelTxInfoResp) String() string {
-	return fmt.Sprintf("%T(%+v)", l, *l)
-}
-
-// genesis block does not have proofs and fee scale, should we use different struct?
-type GenesisTxInfoResp struct {
-	TxGeneral
-	SlotId    int  `json:"slotId"`
-	Signature Str  `json:"signature"`
-	Recipient Str  `json:"recipient"`
-	Amount    VSYS `json:"amount"`
-}
-
-func (g *GenesisTxInfoResp) GetTxGeneral() TxGeneral {
-	return g.TxGeneral
-}
-
-func (g *GenesisTxInfoResp) String() string {
-	return fmt.Sprintf("%T(%+v)", g, *g)
+func (d *DbPutTxInfoResp) String() string {
+	return fmt.Sprintf("%T(%+v)", d, *d)
 }
 
 func (na *NodeAPI) GetTxInfo(txId string) (TxInfoResp, error) {
@@ -151,7 +211,6 @@ func (na *NodeAPI) GetTxInfo(txId string) (TxInfoResp, error) {
 
 	var res TxInfoResp
 
-	// TODO: add missing Tx types
 	switch tg.Type {
 	case TX_TYPE_PAYMENT:
 		res = &PaymentTxInfoResp{}
@@ -167,6 +226,12 @@ func (na *NodeAPI) GetTxInfo(txId string) (TxInfoResp, error) {
 		res = &ExecCtrtFuncTxInfoResp{}
 	case TX_TYPE_GENESIS:
 		res = &GenesisTxInfoResp{}
+	case TX_TYPE_CONTENT_SLOTS:
+		res = &ContentSlotsTxInfoResp{}
+	case TX_TYPE_RELEASE_SLOTS:
+		res = &ReleaseSlotsTxInfoResp{}
+	case TX_TYPE_DB_PUT:
+		res = &DbPutTxInfoResp{}
 	}
 
 	err = json.Unmarshal(resp.Bytes(), res)
