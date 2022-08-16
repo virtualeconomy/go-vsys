@@ -706,6 +706,7 @@ func iTokCtrt_isInList(t ITokCtrt, dbKey Bytes) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("isInList: %w", err)
 	}
+
 	switch val := resp.Val.(type) {
 	case string:
 		return val == "true", nil

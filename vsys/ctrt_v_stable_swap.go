@@ -680,13 +680,12 @@ func (v *VStableSwapCtrt) GetOrderStatus(orderId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("GetOrderStatus: %w", err)
 	}
-	
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetOrderStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderStatus: %w", err)
 	}
+	return val, nil
 }
 
 // Supersede transfers the ownership of the contract to another account.

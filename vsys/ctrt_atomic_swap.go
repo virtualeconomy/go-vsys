@@ -324,17 +324,16 @@ func (a *AtomicSwapCtrt) GetSwapStatus(txId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("GetSwapStatus: %w", err)
 	}
-
 	resp, err := a.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("GetSwapStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetSwapStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetSwapStatus: %w", err)
 	}
+	return val, nil
 }
 
 // Lock locks the token and creates a swap.

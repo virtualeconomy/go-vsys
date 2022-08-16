@@ -585,18 +585,16 @@ func (v *VEscrowCtrt) GetOrderStatus(orderId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("GetOrderStatus: %w", err)
 	}
-	resp, err := v.QueryDBKey(
-		dbKey,
-	)
+	resp, err := v.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("GetOrderStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetOrderStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderStatus: %w", err)
 	}
+	return val, nil
 }
 
 // GetOrderRecipientDepositStatus queries & returns the recipient deposit status of the order.
@@ -606,18 +604,16 @@ func (v *VEscrowCtrt) GetOrderRecipientDepositStatus(orderId string) (bool, erro
 	if err != nil {
 		return false, fmt.Errorf("GetOrderRecipientDepositStatus: %w", err)
 	}
-	resp, err := v.QueryDBKey(
-		dbKey,
-	)
+	resp, err := v.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("GetOrderRecipientDepositStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetOrderRecipientDepositStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderRecipientDepositStatus: %w", err)
 	}
+	return val, nil
 }
 
 // GetOrderJudgeDepositStatus  queries & returns the judge deposit status of the order.
@@ -627,18 +623,16 @@ func (v *VEscrowCtrt) GetOrderJudgeDepositStatus(orderId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("GetOrderJudgeDepositStatus: %w", err)
 	}
-	resp, err := v.QueryDBKey(
-		dbKey,
-	)
+	resp, err := v.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("GetOrderJudgeDepositStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetOrderJudgeDepositStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderJudgeDepositStatus: %w", err)
 	}
+	return val, nil
 }
 
 // GetOrderSubmitStatus queries & returns the submit status of the order.
@@ -647,38 +641,34 @@ func (v *VEscrowCtrt) GetOrderSubmitStatus(orderId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("GetOrderSubmitStatus: %w", err)
 	}
-	resp, err := v.QueryDBKey(
-		dbKey,
-	)
+	resp, err := v.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("GetOrderSubmitStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetOrderSubmitStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderSubmitStatus: %w", err)
 	}
+	return val, nil
 }
 
 // GetOrderJudgeStatus queries & returns the judge status of the order.
 func (v *VEscrowCtrt) GetOrderJudgeStatus(orderId string) (bool, error) {
 	dbKey, err := NewDBKeyVEscrowOrderJudgeStatus(orderId)
 	if err != nil {
-		return false, fmt.Errorf("GetOrderSubmitStatus: %w", err)
+		return false, fmt.Errorf("GetOrderJudgeStatus: %w", err)
 	}
-	resp, err := v.QueryDBKey(
-		dbKey,
-	)
+	resp, err := v.QueryDBKey(dbKey)
 	if err != nil {
-		return false, fmt.Errorf("GetOrderSubmitStatus: %w", err)
+		return false, fmt.Errorf("GetOrderJudgeStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetOrderSubmitStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderJudgeStatus: %w", err)
 	}
+	return val, nil
 }
 
 // GetOrderRecipientLockedAmount queries & returns the amount from the recipient

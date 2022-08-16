@@ -351,17 +351,16 @@ func (p *PayChanCtrt) GetChanStatus(chanId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("GetChanStatus: %w", err)
 	}
-
 	resp, err := p.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("GetChanStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetChanStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetChanStatus: %w", err)
 	}
+	return val, nil
 }
 
 // CreateAndLoad creates the payment channel and loads an amount into it.

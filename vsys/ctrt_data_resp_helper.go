@@ -47,3 +47,12 @@ func ctrtDataRespToVSYSTimestamp(resp *CtrtDataResp) (VSYSTimestamp, error) {
 		return 0, fmt.Errorf("ctrtDataRespToVSYSTimestamp: Val is %T but float64 was expected", timestamp)
 	}
 }
+
+func ctrtDataRespToBool(resp *CtrtDataResp) (bool, error) {
+	switch val := resp.Val.(type) {
+	case string:
+		return val == "true", nil
+	default:
+		return false, fmt.Errorf("ctrtDataRespToBool: Val is %T but string was expected", val)
+	}
+}
