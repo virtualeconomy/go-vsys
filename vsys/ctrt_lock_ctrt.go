@@ -73,16 +73,12 @@ func (l *LockCtrt) Maker() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	switch addrB58 := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(addrB58)
-		if err != nil {
-			return nil, fmt.Errorf("Maker: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", addrB58)
+
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
 	}
+	return addr, nil
 }
 
 // NewDBKeyLockCtrtTokId returns DB key to query TokenId of contract's token.
@@ -99,7 +95,7 @@ func (l *LockCtrt) TokId() (*TokenId, error) {
 		if err != nil {
 			return nil, fmt.Errorf("TokId: %w", err)
 		}
-		tokId, err := NewTokenIdFromB58Str(resp.Val.(string))
+		tokId, err := ctrtDataRespToTokenId(resp)
 		if err != nil {
 			return nil, fmt.Errorf("TokId: %w", err)
 		}
@@ -149,7 +145,7 @@ func (l *LockCtrt) GetCtrtBal(addr string) (*Token, error) {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
 
-	data, err := l.QueryDBKey(NewDBKeyLockCtrtGetCtrtBal(query_addr))
+	resp, err := l.QueryDBKey(NewDBKeyLockCtrtGetCtrtBal(query_addr))
 	if err != nil {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
@@ -159,12 +155,11 @@ func (l *LockCtrt) GetCtrtBal(addr string) (*Token, error) {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
 
-	switch amount := data.Val.(type) {
-	case float64:
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("GetCtrtBal: CtrtDataResp.Val is %T but float64 was expected", amount)
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
+	return tok, nil
 }
 
 // NewDBKeyLockCtrtLockTime returns DB key for querying the contract balance for given address.
@@ -181,12 +176,12 @@ func (l *LockCtrt) GetCtrtLockTime(addr string) (VSYSTimestamp, error) {
 		return 0, fmt.Errorf("GetCtrtLockTime: %w", err)
 	}
 
-	data, err := l.QueryDBKey(NewDBKeyLockCtrtLockTime(query_addr))
+	resp, err := l.QueryDBKey(NewDBKeyLockCtrtLockTime(query_addr))
 	if err != nil {
 		return 0, fmt.Errorf("GetCtrtLockTime: %w", err)
 	}
 
-	switch val := data.Val.(type) {
+	switch val := resp.Val.(type) {
 	case float64:
 		return VSYSTimestamp(val), nil
 	default:

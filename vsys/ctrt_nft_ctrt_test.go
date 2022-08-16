@@ -1,7 +1,6 @@
 package vsys
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -57,19 +56,19 @@ func newNFTCtrt(by *Account) (*NFTCtrt, error) {
 	return nc, nil
 }
 
-func newNFTCtrtWithTok(t *testing.T, by *Account) (*NFTCtrt, error) {
+func newNFTCtrtWithTok(t *testing.T, by *Account) *NFTCtrt {
 	nc, err := RegisterNFTCtrt(by, "")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
 	resp, err := nc.Issue(by, "description", "attachment")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
-	return nc, nil
+	return nc
 }
 
 func test_NFTCtrt_Issue(t *testing.T, nc iNFTtest, by *Account) {
@@ -258,26 +257,17 @@ func Test_NFTCtrt_Issue(t *testing.T) {
 }
 
 func Test_NFTCtrt_Send(t *testing.T) {
-	nc, err := newNFTCtrtWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtWithTok(t, testAcnt0)
 	test_NFTCtrt_Send(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrt_Transfer(t *testing.T) {
-	nc, err := newNFTCtrtWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtWithTok(t, testAcnt0)
 	test_NFTCtrt_Transfer(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrt_DepositWithdraw(t *testing.T) {
-	nc, err := newNFTCtrtWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtWithTok(t, testAcnt0)
 	test_NFTCtrt_DepositWithdraw(t, nc, testAcnt0)
 }
 
@@ -435,28 +425,28 @@ func test_NFTCtrtV2_UpdateListCtrt(t *testing.T, nc iNFTv2Test, by *Account, ctr
 	require.Equal(t, false, inList)
 }
 
-func newNFTCtrtV2Whitelist(by *Account) (*NFTCtrtV2Whitelist, error) {
+func newNFTCtrtV2Whitelist(t *testing.T, by *Account) *NFTCtrtV2Whitelist {
 	nc, err := RegisterNFTCtrtV2Whitelist(by, "")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
-	return nc, nil
+	return nc
 }
 
-func newNFTCtrtV2WhitelistWithTok(t *testing.T, by *Account) (*NFTCtrtV2Whitelist, error) {
+func newNFTCtrtV2WhitelistWithTok(t *testing.T, by *Account) *NFTCtrtV2Whitelist {
 	nc, err := RegisterNFTCtrtV2Whitelist(by, "")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
 	resp, err := nc.UpdateListUser(by, string(by.Addr.B58Str()), true, "") //nolint:staticcheck
 	if err != nil {
-		return nil, fmt.Errorf("newNFTCtrtV2WhitelistWithTok: %w", err)
+		t.Fatal(err)
 	}
 	_, err = nc.UpdateListUser(by, string(testAcnt1.Addr.B58Str()), true, "")
 	if err != nil {
-		return nil, fmt.Errorf("newNFTCtrtV2WhitelistWithTok: %w", err)
+		t.Fatal(err)
 	}
 	resp1, err := nc.Issue(by, "description", "attachment") //nolint:staticcheck
 	if err != nil {
@@ -465,7 +455,7 @@ func newNFTCtrtV2WhitelistWithTok(t *testing.T, by *Account) (*NFTCtrtV2Whitelis
 	waitForBlock()
 	assertTxSuccess(t, resp.Id.Str())
 	assertTxSuccess(t, resp1.Id.Str())
-	return nc, nil
+	return nc
 }
 
 func Test_NFTCtrtV2Whitelist_Register(t *testing.T) {
@@ -478,58 +468,37 @@ func Test_NFTCtrtV2Whitelist_Register(t *testing.T) {
 }
 
 func Test_NFTCtrtV2Whitelist_Issue(t *testing.T) {
-	nc, err := newNFTCtrtV2Whitelist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Whitelist(t, testAcnt0)
 	test_NFTCtrt_Issue(t, nc, testAcnt0)
 }
 
 func Test_NFTCtrtV2Whitelist_Send(t *testing.T) {
-	nc, err := newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
 	test_NFTCtrt_Send(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrtV2Whitelist_Transfer(t *testing.T) {
-	nc, err := newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
 	test_NFTCtrt_Transfer(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrtV2Whitelist_DepositWithdraw(t *testing.T) {
-	nc, err := newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
 	test_NFTCtrt_DepositWithdraw(t, nc, testAcnt0)
 }
 
 func Test_NFTCtrtV2Whitelist_Supersede(t *testing.T) {
-	nc, err := newNFTCtrtV2Whitelist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Whitelist(t, testAcnt0)
 	test_NFTCtrtV2_Supersede(t, nc, testAcnt0, testAcnt1, testAcnt1)
 }
 
 func Test_NFTCtrtV2Whitelist_UpdateListUser(t *testing.T) {
-	nc, err := newNFTCtrtV2Whitelist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Whitelist(t, testAcnt0)
 	test_NFTCtrtV2_UpdateListUser(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrtV2Whitelist_UpdateListCtrt(t *testing.T) {
-	nc, err := newNFTCtrtV2Whitelist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Whitelist(t, testAcnt0)
 	test_NFTCtrtV2_UpdateListCtrt(t, nc, testAcnt0, arbitraryCtrtId(t))
 }
 
@@ -545,7 +514,7 @@ func Test_NFTCtrtV2Whitelist_AsWhole(t *testing.T) {
 
 	test_NFTCtrt_Issue(t, nc, testAcnt0)
 
-	nc, err = newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
+	nc = newNFTCtrtV2WhitelistWithTok(t, testAcnt0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -556,29 +525,29 @@ func Test_NFTCtrtV2Whitelist_AsWhole(t *testing.T) {
 	test_NFTCtrtV2_Supersede(t, nc, testAcnt0, testAcnt1, testAcnt1)
 }
 
-func newNFTCtrtV2Blacklist(by *Account) (*NFTCtrtV2Blacklist, error) {
+func newNFTCtrtV2Blacklist(t *testing.T, by *Account) *NFTCtrtV2Blacklist {
 	nc, err := RegisterNFTCtrtV2Blacklist(by, "")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
-	return nc, nil
+	return nc
 }
 
-func newNFTCtrtV2BlacklistWithTok(t *testing.T, by *Account) (*NFTCtrtV2Blacklist, error) {
+func newNFTCtrtV2BlacklistWithTok(t *testing.T, by *Account) *NFTCtrtV2Blacklist {
 	nc, err := RegisterNFTCtrtV2Blacklist(by, "")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
 
 	resp, err := nc.Issue(by, "description", "attachment")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
-	return nc, nil
+	return nc
 }
 
 func Test_NFTCtrtV2Blacklist_Register(t *testing.T) {
@@ -591,58 +560,37 @@ func Test_NFTCtrtV2Blacklist_Register(t *testing.T) {
 }
 
 func Test_NFTCtrtV2Blacklist_Issue(t *testing.T) {
-	nc, err := newNFTCtrtV2Blacklist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Blacklist(t, testAcnt0)
 	test_NFTCtrt_Issue(t, nc, testAcnt0)
 }
 
 func Test_NFTCtrtV2Blacklist_Send(t *testing.T) {
-	nc, err := newNFTCtrtV2BlacklistWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2BlacklistWithTok(t, testAcnt0)
 	test_NFTCtrt_Send(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrtV2Blacklist_Transfer(t *testing.T) {
-	nc, err := newNFTCtrtV2BlacklistWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2BlacklistWithTok(t, testAcnt0)
 	test_NFTCtrt_Transfer(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrtV2Blacklist_DepositWithdraw(t *testing.T) {
-	nc, err := newNFTCtrtV2BlacklistWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2BlacklistWithTok(t, testAcnt0)
 	test_NFTCtrt_DepositWithdraw(t, nc, testAcnt0)
 }
 
 func Test_NFTCtrtV2Blacklist_Supersede(t *testing.T) {
-	nc, err := newNFTCtrtV2Blacklist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Blacklist(t, testAcnt0)
 	test_NFTCtrtV2_Supersede(t, nc, testAcnt0, testAcnt1, testAcnt1)
 }
 
 func Test_NFTCtrtV2Blacklist_UpdateListUser(t *testing.T) {
-	nc, err := newNFTCtrtV2Blacklist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Blacklist(t, testAcnt0)
 	test_NFTCtrtV2_UpdateListUser(t, nc, testAcnt0, testAcnt1)
 }
 
 func Test_NFTCtrtV2Blacklist_UpdateListCtrt(t *testing.T) {
-	nc, err := newNFTCtrtV2Blacklist(testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	nc := newNFTCtrtV2Blacklist(t, testAcnt0)
 	test_NFTCtrtV2_UpdateListCtrt(t, nc, testAcnt0, arbitraryCtrtId(t))
 }
 

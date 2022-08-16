@@ -21,12 +21,9 @@ func (vect *vEscrowTest) ORDER_PERIOD() int64 {
 }
 
 func (vect *vEscrowTest) newVEscrowCtrt_ForTest(t *testing.T, judge, maker, recipient *Account) *VEscrowCtrt {
-	tc, err := asT.newTokCtrtWithTok(t, judge)
-	if err != nil {
-		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
-	}
+	tc := asT.newTokCtrtWithTok(t, judge)
 	// testing send is out of scope of this file
-	_, err = tc.Send(judge, string(maker.Addr.B58Str()), 200, "")
+	_, err := tc.Send(judge, string(maker.Addr.B58Str()), 200, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -142,10 +139,7 @@ func (vect *vEscrowTest) test_Register(t *testing.T, acnt *Account, tc *TokCtrtW
 }
 
 func Test_VEscrowCtrt_Register(t *testing.T) {
-	tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
-	}
+	tc := asT.newTokCtrtWithTok(t, testAcnt0)
 	vecT.test_Register(t, testAcnt0, tc)
 }
 
@@ -721,11 +715,8 @@ func Test_VEscrowCtrt_Collect(t *testing.T) {
 }
 
 func Test_VEscrowCtrt_AsWhole(t *testing.T) {
-	tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatalf("Cannot get new token ctrt: %s\n", err.Error())
-	}
-	_, err = tc.Send(testAcnt0, string(testAcnt1.Addr.B58Str()), 500, "")
+	tc := asT.newTokCtrtWithTok(t, testAcnt0)
+	_, err := tc.Send(testAcnt0, string(testAcnt1.Addr.B58Str()), 500, "")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -64,7 +64,10 @@ func (s *SysCtrt) Send(by *Account, recipient string, amount float64, attachment
 	if err != nil {
 		return nil, fmt.Errorf("Send: %w", err)
 	}
-	rcptMd.MustOn(by.Chain)
+	err = rcptMd.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Send: %w", err)
+	}
 
 	deAmount, err := NewDeAmountForTokAmount(amount, VSYS_UNIT)
 	if err != nil {
@@ -96,8 +99,14 @@ func (s *SysCtrt) Transfer(by *Account, sender, recipient string, amount float64
 	if err != nil {
 		return nil, fmt.Errorf("Transfer: %w", err)
 	}
-	senderMd.MustOn(by.Chain)
-	rcptMd.MustOn(by.Chain)
+	err = senderMd.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
+	}
+	err = rcptMd.MustOn(by.Chain)
+	if err != nil {
+		return nil, fmt.Errorf("Transfer: %w", err)
+	}
 
 	deAmount, err := NewDeAmountForTokAmount(amount, VSYS_UNIT)
 	if err != nil {

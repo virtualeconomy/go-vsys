@@ -83,6 +83,361 @@ func RegisterVSwapCtrt(
 	}, nil
 }
 
+func NewDBKeyVSwapForTokenAId() Bytes {
+	return STATE_VAR_V_SWAP_TOKEN_A_ID.Serialize()
+}
+
+func NewDBKeyVSwapForTokenBId() Bytes {
+	return STATE_VAR_V_SWAP_TOKEN_B_ID.Serialize()
+}
+
+func NewDBKeyVSwapForLiqTokId() Bytes {
+	return STATE_VAR_V_SWAP_LIQUIDITY_TOKEN_ID.Serialize()
+}
+func NewDBKeyVSwapForTotalLiqTokSupply() Bytes {
+	return STATE_VAR_V_SWAP_TOTAL_SUPPLY.Serialize()
+}
+
+func NewDBKeyVSwapForLiqTokLeft() Bytes {
+	return STATE_VAR_V_SWAP_LIQUIDITY_TOKEN_LEFT.Serialize()
+}
+
+func NewDBKeyVSwapForTokAReserved() Bytes {
+	return STATE_VAR_V_SWAP_TOKEN_A_RESERVED.Serialize()
+}
+
+func NewDBKeyVSwapForTokBReserved() Bytes {
+	return STATE_VAR_V_SWAP_TOKEN_B_RESERVED.Serialize()
+}
+
+func NewDBKeyVSwapForMinLiq() Bytes {
+	return STATE_VAR_V_SWAP_MINIMUM_LIQUIDITY.Serialize()
+}
+
+func NewDBKeyVSwapForSwapStatus() Bytes {
+	return STATE_VAR_V_SWAP_SWAP_STATUS.Serialize()
+}
+
+func NewDBKeyVSwapForMaker() Bytes {
+	return STATE_VAR_V_SWAP_MAKER.Serialize()
+}
+
+func NewDBKeyVSwapForGetTokABal(addr string) (Bytes, error) {
+	addrMd, err := NewAddrFromB58Str(addr)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVSwapForGetTokBal: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_SWAP_TOKEN_A_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
+}
+func NewDBKeyVSwapForGetTokBBal(addr string) (Bytes, error) {
+	addrMd, err := NewAddrFromB58Str(addr)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVSwapForGetTokBal: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_SWAP_TOKEN_B_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
+}
+func NewDBKeyVSwapForGetLiqTokBal(addr string) (Bytes, error) {
+	addrMd, err := NewAddrFromB58Str(addr)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVSwapForGetTokBal: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_SWAP_LIQUIDITY_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
+}
+
+func (vs *VSwapCtrt) TokAUnit() (Unit, error) {
+	tc, err := vs.TokACtrt()
+	if err != nil {
+		return 0, fmt.Errorf("TokAUnit: %w", err)
+	}
+	return tc.Unit()
+}
+
+func (vs *VSwapCtrt) TokBUnit() (Unit, error) {
+	tc, err := vs.TokBCtrt()
+	if err != nil {
+		return 0, fmt.Errorf("TokBUnit: %w", err)
+	}
+	return tc.Unit()
+}
+
+func (vs *VSwapCtrt) LiqTokUnit() (Unit, error) {
+	tc, err := vs.LiqTokCtrt()
+	if err != nil {
+		return 0, fmt.Errorf("TokBUnit: %w", err)
+	}
+	return tc.Unit()
+}
+
+func (vs *VSwapCtrt) TokACtrt() (BaseTokCtrt, error) {
+	if vs.tokACtrt == nil {
+		tokAId, err := vs.TokAId()
+		if err != nil {
+			return nil, fmt.Errorf("TokACtrt: %w", err)
+		}
+		tc, err := GetCtrtFromTokId(tokAId, vs.Chain)
+		if err != nil {
+			return nil, fmt.Errorf("TokACtrt: %w", err)
+		}
+		vs.tokACtrt = tc
+	}
+	return vs.tokACtrt, nil
+}
+func (vs *VSwapCtrt) TokBCtrt() (BaseTokCtrt, error) {
+	if vs.tokBCtrt == nil {
+		tokAId, err := vs.TokBId()
+		if err != nil {
+			return nil, fmt.Errorf("TokBCtrt: %w", err)
+		}
+		tc, err := GetCtrtFromTokId(tokAId, vs.Chain)
+		if err != nil {
+			return nil, fmt.Errorf("TokBCtrt: %w", err)
+		}
+		vs.tokBCtrt = tc
+	}
+	return vs.tokBCtrt, nil
+}
+
+func (vs *VSwapCtrt) LiqTokCtrt() (BaseTokCtrt, error) {
+	if vs.liqTokCtrt == nil {
+		liqTokId, err := vs.LiqTokId()
+		if err != nil {
+			return nil, fmt.Errorf("LiqTokCtrt: %w", err)
+		}
+		tc, err := GetCtrtFromTokId(liqTokId, vs.Chain)
+		if err != nil {
+			return nil, fmt.Errorf("LiqTokCtrt: %w", err)
+		}
+		vs.liqTokCtrt = tc
+	}
+	return vs.liqTokCtrt, nil
+}
+
+func (vs *VSwapCtrt) TokAId() (*TokenId, error) {
+
+	if vs.tokAId == nil {
+		resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokenAId())
+		if err != nil {
+			return nil, fmt.Errorf("TokAId: %w", err)
+		}
+
+		tokId, err := ctrtDataRespToTokenId(resp)
+		if err != nil {
+			return nil, fmt.Errorf("TokAId: %w", err)
+		}
+		vs.tokAId = tokId
+	}
+	return vs.tokAId, nil
+}
+
+func (vs *VSwapCtrt) TokBId() (*TokenId, error) {
+	if vs.tokBId == nil {
+		resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokenBId())
+		if err != nil {
+			return nil, fmt.Errorf("TokBId: %w", err)
+		}
+
+		tokId, err := ctrtDataRespToTokenId(resp)
+		if err != nil {
+			return nil, fmt.Errorf("TokBId: %w", err)
+		}
+		vs.tokBId = tokId
+	}
+	return vs.tokBId, nil
+}
+
+func (vs *VSwapCtrt) LiqTokId() (*TokenId, error) {
+	if vs.liqTokId == nil {
+		resp, err := vs.QueryDBKey(NewDBKeyVSwapForLiqTokId())
+		if err != nil {
+			return nil, fmt.Errorf("LiqTokId: %w", err)
+		}
+
+		tokId, err := ctrtDataRespToTokenId(resp)
+		if err != nil {
+			return nil, fmt.Errorf("LiqTokId: %w", err)
+		}
+		vs.liqTokId = tokId
+	}
+	return vs.liqTokId, nil
+}
+
+func (vs *VSwapCtrt) Maker() (*Addr, error) {
+	resp, err := vs.QueryDBKey(
+		NewDBKeyVSwapForMaker(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
+	}
+
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
+	}
+	return addr, nil
+}
+
+func (vs *VSwapCtrt) IsSwapActive() (bool, error) {
+	resp, err := vs.QueryDBKey(NewDBKeyVSwapForSwapStatus())
+	if err != nil {
+		return false, fmt.Errorf("IsSwapActive: %w", err)
+	}
+
+	switch val := resp.Val.(type) {
+	case string:
+		return val == "true", nil
+	default:
+		return false, fmt.Errorf("IsSwapActive: CtrtDataResp.Val is %T but string was expected", tokId)
+	}
+}
+
+func (vs *VSwapCtrt) MinLiq() (*Token, error) {
+	resp, err := vs.QueryDBKey(NewDBKeyVSwapForMinLiq())
+	if err != nil {
+		return nil, fmt.Errorf("MinLiq: %w", err)
+	}
+	unit, err := vs.LiqTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("MinLiq: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("MinLiq: %w", err)
+	}
+	return tok, nil
+}
+
+func (vs *VSwapCtrt) TokAReserved() (*Token, error) {
+	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokAReserved())
+	if err != nil {
+		return nil, fmt.Errorf("TokAReserved: %w", err)
+	}
+	unit, err := vs.TokAUnit()
+	if err != nil {
+		return nil, fmt.Errorf("TokAReserved: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("TokAReserved: %w", err)
+	}
+	return tok, nil
+}
+
+func (vs *VSwapCtrt) TokBReserved() (*Token, error) {
+	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokBReserved())
+	if err != nil {
+		return nil, fmt.Errorf("TokBReserved: %w", err)
+	}
+	unit, err := vs.TokBUnit()
+	if err != nil {
+		return nil, fmt.Errorf("TokBReserved: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("TokBReserved: %w", err)
+	}
+	return tok, nil
+}
+
+func (vs *VSwapCtrt) TotalLiqTokSupply() (*Token, error) {
+	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTotalLiqTokSupply())
+	if err != nil {
+		return nil, fmt.Errorf("TotalLiqTokSupply: %w", err)
+	}
+	unit, err := vs.LiqTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("TotalLiqSupply: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("TotalLiqSupply: %w", err)
+	}
+	return tok, nil
+}
+
+func (vs *VSwapCtrt) LiqTokLeft() (*Token, error) {
+	resp, err := vs.QueryDBKey(NewDBKeyVSwapForLiqTokLeft())
+	if err != nil {
+		return nil, fmt.Errorf("LiqTokLeft: %w", err)
+	}
+	unit, err := vs.LiqTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("LiqTokLeft: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("LiqTokLeft: %w", err)
+	}
+	return tok, nil
+}
+
+func (vs *VSwapCtrt) GetTokABal(addr string) (*Token, error) {
+	dbKey, err := NewDBKeyVSwapForGetTokABal(addr)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokABal: %w", err)
+	}
+	resp, err := vs.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokABal: %w", err)
+	}
+	unit, err := vs.TokAUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetTokABal: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokABal: %w", err)
+	}
+	return tok, nil
+}
+
+func (vs *VSwapCtrt) GetTokBBal(addr string) (*Token, error) {
+	dbKey, err := NewDBKeyVSwapForGetTokBBal(addr)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokBBal: %w", err)
+	}
+	resp, err := vs.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokBBal: %w", err)
+	}
+	unit, err := vs.TokBUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetTokBBal: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetTokBBal: %w", err)
+	}
+	return tok, nil
+}
+
+func (vs *VSwapCtrt) GetLiqTokBal(addr string) (*Token, error) {
+	dbKey, err := NewDBKeyVSwapForGetLiqTokBal(addr)
+	if err != nil {
+		return nil, fmt.Errorf("GetLiqTokBal: %w", err)
+	}
+	resp, err := vs.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetLiqTokBal: %w", err)
+	}
+	unit, err := vs.LiqTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetLiqTokBal: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetLiqTokBal: %w", err)
+	}
+	return tok, nil
+}
+
 func (vs *VSwapCtrt) Supersede(by *Account, newOwner, attachment string) (*BroadcastExecuteTxResp, error) {
 	newOwnerMd, err := NewAddrFromB58Str(newOwner)
 	if err != nil {
@@ -410,380 +765,4 @@ func (vs *VSwapCtrt) SwapExactAForB(
 		return nil, fmt.Errorf("SwapExactAForB: %w", err)
 	}
 	return resp, nil
-}
-
-func NewDBKeyVSwapForTokenAId() Bytes {
-	return STATE_VAR_V_SWAP_TOKEN_A_ID.Serialize()
-}
-
-func NewDBKeyVSwapForTokenBId() Bytes {
-	return STATE_VAR_V_SWAP_TOKEN_B_ID.Serialize()
-}
-
-func NewDBKeyVSwapForLiqTokId() Bytes {
-	return STATE_VAR_V_SWAP_LIQUIDITY_TOKEN_ID.Serialize()
-}
-func NewDBKeyVSwapForTotalLiqTokSupply() Bytes {
-	return STATE_VAR_V_SWAP_TOTAL_SUPPLY.Serialize()
-}
-
-func NewDBKeyVSwapForLiqTokLeft() Bytes {
-	return STATE_VAR_V_SWAP_LIQUIDITY_TOKEN_LEFT.Serialize()
-}
-
-func NewDBKeyVSwapForTokAReserved() Bytes {
-	return STATE_VAR_V_SWAP_TOKEN_A_RESERVED.Serialize()
-}
-
-func NewDBKeyVSwapForTokBReserved() Bytes {
-	return STATE_VAR_V_SWAP_TOKEN_B_RESERVED.Serialize()
-}
-
-func NewDBKeyVSwapForMinLiq() Bytes {
-	return STATE_VAR_V_SWAP_MINIMUM_LIQUIDITY.Serialize()
-}
-
-func NewDBKeyVSwapForSwapStatus() Bytes {
-	return STATE_VAR_V_SWAP_SWAP_STATUS.Serialize()
-}
-
-func NewDBKeyVSwapForMaker() Bytes {
-	return STATE_VAR_V_SWAP_MAKER.Serialize()
-}
-
-func NewDBKeyVSwapForGetTokABal(addr string) (Bytes, error) {
-	addrMd, err := NewAddrFromB58Str(addr)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVSwapForGetTokBal: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_SWAP_TOKEN_A_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
-}
-func NewDBKeyVSwapForGetTokBBal(addr string) (Bytes, error) {
-	addrMd, err := NewAddrFromB58Str(addr)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVSwapForGetTokBal: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_SWAP_TOKEN_B_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
-}
-func NewDBKeyVSwapForGetLiqTokBal(addr string) (Bytes, error) {
-	addrMd, err := NewAddrFromB58Str(addr)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVSwapForGetTokBal: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_SWAP_LIQUIDITY_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
-}
-
-func (vs *VSwapCtrt) TokAUnit() (Unit, error) {
-	tc, err := vs.TokACtrt()
-	if err != nil {
-		return 0, fmt.Errorf("TokAUnit: %w", err)
-	}
-	return tc.Unit()
-}
-
-func (vs *VSwapCtrt) TokBUnit() (Unit, error) {
-	tc, err := vs.TokBCtrt()
-	if err != nil {
-		return 0, fmt.Errorf("TokBUnit: %w", err)
-	}
-	return tc.Unit()
-}
-
-func (vs *VSwapCtrt) LiqTokUnit() (Unit, error) {
-	tc, err := vs.LiqTokCtrt()
-	if err != nil {
-		return 0, fmt.Errorf("TokBUnit: %w", err)
-	}
-	return tc.Unit()
-}
-
-func (vs *VSwapCtrt) TokACtrt() (BaseTokCtrt, error) {
-	if vs.tokACtrt == nil {
-		tokAId, err := vs.TokAId()
-		if err != nil {
-			return nil, fmt.Errorf("TokACtrt: %w", err)
-		}
-		tc, err := GetCtrtFromTokId(tokAId, vs.Chain)
-		if err != nil {
-			return nil, fmt.Errorf("TokACtrt: %w", err)
-		}
-		vs.tokACtrt = tc
-	}
-	return vs.tokACtrt, nil
-}
-func (vs *VSwapCtrt) TokBCtrt() (BaseTokCtrt, error) {
-	if vs.tokBCtrt == nil {
-		tokAId, err := vs.TokBId()
-		if err != nil {
-			return nil, fmt.Errorf("TokBCtrt: %w", err)
-		}
-		tc, err := GetCtrtFromTokId(tokAId, vs.Chain)
-		if err != nil {
-			return nil, fmt.Errorf("TokBCtrt: %w", err)
-		}
-		vs.tokBCtrt = tc
-	}
-	return vs.tokBCtrt, nil
-}
-
-func (vs *VSwapCtrt) LiqTokCtrt() (BaseTokCtrt, error) {
-	if vs.liqTokCtrt == nil {
-		liqTokId, err := vs.LiqTokId()
-		if err != nil {
-			return nil, fmt.Errorf("LiqTokCtrt: %w", err)
-		}
-		tc, err := GetCtrtFromTokId(liqTokId, vs.Chain)
-		if err != nil {
-			return nil, fmt.Errorf("LiqTokCtrt: %w", err)
-		}
-		vs.liqTokCtrt = tc
-	}
-	return vs.liqTokCtrt, nil
-}
-
-func (vs *VSwapCtrt) TokAId() (*TokenId, error) {
-
-	if vs.tokAId == nil {
-		resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokenAId())
-		if err != nil {
-			return nil, fmt.Errorf("TokAId: %w", err)
-		}
-		switch tokId := resp.Val.(type) {
-		case string:
-			tokIdMd, err := NewTokenIdFromB58Str(tokId)
-			if err != nil {
-				return nil, fmt.Errorf("TokAId: %w", err)
-			}
-			vs.tokAId = tokIdMd
-			return tokIdMd, nil
-		default:
-			return nil, fmt.Errorf("TokenAId: CtrtDataResp.Val is %T but string was expected", tokId)
-		}
-	}
-	return vs.tokAId, nil
-}
-
-func (vs *VSwapCtrt) TokBId() (*TokenId, error) {
-	if vs.tokBId == nil {
-		resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokenBId())
-		if err != nil {
-			return nil, fmt.Errorf("TokBId: %w", err)
-		}
-		switch tokId := resp.Val.(type) {
-		case string:
-			tokIdMd, err := NewTokenIdFromB58Str(tokId)
-			if err != nil {
-				return nil, fmt.Errorf("TokBId: %w", err)
-			}
-			vs.tokBId = tokIdMd
-			return tokIdMd, nil
-		default:
-			return nil, fmt.Errorf("TokenBId: CtrtDataResp.Val is %T but string was expected", tokId)
-		}
-	}
-	return vs.tokBId, nil
-}
-
-func (vs *VSwapCtrt) LiqTokId() (*TokenId, error) {
-	if vs.liqTokId == nil {
-		resp, err := vs.QueryDBKey(NewDBKeyVSwapForLiqTokId())
-		if err != nil {
-			return nil, fmt.Errorf("TokBId: %w", err)
-		}
-		switch tokId := resp.Val.(type) {
-		case string:
-			tokIdMd, err := NewTokenIdFromB58Str(tokId)
-			if err != nil {
-				return nil, fmt.Errorf("LiqTokId: %w", err)
-			}
-			vs.tokBId = tokIdMd
-			return tokIdMd, nil
-		default:
-			return nil, fmt.Errorf("LiqTokId: CtrtDataResp.Val is %T but string was expected", tokId)
-		}
-	}
-	return vs.liqTokId, nil
-}
-
-func (vs *VSwapCtrt) Maker() (*Addr, error) {
-	resp, err := vs.QueryDBKey(
-		NewDBKeyVSwapForMaker(),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("Maker: %w", err)
-	}
-	switch addrB58 := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(addrB58)
-		if err != nil {
-			return nil, fmt.Errorf("Maker: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", addrB58)
-	}
-}
-
-func (vs *VSwapCtrt) IsSwapActive() (bool, error) {
-	resp, err := vs.QueryDBKey(NewDBKeyVSwapForSwapStatus())
-	if err != nil {
-		return false, fmt.Errorf("IsSwapActive: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("IsSwapActive: CtrtDataResp.Val is %T but string was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) MinLiq() (*Token, error) {
-	resp, err := vs.QueryDBKey(NewDBKeyVSwapForMinLiq())
-	if err != nil {
-		return nil, fmt.Errorf("MinLiq: %w", err)
-	}
-	switch amount := resp.Val.(type) {
-	case float64:
-		unit, err := vs.LiqTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("MinLiq: %w", err)
-		}
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("MinLiq: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) TokAReserved() (*Token, error) {
-	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokAReserved())
-	if err != nil {
-		return nil, fmt.Errorf("TokAReserved: %w", err)
-	}
-	switch amount := resp.Val.(type) {
-	case float64:
-		unit, err := vs.TokAUnit()
-		if err != nil {
-			return nil, fmt.Errorf("TokAReserved: %w", err)
-		}
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("TokAReserved: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) TokBReserved() (*Token, error) {
-	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokBReserved())
-	if err != nil {
-		return nil, fmt.Errorf("TokBReserved: %w", err)
-	}
-	switch amount := resp.Val.(type) {
-	case float64:
-		unit, err := vs.TokBUnit()
-		if err != nil {
-			return nil, fmt.Errorf("TokBReserved: %w", err)
-		}
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("TokBReserved: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) TotalLiqTokSupply() (*Token, error) {
-	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTotalLiqTokSupply())
-	if err != nil {
-		return nil, fmt.Errorf("TotalLiqTokSupply: %w", err)
-	}
-	switch amount := resp.Val.(type) {
-	case float64:
-		unit, err := vs.LiqTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("TotalLiqTokSupply: %w", err)
-		}
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("TotalLiqTokSupply: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) LiqTokLeft() (*Token, error) {
-	resp, err := vs.QueryDBKey(NewDBKeyVSwapForLiqTokLeft())
-	if err != nil {
-		return nil, fmt.Errorf("LiqTokLeft: %w", err)
-	}
-	switch amount := resp.Val.(type) {
-	case float64:
-		unit, err := vs.LiqTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("LiqTokLeft: %w", err)
-		}
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("LiqTokLeft: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) GetTokABal(addr string) (*Token, error) {
-	dbKey, err := NewDBKeyVSwapForGetTokABal(addr)
-	if err != nil {
-		return nil, fmt.Errorf("GetTokABal: %w", err)
-	}
-	resp, err := vs.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetTokABal: %w", err)
-	}
-
-	switch amount := resp.Val.(type) {
-	case float64:
-		tokAUnit, err := vs.TokAUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetTokABal: %w", err)
-		}
-		return NewToken(Amount(amount), tokAUnit), nil
-	default:
-		return nil, fmt.Errorf("GetTokABal: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) GetTokBBal(addr string) (*Token, error) {
-	dbKey, err := NewDBKeyVSwapForGetTokBBal(addr)
-	if err != nil {
-		return nil, fmt.Errorf("GetTokBBal: %w", err)
-	}
-	resp, err := vs.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetTokBBal: %w", err)
-	}
-
-	switch amount := resp.Val.(type) {
-	case float64:
-		tokBUnit, err := vs.TokBUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetTokBBal: %w", err)
-		}
-		return NewToken(Amount(amount), tokBUnit), nil
-	default:
-		return nil, fmt.Errorf("GetTokBBal: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func (vs *VSwapCtrt) GetLiqTokBal(addr string) (*Token, error) {
-	dbKey, err := NewDBKeyVSwapForGetLiqTokBal(addr)
-	if err != nil {
-		return nil, fmt.Errorf("GetLiqTokBal: %w", err)
-	}
-	resp, err := vs.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetLiqTokBal: %w", err)
-	}
-
-	switch amount := resp.Val.(type) {
-	case float64:
-		liqUnit, err := vs.LiqTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetLiqTokBal: %w", err)
-		}
-		return NewToken(Amount(amount), liqUnit), nil
-	default:
-		return nil, fmt.Errorf("GetLiqTokBal: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
 }
