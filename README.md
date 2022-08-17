@@ -8,15 +8,21 @@ The official Golang SDK for VSYS APIs
 The official Golang SDK for VSYS APIs. The [old Golang SDK](https://github.com/virtualeconomy/go-v-sdk) is deprecated and will be archived soon.
 
 - [go-vsys](#go-vsys)
-  - [Installation](#installation)
-  - [Quick Example](#quick-example)
+	- [Installation](#installation)
+	- [Quick Example](#quick-example)
+	- [Docs](#docs)
+		- [Account & Wallet](#account--wallet)
+		- [Chain & API](#chain--api)
+		- [Smart Contracts](#smart-contracts)
+	- [Testing](#testing)
+	- [Contributing](#contributing)
 
 ## Installation
 
-Install from Github
+Install from Github using `go get`:
 
-```
-go get github.com/virtualeconomy/go-vsys/vsys
+```bash
+go get github.com/virtualeconomy/go-vsys
 ```
 
 ## Quick Example
@@ -76,9 +82,51 @@ func main() {
 }
 ```
 
+## Docs
+### Account & Wallet
+- [Account](./doc/account.md)
+- [Wallet](./doc/wallet.md)
+### Chain & API
+- [Chain](./doc/chain.md)
+- [Api](./doc/api.md)
+
+### Smart Contracts
+- [NFT Contract V1](./doc/smart_contract/nft_ctrt.md)
+- [NFT Contract V2](./doc/smart_contract/nft_ctrt_v2.md)
+- [Token Contract V1 without split](./doc/smart_contract/tok_ctrt_no_split.md)
+- [Token Contract V1 with split](./doc/smart_contract/tok_ctrt_split.md)
+- [Token Contract V2 without split](./doc/smart_contract/tok_ctrt_no_split_v2.md)
+- [Atomic Swap Contract](./doc/smart_contract/atomic_swap_ctrt.md)
+- [Payment Channel Contract](./doc/smart_contract/pay_chan_ctrt.md)
+- [Lock Contract](./doc/smart_contract/lock_ctrt.md)
+- [System Contract](./doc/smart_contract/sys_ctrt.md)
+- [V Escrow Contract](./doc/smart_contract/v_escrow_ctrt.md)
+- [V Option Contract](./doc/smart_contract/v_option_ctrt.md)
+- [V Stable Swap Contract](./doc/smart_contract/v_stable_swap_ctrt.md)
+- [V Swap Contract](./doc/smart_contract/v_swap_ctrt.md)
+
 ## Testing
 
-- timeout is needed to avoid default 10min limit for running tests. With -run flag you can supply regexp for tests to run.
-```
+Functional tests are functions that simulate the behavior of a normal user to interact with `go-vsys`(e.g. register a smart contract & call functions of it).
+
+> NOTE that the test environement defined as global variables in [helper_test.go](./vsys/helper_test.go) has to be configured through environemnt variables before the test cases can be executed.
+
+Then go to the root of the project and run.
+```bash
 go test ./vsys/ -v -timeout 0 -run AsWhole
 ```
+> timeout is needed to avoid default 10min limit for running tests. With -run flag you can supply regexp for tests to run.
+
+The above command will run functions that tests contracts as a whole i.e. without setting up new resources per each function test. If you want to test individual contracts or functions:
+```bash
+go test ./vsys/ -v -timeout 0 -run NFTCtrt_Supersede
+```
+> Test function names are made so that you can run all functions of certain contract by supplying its name to `-run` argument. Then can add function name as suffix to test specific function.
+
+More information on how to run tests can be found in [testing package](https://pkg.go.dev/testing) documentation.
+
+## Contributing
+
+**Contributions are always welcome!**
+
+See [the development documentation](./doc/dev.md) for more details and please adhere to conventions mentioned in it.

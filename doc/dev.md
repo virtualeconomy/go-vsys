@@ -1,15 +1,15 @@
 # Developing Documentation
 
 - [Developing Documentation](#developing-documentation)
-    - [Workflow](#workflow)
-    - [Set Up Development Environment](#set-up-development-environment)
-    - [Set up Automated Testing with Github Action](#set-up-automated-testing-with-github-action)
-    - [Code Style](#code-style)
-    - [Git Commit Style](#git-commit-style)
-        - [Commit Format](#commit-format)
-    - [Branch & PR Naming Convention](#branch--pr-naming-convention)
-    - [Github Issue Naming Convention](#github-issue-naming-convention)
-    - [Doc String Guide](#doc-string-guide)
+  - [Workflow](#workflow)
+  - [Set Up Development Environment](#set-up-development-environment)
+  - [Set up Automated Testing with Github Action](#set-up-automated-testing-with-github-action)
+  - [Code Style](#code-style)
+  - [Git Commit Style](#git-commit-style)
+    - [Commit Format](#commit-format)
+  - [Branch & PR Naming Convention](#branch--pr-naming-convention)
+  - [Github Issue Naming Convention](#github-issue-naming-convention)
+  - [Doc String Guide](#doc-string-guide)
 
 ## Workflow
 
@@ -23,15 +23,15 @@ The development requires Go to be installed locally.
 
 To set up the development environment, go to the project root directory and
 
-1. Install dependencies
-
-   ```bash
-   go build
-   ```
-   or
-   ```bash
-   go run .
-   ```
+1. Install package
+   
+  ```bash
+  go get github.com/virtualeconomy/go-vsys
+  ```
+  or clone repo manually and install dependencies:
+  ```bash
+  git clone git@github.com:virtualeconomy/go-vsys.git && cd go-vsys && go build
+  ```
 
 2. Install Git hooks with [pre-commit](https://github.com/pre-commit/pre-commit) so that the fommatter will be invoked whenever a commit is created. Ideally your IDE should run `gofmt` on save. Also, `golangci` need to be installed.
 
