@@ -92,6 +92,9 @@ func Test_Account_LeaseAndCancelLease(t *testing.T) {
 	require.Equal(t, effBalInit-amount-FEE_LEASING, effBalLease)
 
 	resp2, err := testAcnt0.CancelLease(leaseTxId)
+	if err != nil {
+		t.Fatal(err)
+	}
 	waitForBlock()
 	assertTxSuccess(t, resp2.Id.Str())
 

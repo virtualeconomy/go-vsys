@@ -19,7 +19,7 @@ jobs:
           go-version: 1.18
 
       - name: Install dependencies
-        run: go build -v ./...
+        run: go build
 
       - name: Set environmental variables suite
         run: |
@@ -29,4 +29,4 @@ jobs:
           export GO_VSYS_AVG_BLOCK_DELAY="${{ secrets.GO_VSYS_AVG_BLOCK_DELAY }}"
 
       - name: Run test suit
-        run: go test -v ./...
+        run: go test ./vsys -v -timeout 0

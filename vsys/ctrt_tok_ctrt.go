@@ -17,16 +17,11 @@ func iTokCtrt_issuer(t ITokCtrt, dbKey Bytes) (*Addr, error) {
 		return nil, fmt.Errorf("Issuer: %w", err)
 	}
 
-	switch val := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(val)
-		if err != nil {
-			return nil, fmt.Errorf("Issuer: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Issuer: CtrtDataResp.Val is %T but string was expected", val)
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Issuer: %w", err)
 	}
+	return addr, nil
 }
 
 // Maker queries and returns maker Addr of the contract.
@@ -36,16 +31,11 @@ func iTokCtrt_maker(t ITokCtrt, dbKey Bytes) (*Addr, error) {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
 
-	switch val := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(val)
-		if err != nil {
-			return nil, fmt.Errorf("Maker: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", val)
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
 	}
+	return addr, nil
 }
 
 // tokId is internal implementation for TokId.
@@ -716,6 +706,7 @@ func iTokCtrt_isInList(t ITokCtrt, dbKey Bytes) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("isInList: %w", err)
 	}
+
 	switch val := resp.Val.(type) {
 	case string:
 		return val == "true", nil
@@ -886,16 +877,11 @@ func iTokCtrt_regulator(t ITokCtrt) (*Addr, error) {
 		return nil, fmt.Errorf("Regulator: %w", err)
 	}
 
-	switch val := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(val)
-		if err != nil {
-			return nil, fmt.Errorf("Regulator: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Regulator: CtrtDataResp.Val is %T but string was expected", val)
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Regulator: %w", err)
 	}
+	return addr, nil
 }
 
 func (t *TokCtrtWithoutSplitV2Whitelist) ctrtId() *CtrtId {

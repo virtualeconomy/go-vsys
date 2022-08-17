@@ -1,7 +1,6 @@
 package vsys
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -35,23 +34,23 @@ func (vot *vOptionTest) EXEC_DDL_DELTA() int64 {
 
 var voT *vOptionTest
 
-func (vot *vOptionTest) newTokCtrt(t *testing.T, mu *sync.Mutex) (*TokCtrtWithoutSplit, error) {
+func (vot *vOptionTest) newTokCtrt(t *testing.T, mu *sync.Mutex) *TokCtrtWithoutSplit {
 	mu.Lock()
 	tc, err := RegisterTokCtrtWithoutSplit(testAcnt0, 1000, 1, "", "")
 	if err != nil {
-		return nil, fmt.Errorf("newTokCtrt: %w", err)
+		t.Fatal(err)
 	}
 	mu.Unlock()
 	waitForBlock()
 	mu.Lock()
 	resp, err := tc.Issue(testAcnt0, 1000, "")
 	if err != nil {
-		return nil, fmt.Errorf("newTokCtrt: %w", err)
+		t.Fatal(err)
 	}
 	mu.Unlock()
 	waitForBlock()
 	assertTxSuccess(t, resp.Id.Str())
-	return tc, nil
+	return tc
 }
 
 func (vot *vOptionTest) newVOptionCtrt(t *testing.T) *VOptionCtrt {
@@ -60,21 +59,20 @@ func (vot *vOptionTest) newVOptionCtrt(t *testing.T) *VOptionCtrt {
 	var (
 		baseTc, targetTc, optionTc, proofTc *TokCtrtWithoutSplit
 	)
-	var err error
 	g.Go(func() (err error) {
-		baseTc, err = vot.newTokCtrt(t, &mu)
+		baseTc = vot.newTokCtrt(t, &mu)
 		return
 	})
 	g.Go(func() (err error) {
-		targetTc, err = vot.newTokCtrt(t, &mu)
+		targetTc = vot.newTokCtrt(t, &mu)
 		return
 	})
 	g.Go(func() (err error) {
-		optionTc, err = vot.newTokCtrt(t, &mu)
+		optionTc = vot.newTokCtrt(t, &mu)
 		return
 	})
 	g.Go(func() (err error) {
-		proofTc, err = vot.newTokCtrt(t, &mu)
+		proofTc = vot.newTokCtrt(t, &mu)
 		return
 	})
 	if err := g.Wait(); err != nil {
@@ -245,7 +243,26 @@ func Test_VOptionCtrt_ExecuteAndCollect(t *testing.T) {
 	voT.test_ExecuteAndCollect(t, vo)
 }
 
-// TODO: test supersede
+func (vot *vOptionTest) test_Supersede(t *testing.T, vo *VOptionCtrt) {
+	resp, err := vo.Supersede(testAcnt0, testAcnt1.Addr.B58Str().Str(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, resp.Id.Str())
+
+	maker, err := vo.Maker()
+	if err != nil {
+		t.Fatal(err)
+	}
+	require.Equal(t, testAcnt1.Addr, maker)
+}
+
+func Test_VOptionCtrt_Supersede(t *testing.T) {
+	vo := voT.newVOptionCtrt(t)
+	voT.test_Supersede(t, vo)
+}
+
 func Test_VOptionCtrt_AsWhole(t *testing.T) {
 	vo := voT.newVOptionCtrtActivatedAndMinted(t)
 	voT.test_Register(t, vo)
@@ -253,4 +270,5 @@ func Test_VOptionCtrt_AsWhole(t *testing.T) {
 	voT.test_Mint(t, vo)
 	voT.test_Unlock(t, vo)
 	voT.test_ExecuteAndCollect(t, vo)
+	voT.test_Supersede(t, vo)
 }

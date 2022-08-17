@@ -41,16 +41,12 @@ func iNFTCtrt_maker(n INFTCtrt, dbKey Bytes) (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(val)
-		if err != nil {
-			return nil, fmt.Errorf("Maker: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", val)
+
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
 	}
+	return addr, nil
 }
 
 // iNFTCtrt_issuer is internal implementation for Issuer.
@@ -61,16 +57,12 @@ func iNFTCtrt_issuer(n INFTCtrt, dbKey Bytes) (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Issuer: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(val)
-		if err != nil {
-			return nil, fmt.Errorf("Issuer: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Issuer: CtrtDataResp.Val is %T but string was expected", val)
+
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Issuer: %w", err)
 	}
+	return addr, nil
 }
 
 // iNFTCtrt_lastIndex is internal implementation for LastIndex.
@@ -384,6 +376,7 @@ func iNFTCtrt_isInList(t INFTCtrt, dbKey Bytes) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("isInList: %w", err)
 	}
+
 	switch val := resp.Val.(type) {
 	case string:
 		return val == "true", nil
@@ -404,16 +397,11 @@ func iNFTCtrt_regulator(t INFTCtrt) (*Addr, error) {
 		return nil, fmt.Errorf("Regulator: %w", err)
 	}
 
-	switch val := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(val)
-		if err != nil {
-			return nil, fmt.Errorf("Regulator: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Regulator: CtrtDataResp.Val is %T but string was expected", val)
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Regulator: %w", err)
 	}
+	return addr, nil
 }
 
 // iNFTCtrt_updateList updates the presence of the address within the given data entry in the list.

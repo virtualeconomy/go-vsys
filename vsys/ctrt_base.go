@@ -37,7 +37,6 @@ func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
 	}
-	// Switch statement here to choose constructor
 	switch string(ctrtInfo.Type) {
 	case "NonFungibleContract":
 		n, err := NewNFTCtrt(ctrtInfo.CtrtId.Str(), chain)

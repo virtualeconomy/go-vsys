@@ -21,30 +21,24 @@ func (vsst *vStableSwapTest) test_Register(t *testing.T, acnt *Account, newctrt 
 	return newctrt
 }
 
-func (vsst *vStableSwapTest) newCtrtWithTok(by *Account) (*TokCtrtWithoutSplit, error) {
+func (vsst *vStableSwapTest) newCtrtWithTok(t *testing.T, by *Account) *TokCtrtWithoutSplit {
 	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
 
 	_, err = tc.Issue(by, 1000, "")
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	waitForBlock()
-	return tc, nil
+	return tc
 }
 
 func (vsst *vStableSwapTest) newStableCtrt(t *testing.T, by *Account) *VStableSwapCtrt {
-	baseTc, err := vsst.newCtrtWithTok(by)
-	if err != nil {
-		t.Fatal(err)
-	}
-	targetTc, err := vsst.newCtrtWithTok(by)
-	if err != nil {
-		t.Fatal(err)
-	}
+	baseTc := vsst.newCtrtWithTok(t, by)
+	targetTc := vsst.newCtrtWithTok(t, by)
 
 	baseTokId, _ := baseTc.TokId()
 	targetTokId, _ := targetTc.TokId()

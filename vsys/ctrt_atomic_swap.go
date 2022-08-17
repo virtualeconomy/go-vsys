@@ -80,16 +80,12 @@ func (a *AtomicSwapCtrt) Maker() (*Addr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Maker: %w", err)
 	}
-	switch addrB58 := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(addrB58)
-		if err != nil {
-			return nil, fmt.Errorf("Maker: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", addrB58)
+
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
 	}
+	return addr, nil
 }
 
 // NewDBKeyAtomicSwapTokId returns DB key to query TokenId of contract's token.
@@ -106,9 +102,10 @@ func (a *AtomicSwapCtrt) TokId() (*TokenId, error) {
 		if err != nil {
 			return nil, fmt.Errorf("TokId: %w", err)
 		}
-		tokId, err := NewTokenIdFromB58Str(resp.Val.(string))
+
+		tokId, err := ctrtDataRespToTokenId(resp)
 		if err != nil {
-			return nil, fmt.Errorf("TokId: %w", err)
+			return nil, fmt.Errorf("OptionTokId: %w", err)
 		}
 		a.tokId = tokId
 	}
@@ -156,7 +153,7 @@ func (a *AtomicSwapCtrt) GetCtrtBal(addr string) (*Token, error) {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
 
-	data, err := a.QueryDBKey(NewDBKeyAtomicSwapGetCtrtBal(query_addr))
+	resp, err := a.QueryDBKey(NewDBKeyAtomicSwapGetCtrtBal(query_addr))
 	if err != nil {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
@@ -166,12 +163,11 @@ func (a *AtomicSwapCtrt) GetCtrtBal(addr string) (*Token, error) {
 		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
 
-	switch amount := data.Val.(type) {
-	case float64:
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("GetCtrtBal: CtrtDataResp.Val is %T but float64 was expected", amount)
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
+	return tok, nil
 }
 
 // NewDBKeyAtomicSwapOwner returns DB key for querying owner of the given swap.
@@ -189,21 +185,16 @@ func (a *AtomicSwapCtrt) GetSwapOwner(txId string) (*Addr, error) {
 		return nil, fmt.Errorf("GetSwapOwner: %w", err)
 	}
 
-	data, err := a.QueryDBKey(dbKey)
+	resp, err := a.QueryDBKey(dbKey)
 	if err != nil {
 		return nil, fmt.Errorf("GetSwapOwner: %w", err)
 	}
 
-	switch addrB58 := data.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(addrB58)
-		if err != nil {
-			return nil, fmt.Errorf("GetSwapOwner: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("GetSwapOwner: CtrtDataResp.Val is %T but string was expected", addrB58)
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("GetSwapOwner: %w", err)
 	}
+	return addr, nil
 }
 
 // NewDBKeyAtomicSwapRecipient returns DB key for querying recipient of the given swap.
@@ -222,21 +213,16 @@ func (a *AtomicSwapCtrt) GetSwapRecipient(txId string) (*Addr, error) {
 		return nil, fmt.Errorf("GetSwapRecipient: %w", err)
 	}
 
-	data, err := a.QueryDBKey(dbKey)
+	resp, err := a.QueryDBKey(dbKey)
 	if err != nil {
 		return nil, fmt.Errorf("GetSwapRecipient: %w", err)
 	}
 
-	switch addrB58 := data.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(addrB58)
-		if err != nil {
-			return nil, fmt.Errorf("GetSwapRecipient: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("GetSwapRecipient: CtrtDataResp.Val is %T but string was expected", addrB58)
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("GetSwapRecipient: %w", err)
 	}
+	return addr, nil
 }
 
 // NewDBKeyAtomicSwapPuzzle returns DB key for querying secret of the given swap.
@@ -279,7 +265,7 @@ func (a *AtomicSwapCtrt) GetSwapAmount(txId string) (*Token, error) {
 		return nil, fmt.Errorf("GetSwapAmount: %w", err)
 	}
 
-	data, err := a.QueryDBKey(dbKey)
+	resp, err := a.QueryDBKey(dbKey)
 	if err != nil {
 		return nil, fmt.Errorf("GetSwapAmount: %w", err)
 	}
@@ -288,12 +274,11 @@ func (a *AtomicSwapCtrt) GetSwapAmount(txId string) (*Token, error) {
 		return nil, fmt.Errorf("GetSwapAmount: %w", err)
 	}
 
-	switch amount := data.Val.(type) {
-	case float64:
-		return NewToken(Amount(amount), unit), nil
-	default:
-		return nil, fmt.Errorf("GetSwapAmount: CtrtDataResp.Val is %T but float64 was expected", amount)
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtBal: %w", err)
 	}
+	return tok, nil
 }
 
 // NewDBKeyAtomicSwapExpiredTime returns DB key for querying expire time of the given swap.
@@ -317,12 +302,11 @@ func (a *AtomicSwapCtrt) GetSwapExpiredTime(txId string) (VSYSTimestamp, error) 
 		return 0, fmt.Errorf("GetSwapExpiredTime: %w", err)
 	}
 
-	switch timestamp := resp.Val.(type) {
-	case float64:
-		return VSYSTimestamp(timestamp), nil
-	default:
-		return 0, fmt.Errorf("GetSwapExpiredTime: CtrtDataResp.Val is %T but float64 was expected", timestamp)
+	ts, err := ctrtDataRespToVSYSTimestamp(resp)
+	if err != nil {
+		return 0, fmt.Errorf("GetSwapExpiredTime: %w", err)
 	}
+	return ts, nil
 }
 
 // NewDBKeyAtomicSwapStatus returns DB key for querying current status of the swap.
@@ -340,17 +324,16 @@ func (a *AtomicSwapCtrt) GetSwapStatus(txId string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("GetSwapStatus: %w", err)
 	}
-
 	resp, err := a.QueryDBKey(dbKey)
 	if err != nil {
 		return false, fmt.Errorf("GetSwapStatus: %w", err)
 	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetSwapStatus: CtrtDataResp.Val is %T but string was expected", val)
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetSwapStatus: %w", err)
 	}
+	return val, nil
 }
 
 // Lock locks the token and creates a swap.

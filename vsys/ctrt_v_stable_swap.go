@@ -81,6 +81,613 @@ func RegisterVStableSwapCtrt(
 	}, nil
 }
 
+func NewDBKeyVStableSwapForMaker() Bytes {
+	return STATE_VAR_V_STABLE_SWAP_MAKER.Serialize()
+}
+
+// Maker queries & returns the maker of the contract.
+func (v *VStableSwapCtrt) Maker() (*Addr, error) {
+	resp, err := v.QueryDBKey(
+		NewDBKeyVStableSwapForMaker(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
+	}
+
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("Maker: %w", err)
+	}
+	return addr, nil
+}
+
+// BaseTokUnit queries & returns the base token id.
+func (v *VStableSwapCtrt) BaseTokUnit() (Unit, error) {
+	tc, err := v.BaseTokCtrt()
+	if err != nil {
+		return 0, fmt.Errorf("BaseTokUnit: %w", err)
+	}
+	return tc.Unit()
+}
+
+// TargetTokUnit queries & returns the target token id.
+func (v *VStableSwapCtrt) TargetTokUnit() (Unit, error) {
+	tc, err := v.TargetTokCtrt()
+	if err != nil {
+		return 0, fmt.Errorf("TargetTokUnit: %w", err)
+	}
+	return tc.Unit()
+}
+
+// BaseTokCtrt returns the token contract instance for base token.
+func (v *VStableSwapCtrt) BaseTokCtrt() (BaseTokCtrt, error) {
+	if v.baseTokCtrt == nil {
+		// Note that this BaseTokId() is not related to Base token of VStableSwap
+		baseTokId, err := v.BaseTokId()
+		if err != nil {
+			return nil, fmt.Errorf("BaseTokCtrt: %w", err)
+		}
+		tc, err := GetCtrtFromTokId(baseTokId, v.Chain)
+		if err != nil {
+			return nil, fmt.Errorf("BaseTokCtrt: %w", err)
+		}
+		v.baseTokCtrt = tc
+	}
+	return v.baseTokCtrt, nil
+}
+
+// TargetTokCtrt returns the token contract instance for target token.
+func (v *VStableSwapCtrt) TargetTokCtrt() (BaseTokCtrt, error) {
+	if v.targetTokCtrt == nil {
+		// Note that this BaseTokId() is not related to Base token of VStableSwap
+		targetTokId, err := v.BaseTokId()
+		if err != nil {
+			return nil, fmt.Errorf("TargetTokCtrt: %w", err)
+		}
+		tc, err := GetCtrtFromTokId(targetTokId, v.Chain)
+		if err != nil {
+			return nil, fmt.Errorf("TargetTokCtrt: %w", err)
+		}
+		v.targetTokCtrt = tc
+	}
+	return v.targetTokCtrt, nil
+}
+
+func NewDBKeyVStableSwapBaseTokId() Bytes {
+	return STATE_VAR_V_STABLE_SWAP_BASE_TOKEN_ID.Serialize()
+}
+
+func NewDBKeyVStableSwapTargetTokId() Bytes {
+	return STATE_VAR_V_STABLE_SWAP_TARGET_TOKEN_ID.Serialize()
+}
+
+// BaseTokId returns token id of base token.
+func (v *VStableSwapCtrt) BaseTokId() (*TokenId, error) {
+	if v.baseTokId == nil {
+		resp, err := v.QueryDBKey(NewDBKeyVStableSwapBaseTokId())
+		if err != nil {
+			return nil, fmt.Errorf("BaseTokId: %w", err)
+		}
+		tokId, err := ctrtDataRespToTokenId(resp)
+		if err != nil {
+			return nil, fmt.Errorf("BaseTokId: %w", err)
+		}
+		v.baseTokId = tokId
+	}
+	return v.baseTokId, nil
+}
+
+// TargetTokId returns token id of target token.
+func (v *VStableSwapCtrt) TargetTokId() (*TokenId, error) {
+	if v.targetTokId == nil {
+		resp, err := v.QueryDBKey(NewDBKeyVStableSwapTargetTokId())
+		if err != nil {
+			return nil, fmt.Errorf("TargetTokId: %w", err)
+		}
+		tokId, err := ctrtDataRespToTokenId(resp)
+		if err != nil {
+			return nil, fmt.Errorf("TargetTokId: %w", err)
+		}
+		v.targetTokId = tokId
+	}
+	return v.targetTokId, nil
+}
+
+func NewDBKeyVStableSwapBasePriceUnit() Bytes {
+	return STATE_VAR_V_STABLE_SWAP_UNIT_PRICE_BASE.Serialize()
+}
+func NewDBKeyVStableSwapTargetPriceUnit() Bytes {
+	return STATE_VAR_V_STABLE_SWAP_UNIT_PRICE_TARGET.Serialize()
+}
+
+// BasePriceUnit queries & returns the price unit of base token.
+func (v *VStableSwapCtrt) BasePriceUnit() (Unit, error) {
+	resp, err := v.QueryDBKey(NewDBKeyVStableSwapBasePriceUnit())
+	if err != nil {
+		return 0, fmt.Errorf("BasePriceUnit: %w", err)
+	}
+	switch unit := resp.Val.(type) {
+	case float64:
+		return Unit(unit), nil
+	default:
+		return 0, fmt.Errorf("BasePriceUnit: CtrtDataResp.Val is %T but float64 was expected", tokId)
+	}
+}
+
+// TargetPriceUnit  queries & returns the price unit of target token.
+func (v *VStableSwapCtrt) TargetPriceUnit() (Unit, error) {
+	resp, err := v.QueryDBKey(NewDBKeyVStableSwapTargetPriceUnit())
+	if err != nil {
+		return 0, fmt.Errorf("TargetPriceUnit: %w", err)
+	}
+	switch unit := resp.Val.(type) {
+	case float64:
+		return Unit(unit), nil
+	default:
+		return 0, fmt.Errorf("TargetPriceUnit: CtrtDataResp.Val is %T but float64 was expected", tokId)
+	}
+}
+
+func NewDBKeyVStableSwapMaxOrderPerUser() Bytes {
+	return STATE_VAR_V_STABLE_SWAP_MAX_ORDER_PER_USER.Serialize()
+}
+
+// MaxOrderPerUser queries & returns the maximum order number that each user can create.
+func (v *VStableSwapCtrt) MaxOrderPerUser() (int, error) {
+	resp, err := v.QueryDBKey(
+		NewDBKeyVStableSwapMaxOrderPerUser(),
+	)
+	if err != nil {
+		return 0, fmt.Errorf("Maker: %w", err)
+	}
+	switch val := resp.Val.(type) {
+	case float64:
+		return int(val), nil
+	default:
+		return 0, fmt.Errorf("Maker: CtrtDataResp.Val is %T but float64 was expected", val)
+	}
+}
+
+func NewDBKeyVStableSwapBaseTokenBalance(addr string) (Bytes, error) {
+	addrMd, err := NewAddrFromB58Str(addr)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyForBaseTokenBalance: %w", err)
+	}
+
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_BASE_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
+}
+
+// GetBaseTokBal queries & returns the balance of the available base tokens.
+func (v *VStableSwapCtrt) GetBaseTokBal(addr string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapBaseTokenBalance(addr)
+	if err != nil {
+		return nil, fmt.Errorf("GetBaseTokBal: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetBaseTokBal: %w", err)
+	}
+	unit, err := v.BaseTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetBaseTokBal: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapTargetTokenBalance(addr string) (Bytes, error) {
+	addrMd, err := NewAddrFromB58Str(addr)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyForTargetTokenBalance: %w", err)
+	}
+
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_TARGET_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
+}
+
+// GetTargetTokBal queries & returns the balance of the available target tokens.
+func (v *VStableSwapCtrt) GetTargetTokBal(addr string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapTargetTokenBalance(addr)
+	if err != nil {
+		return nil, fmt.Errorf("GetTargetTokBal: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetTargetTokBal: %w", err)
+	}
+	unit, err := v.TargetTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetTargetTokBal: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapGetUserOrders(addr string) (Bytes, error) {
+	addrMd, err := NewAddrFromB58Str(addr)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyForTargetTokenBalance: %w", err)
+	}
+
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_USER_ORDERS, NewDeAddr(addrMd)).Serialize(), nil
+}
+
+// GetUserOrders queries & returns the number of user orders.
+func (v *VStableSwapCtrt) GetUserOrders(addr string) (int, error) {
+	dbKey, err := NewDBKeyVStableSwapGetUserOrders(addr)
+	if err != nil {
+		return 0, fmt.Errorf("GetUserOrders: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return 0, fmt.Errorf("GetUserOrders: %w", err)
+	}
+	switch val := resp.Val.(type) {
+	case float64:
+		return int(val), nil
+	default:
+		return 0, fmt.Errorf("GetUserOrders: CtrtDataResp.Val is %T but float64 was expected", val)
+	}
+}
+
+func NewDBKeyVStableSwapOrderOwner(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapOrderOwner: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_ORDER_OWNER, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetOrderOwner queries & returns the address of the order owner.
+func (v *VStableSwapCtrt) GetOrderOwner(orderId string) (*Addr, error) {
+	dbKey, err := NewDBKeyVStableSwapOrderOwner(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderOwner: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderOwner: %w", err)
+	}
+
+	addr, err := ctrtDataRespToAddr(resp)
+	if err != nil {
+		return nil, fmt.Errorf("GetOrderOwner: %w", err)
+	}
+	return addr, nil
+}
+
+func NewDBKeyVStableSwapFeeBase(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapFeeBase: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_FEE_BASE, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetFeeBase queries & returns the base fee.
+func (v *VStableSwapCtrt) GetFeeBase(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapFeeBase(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetFeeBase: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetFeeBase: %w", err)
+	}
+	unit, err := v.BaseTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetFeeBase: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapFeeTarget(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapFeeTarget: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_FEE_TARGET, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetFeeTarget queries and returns target fee.
+func (v *VStableSwapCtrt) GetFeeTarget(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapFeeTarget(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetFeeTarget: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetFeeTarget: %w", err)
+	}
+	unit, err := v.TargetTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetFeeTarget: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapMinBase(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapMinBase: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MIN_BASE, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetMinBase queries & returns the minimum amount of base token.
+func (v *VStableSwapCtrt) GetMinBase(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapMinBase(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+	unit, err := v.BaseTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetMinBase: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapMinTarget(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapMinTarget: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MIN_TARGET, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetMinTarget  queries & returns the minimum amount of target token.
+func (v *VStableSwapCtrt) GetMinTarget(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapMinTarget(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetMinTarget: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetMinTarget: %w", err)
+	}
+	unit, err := v.TargetTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMinTarget: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetMinTarget: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapMaxBase(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapMaxBase: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MAX_BASE, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetMaxBase  queries & returns the maximum amount of base token.
+func (v *VStableSwapCtrt) GetMaxBase(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapMaxBase(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxBase: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxBase: %w", err)
+	}
+	unit, err := v.BaseTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxBase: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxBase: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapMaxTarget(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapMaxTarget: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MAX_TARGET, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetMaxTarget  queries & returns the maximum amount of target token.
+func (v *VStableSwapCtrt) GetMaxTarget(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapMaxTarget(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxTarget: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxTarget: %w", err)
+	}
+	unit, err := v.TargetTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxTarget: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetMaxTarget: %w", err)
+	}
+	return tok, nil
+}
+func NewDBKeyVStableSwapPriceBase(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapPriceBase: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_PRICE_BASE, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetPriceBase  queries & returns the price of base token.
+func (v *VStableSwapCtrt) GetPriceBase(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapPriceBase(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceBase: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceBase: %w", err)
+	}
+	unit, err := v.BaseTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceBase: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceBase: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapPriceTarget(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapPriceTarget: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_PRICE_TARGET, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetPriceTarget  queries & returns the price of the target token.
+func (v *VStableSwapCtrt) GetPriceTarget(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapPriceTarget(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceTarget: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceTarget: %w", err)
+	}
+	unit, err := v.TargetTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceTarget: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetPriceTarget: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapBaseTokenLocked(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapBaseTokenLocked: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_BASE_TOKEN_LOCKED, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetBaseTokLocked  queries & returns the amount of locked base tokens.
+func (v *VStableSwapCtrt) GetBaseTokLocked(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapBaseTokenLocked(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetBaseTokLocked: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetBaseTokLocked: %w", err)
+	}
+	unit, err := v.BaseTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetBaseTokLocked: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetBaseTokLocked: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapTargetTokenLocked(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapTargetTokenLocked: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_TARGET_TOKEN_LOCKED, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetTargetTokLocked  queries & returns the amount of locked target tokens.
+func (v *VStableSwapCtrt) GetTargetTokLocked(orderId string) (*Token, error) {
+	dbKey, err := NewDBKeyVStableSwapTargetTokenLocked(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("GetTargetTokLocked: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return nil, fmt.Errorf("GetTargetTokLocked: %w", err)
+	}
+	unit, err := v.TargetTokUnit()
+	if err != nil {
+		return nil, fmt.Errorf("GetTargetTokLocked: %w", err)
+	}
+
+	tok, err := ctrtDataRespToToken(resp, unit)
+	if err != nil {
+		return nil, fmt.Errorf("GetTargetTokLocked: %w", err)
+	}
+	return tok, nil
+}
+
+func NewDBKeyVStableSwapOrderStatus(orderId string) (Bytes, error) {
+	b, err := NewBytesFromB58Str(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBKeyVStableSwapOrderStatus: %w", err)
+	}
+	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_ORDER_STATUS, NewDeBytes(b)).Serialize(), nil
+}
+
+// GetOrderStatus  queries & returns the status of the order.
+func (v *VStableSwapCtrt) GetOrderStatus(orderId string) (bool, error) {
+	dbKey, err := NewDBKeyVStableSwapOrderStatus(orderId)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderStatus: %w", err)
+	}
+	resp, err := v.QueryDBKey(dbKey)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderStatus: %w", err)
+	}
+
+	val, err := ctrtDataRespToBool(resp)
+	if err != nil {
+		return false, fmt.Errorf("GetOrderStatus: %w", err)
+	}
+	return val, nil
+}
+
 // Supersede transfers the ownership of the contract to another account.
 func (v *VStableSwapCtrt) Supersede(by *Account, newOwner string, attachment string) (*BroadcastExecuteTxResp, error) {
 	newOwnerMd, err := NewAddrFromB58Str(newOwner)
@@ -509,631 +1116,4 @@ func (v *VStableSwapCtrt) SwapTargetToBase(
 		return nil, fmt.Errorf("SwapTargetToBase: %w", err)
 	}
 	return resp, nil
-}
-
-func NewDBKeyVStableSwapForMaker() Bytes {
-	return STATE_VAR_V_STABLE_SWAP_MAKER.Serialize()
-}
-
-// Maker queries & returns the maker of the contract.
-func (v *VStableSwapCtrt) Maker() (*Addr, error) {
-	resp, err := v.QueryDBKey(
-		NewDBKeyVStableSwapForMaker(),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("Maker: %w", err)
-	}
-	switch addrB58 := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(addrB58)
-		if err != nil {
-			return nil, fmt.Errorf("Maker: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("Maker: CtrtDataResp.Val is %T but string was expected", addrB58)
-	}
-}
-
-// BaseTokUnit queries & returns the base token id.
-func (v *VStableSwapCtrt) BaseTokUnit() (Unit, error) {
-	tc, err := v.BaseTokCtrt()
-	if err != nil {
-		return 0, fmt.Errorf("BaseTokUnit: %w", err)
-	}
-	return tc.Unit()
-}
-
-// TargetTokUnit queries & returns the target token id.
-func (v *VStableSwapCtrt) TargetTokUnit() (Unit, error) {
-	tc, err := v.TargetTokCtrt()
-	if err != nil {
-		return 0, fmt.Errorf("TargetTokUnit: %w", err)
-	}
-	return tc.Unit()
-}
-
-// BaseTokCtrt returns the token contract instance for base token.
-func (v *VStableSwapCtrt) BaseTokCtrt() (BaseTokCtrt, error) {
-	if v.baseTokCtrt == nil {
-		// Note that this BaseTokId() is not related to Base token of VStableSwap
-		baseTokId, err := v.BaseTokId()
-		if err != nil {
-			return nil, fmt.Errorf("BaseTokCtrt: %w", err)
-		}
-		tc, err := GetCtrtFromTokId(baseTokId, v.Chain)
-		if err != nil {
-			return nil, fmt.Errorf("BaseTokCtrt: %w", err)
-		}
-		v.baseTokCtrt = tc
-	}
-	return v.baseTokCtrt, nil
-}
-
-// TargetTokCtrt returns the token contract instance for target token.
-func (v *VStableSwapCtrt) TargetTokCtrt() (BaseTokCtrt, error) {
-	if v.targetTokCtrt == nil {
-		// Note that this BaseTokId() is not related to Base token of VStableSwap
-		targetTokId, err := v.BaseTokId()
-		if err != nil {
-			return nil, fmt.Errorf("TargetTokCtrt: %w", err)
-		}
-		tc, err := GetCtrtFromTokId(targetTokId, v.Chain)
-		if err != nil {
-			return nil, fmt.Errorf("TargetTokCtrt: %w", err)
-		}
-		v.targetTokCtrt = tc
-	}
-	return v.targetTokCtrt, nil
-}
-
-func NewDBKeyVStableSwapBaseTokId() Bytes {
-	return STATE_VAR_V_STABLE_SWAP_BASE_TOKEN_ID.Serialize()
-}
-
-func NewDBKeyVStableSwapTargetTokId() Bytes {
-	return STATE_VAR_V_STABLE_SWAP_TARGET_TOKEN_ID.Serialize()
-}
-
-// BaseTokId returns token id of base token.
-func (v *VStableSwapCtrt) BaseTokId() (*TokenId, error) {
-	if v.baseTokId == nil {
-		resp, err := v.QueryDBKey(NewDBKeyVStableSwapBaseTokId())
-		if err != nil {
-			return nil, fmt.Errorf("BaseTokId: %w", err)
-		}
-		switch tokId := resp.Val.(type) {
-		case string:
-			tokIdMd, err := NewTokenIdFromB58Str(tokId)
-			if err != nil {
-				return nil, fmt.Errorf("BaseTokId: %w", err)
-			}
-			v.baseTokId = tokIdMd
-			return tokIdMd, nil
-		default:
-			return nil, fmt.Errorf("BaseTokId: CtrtDataResp.Val is %T but string was expected", tokId)
-		}
-	}
-	return v.baseTokId, nil
-}
-
-// TargetTokId returns token id of target token.
-func (v *VStableSwapCtrt) TargetTokId() (*TokenId, error) {
-	if v.targetTokId == nil {
-		resp, err := v.QueryDBKey(NewDBKeyVStableSwapTargetTokId())
-		if err != nil {
-			return nil, fmt.Errorf("TargetTokId: %w", err)
-		}
-		switch tokId := resp.Val.(type) {
-		case string:
-			tokIdMd, err := NewTokenIdFromB58Str(tokId)
-			if err != nil {
-				return nil, fmt.Errorf("TargetTokId: %w", err)
-			}
-			v.targetTokId = tokIdMd
-			return tokIdMd, nil
-		default:
-			return nil, fmt.Errorf("TargetTokId: CtrtDataResp.Val is %T but string was expected", tokId)
-		}
-	}
-	return v.targetTokId, nil
-}
-
-func NewDBKeyVStableSwapBasePriceUnit() Bytes {
-	return STATE_VAR_V_STABLE_SWAP_UNIT_PRICE_BASE.Serialize()
-}
-func NewDBKeyVStableSwapTargetPriceUnit() Bytes {
-	return STATE_VAR_V_STABLE_SWAP_UNIT_PRICE_TARGET.Serialize()
-}
-
-// BasePriceUnit queries & returns the price unit of base token.
-func (v *VStableSwapCtrt) BasePriceUnit() (Unit, error) {
-	resp, err := v.QueryDBKey(NewDBKeyVStableSwapBasePriceUnit())
-	if err != nil {
-		return 0, fmt.Errorf("BasePriceUnit: %w", err)
-	}
-	switch unit := resp.Val.(type) {
-	case float64:
-		return Unit(unit), nil
-	default:
-		return 0, fmt.Errorf("BasePriceUnit: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-// TargetPriceUnit  queries & returns the price unit of target token.
-func (v *VStableSwapCtrt) TargetPriceUnit() (Unit, error) {
-	resp, err := v.QueryDBKey(NewDBKeyVStableSwapTargetPriceUnit())
-	if err != nil {
-		return 0, fmt.Errorf("TargetPriceUnit: %w", err)
-	}
-	switch unit := resp.Val.(type) {
-	case float64:
-		return Unit(unit), nil
-	default:
-		return 0, fmt.Errorf("TargetPriceUnit: CtrtDataResp.Val is %T but float64 was expected", tokId)
-	}
-}
-
-func NewDBKeyVStableSwapMaxOrderPerUser() Bytes {
-	return STATE_VAR_V_STABLE_SWAP_MAX_ORDER_PER_USER.Serialize()
-}
-
-// MaxOrderPerUser queries & returns the maximum order number that each user can create.
-func (v *VStableSwapCtrt) MaxOrderPerUser() (int, error) {
-	resp, err := v.QueryDBKey(
-		NewDBKeyVStableSwapMaxOrderPerUser(),
-	)
-	if err != nil {
-		return 0, fmt.Errorf("Maker: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		return int(val), nil
-	default:
-		return 0, fmt.Errorf("Maker: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapBaseTokenBalance(addr string) (Bytes, error) {
-	addrMd, err := NewAddrFromB58Str(addr)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyForBaseTokenBalance: %w", err)
-	}
-
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_BASE_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
-}
-
-// GetBaseTokBal queries & returns the balance of the available base tokens.
-func (v *VStableSwapCtrt) GetBaseTokBal(addr string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapBaseTokenBalance(addr)
-	if err != nil {
-		return nil, fmt.Errorf("GetBaseTokBal: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetBaseTokBal: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.BaseTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetBaseTokBal: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetBaseTokBal: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapTargetTokenBalance(addr string) (Bytes, error) {
-	addrMd, err := NewAddrFromB58Str(addr)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyForTargetTokenBalance: %w", err)
-	}
-
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_TARGET_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
-}
-
-// GetTargetTokBal queries & returns the balance of the available target tokens.
-func (v *VStableSwapCtrt) GetTargetTokBal(addr string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapTargetTokenBalance(addr)
-	if err != nil {
-		return nil, fmt.Errorf("GetTargetTokBal: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetTargetTokBal: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetTargetTokBal: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetTargetTokBal: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapGetUserOrders(addr string) (Bytes, error) {
-	addrMd, err := NewAddrFromB58Str(addr)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyForTargetTokenBalance: %w", err)
-	}
-
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_USER_ORDERS, NewDeAddr(addrMd)).Serialize(), nil
-}
-
-// GetUserOrders queries & returns the number of user orders.
-func (v *VStableSwapCtrt) GetUserOrders(addr string) (int, error) {
-	dbKey, err := NewDBKeyVStableSwapGetUserOrders(addr)
-	if err != nil {
-		return 0, fmt.Errorf("GetUserOrders: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return 0, fmt.Errorf("GetUserOrders: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		return int(val), nil
-	default:
-		return 0, fmt.Errorf("GetUserOrders: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapOrderOwner(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapOrderOwner: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_ORDER_OWNER, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetOrderOwner queries & returns the address of the order owner.
-func (v *VStableSwapCtrt) GetOrderOwner(orderId string) (*Addr, error) {
-	dbKey, err := NewDBKeyVStableSwapOrderOwner(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetOrderOwner: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetOrderOwner: %w", err)
-	}
-	switch addrB58 := resp.Val.(type) {
-	case string:
-		addr, err := NewAddrFromB58Str(addrB58)
-		if err != nil {
-			return nil, fmt.Errorf("GetOrderOwner: %w", err)
-		}
-		return addr, nil
-	default:
-		return nil, fmt.Errorf("GetOrderOwner: CtrtDataResp.Val is %T but string was expected", addrB58)
-	}
-}
-
-func NewDBKeyVStableSwapFeeBase(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapFeeBase: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_FEE_BASE, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetFeeBase queries & returns the base fee.
-func (v *VStableSwapCtrt) GetFeeBase(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapFeeBase(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetFeeBase: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetFeeBase: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetFeeBase: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetFeeBase: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapFeeTarget(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapFeeTarget: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_FEE_TARGET, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetFeeTarget queries and returns target fee.
-func (v *VStableSwapCtrt) GetFeeTarget(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapFeeTarget(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetFeeTarget: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetFeeTarget: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetFeeTarget: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetFeeTarget: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapMinBase(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapMinBase: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MIN_BASE, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetMinBase queries & returns the minimum amount of base token.
-func (v *VStableSwapCtrt) GetMinBase(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapMinBase(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetMinBase: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetMinBase: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetMinBase: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetMinBase: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapMinTarget(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapMinTarget: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MIN_TARGET, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetMinTarget  queries & returns the minimum amount of target token.
-func (v *VStableSwapCtrt) GetMinTarget(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapMinTarget(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetMinTarget: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetMinTarget: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetMinTarget: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetMinTarget: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapMaxBase(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapMaxBase: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MAX_BASE, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetMaxBase  queries & returns the maximum amount of base token.
-func (v *VStableSwapCtrt) GetMaxBase(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapMaxBase(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetMaxBase: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetMaxBase: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetMaxBase: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetMaxBase: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapMaxTarget(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapMaxTarget: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_MAX_TARGET, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetMaxTarget  queries & returns the maximum amount of target token.
-func (v *VStableSwapCtrt) GetMaxTarget(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapMaxTarget(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetMaxTarget: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetMaxTarget: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetMaxTarget: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetMaxTarget: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-func NewDBKeyVStableSwapPriceBase(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapPriceBase: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_PRICE_BASE, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetPriceBase  queries & returns the price of base token.
-func (v *VStableSwapCtrt) GetPriceBase(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapPriceBase(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetPriceBase: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetPriceBase: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetPriceBase: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetPriceBase: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapPriceTarget(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapPriceTarget: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_PRICE_TARGET, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetPriceTarget  queries & returns the price of the target token.
-func (v *VStableSwapCtrt) GetPriceTarget(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapPriceTarget(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetPriceTarget: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetPriceTarget: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetPriceTarget: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetPriceTarget: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapBaseTokenLocked(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapBaseTokenLocked: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_BASE_TOKEN_LOCKED, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetBaseTokLocked  queries & returns the amount of locked base tokens.
-func (v *VStableSwapCtrt) GetBaseTokLocked(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapBaseTokenLocked(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetBaseTokLocked: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetBaseTokLocked: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetBaseTokLocked: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetBaseTokLocked: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapTargetTokenLocked(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapTargetTokenLocked: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_TARGET_TOKEN_LOCKED, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetTargetTokLocked  queries & returns the amount of locked target tokens.
-func (v *VStableSwapCtrt) GetTargetTokLocked(orderId string) (*Token, error) {
-	dbKey, err := NewDBKeyVStableSwapTargetTokenLocked(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("GetTargetTokLocked: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return nil, fmt.Errorf("GetTargetTokLocked: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case float64:
-		unit, err := v.TargetTokUnit()
-		if err != nil {
-			return nil, fmt.Errorf("GetTargetTokLocked: %w", err)
-		}
-		return NewToken(Amount(val), unit), nil
-	default:
-		return nil, fmt.Errorf("GetTargetTokLocked: CtrtDataResp.Val is %T but float64 was expected", val)
-	}
-}
-
-func NewDBKeyVStableSwapOrderStatus(orderId string) (Bytes, error) {
-	b, err := NewBytesFromB58Str(orderId)
-	if err != nil {
-		return nil, fmt.Errorf("NewDBKeyVStableSwapOrderStatus: %w", err)
-	}
-	return NewStateMap(STATE_MAP_IDX_V_STABLE_SWAP_ORDER_STATUS, NewDeBytes(b)).Serialize(), nil
-}
-
-// GetOrderStatus  queries & returns the status of the order.
-func (v *VStableSwapCtrt) GetOrderStatus(orderId string) (bool, error) {
-	dbKey, err := NewDBKeyVStableSwapOrderStatus(orderId)
-	if err != nil {
-		return false, fmt.Errorf("GetOrderStatus: %w", err)
-	}
-	resp, err := v.QueryDBKey(dbKey)
-	if err != nil {
-		return false, fmt.Errorf("GetOrderStatus: %w", err)
-	}
-	switch val := resp.Val.(type) {
-	case string:
-		return val == "true", nil
-	default:
-		return false, fmt.Errorf("GetOrderStatus: CtrtDataResp.Val is %T but string was expected", val)
-	}
 }

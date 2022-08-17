@@ -1,7 +1,6 @@
 package vsys
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -16,29 +15,26 @@ type atomicSwapTest struct {
 var asT *atomicSwapTest
 var mu sync.Mutex
 
-func (ast *atomicSwapTest) newTokCtrtWithTok(t *testing.T, by *Account) (*TokCtrtWithoutSplit, error) {
+func (ast *atomicSwapTest) newTokCtrtWithTok(t *testing.T, by *Account) *TokCtrtWithoutSplit {
 	mu.Lock()
 	tc, err := RegisterTokCtrtWithoutSplit(by, 1000, 1, "", "")
 	if err != nil {
-		return nil, fmt.Errorf("newMakerTokCtrtWithTok: %w", err)
+		t.Fatal(err)
 	}
 	mu.Unlock()
 	waitForBlock()
 
 	resp, err := tc.Issue(by, 1000, "")
 	if err != nil {
-		return nil, fmt.Errorf("newMakerTokCtrtWithTok: %w", err)
+		t.Fatal(err)
 	}
 	waitForBlock()
 	assertTxSuccess(t, string(resp.Id))
-	return tc, nil
+	return tc
 }
 
 func (ast *atomicSwapTest) newAtomicSwap(t *testing.T, by *Account) (*AtomicSwapCtrt, error) {
-	token, err := ast.newTokCtrtWithTok(t, by)
-	if err != nil {
-		return nil, fmt.Errorf(": %w", err)
-	}
+	token := ast.newTokCtrtWithTok(t, by)
 	tokId, _ := token.TokId()
 	ac, err := RegisterAtomicSwapCtrt(by, string(tokId.B58Str()), "")
 	if err != nil {
@@ -81,10 +77,7 @@ func (ast *atomicSwapTest) test_Register(t *testing.T, acnt *Account, tc *TokCtr
 }
 
 func Test_AtomicSwapCtrt_Register(t *testing.T) {
-	tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatalf("Cannot get new maker token ctrt: %s\n", err.Error())
-	}
+	tc := asT.newTokCtrtWithTok(t, testAcnt0)
 	asT.test_Register(t, testAcnt0, tc)
 }
 
@@ -291,10 +284,7 @@ func Test_AtomicSwapCtrt_ExpWithdraw(t *testing.T) {
 }
 
 func Test_AtomicSwapCtrt_AsWhole(t *testing.T) {
-	maker_tc, err := asT.newTokCtrtWithTok(t, testAcnt0)
-	if err != nil {
-		t.Fatal(err)
-	}
+	maker_tc := asT.newTokCtrtWithTok(t, testAcnt0)
 	makerCtrt := asT.test_Register(t, testAcnt0, maker_tc)
 	resp, err := maker_tc.Deposit(testAcnt0, string(makerCtrt.CtrtId.B58Str()), 1000, "")
 	if err != nil {
