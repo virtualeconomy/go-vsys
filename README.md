@@ -107,7 +107,7 @@ func main() {
 
 ## Testing
 
-Functional tests are functions that simulate the behavior of a normal user to interact with `py_vsys`(e.g. register a smart contract & call fucntions of it).
+Functional tests are functions that simulate the behavior of a normal user to interact with `go-vsys`(e.g. register a smart contract & call functions of it).
 
 > NOTE that the test environement defined as global variables in [helper_test.go](./vsys/helper_test.go) has to be configured through environemnt variables before the test cases can be executed.
 
