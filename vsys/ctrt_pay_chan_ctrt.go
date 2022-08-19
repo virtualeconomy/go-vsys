@@ -177,6 +177,7 @@ func NewDBKeyPayChanCtrtChanCreator(chanId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_PAY_CHAN_CHANNEL_CREATOR, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetChanCreator queries & returns the channel creator.
 func (p *PayChanCtrt) GetChanCreator(chanId string) (*Addr, error) {
 	dbKey, err := NewDBKeyPayChanCtrtChanCreator(chanId)
 	if err != nil {
@@ -203,6 +204,7 @@ func NewDBKeyPayChanCtrtChanCreatorPubKey(chanId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_PAY_CHAN_CHANNEL_CREATOR_PUBLIC_KEY, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetChanCreatorPubKey queries & returns the public key of the channel creator.
 func (p *PayChanCtrt) GetChanCreatorPubKey(chanId string) (*PubKey, error) {
 	dbKey, err := NewDBKeyPayChanCtrtChanCreatorPubKey(chanId)
 	if err != nil {
@@ -234,6 +236,7 @@ func NewDBKeyPayChanCtrtChanRecipient(chanId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_PAY_CHAN_CHANNEL_RECIPIENT, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetChanRecipient queries & returns the recipient of the channel.
 func (p *PayChanCtrt) GetChanRecipient(chanId string) (*Addr, error) {
 	dbKey, err := NewDBKeyPayChanCtrtChanRecipient(chanId)
 	if err != nil {
@@ -260,6 +263,7 @@ func NewDBKeyPayChanCtrtChannelAccumLoad(chanId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_PAY_CHAN_CHANNEL_ACCUMULATED_LOAD, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetChanAccumLoad queries & returns the accumulated load of the channel.
 func (p *PayChanCtrt) GetChanAccumLoad(chanId string) (*Token, error) {
 	dbKey, err := NewDBKeyPayChanCtrtChannelAccumLoad(chanId)
 	if err != nil {
@@ -290,6 +294,7 @@ func NewDBKeyPayChanCtrtChannelAccumPay(chanId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_PAY_CHAN_CHANNEL_ACCUMULATED_PAYMENT, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetChanAccumPay queries & returns the accumulated payment of the channel.
 func (p *PayChanCtrt) GetChanAccumPay(chanId string) (*Token, error) {
 	dbKey, err := NewDBKeyPayChanCtrtChannelAccumPay(chanId)
 	if err != nil {
@@ -320,6 +325,7 @@ func NewDBKeyPayChanCtrtChanExpTime(chanId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_PAY_CHAN_CHANNEL_EXPIRATION_TIME, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetChanExpTime queries & returns the expiration time of the channel.
 func (p *PayChanCtrt) GetChanExpTime(chanId string) (VSYSTimestamp, error) {
 	dbKey, err := NewDBKeyPayChanCtrtChanExpTime(chanId)
 	if err != nil {
@@ -346,6 +352,7 @@ func NewDBKeyPayChanCtrtChanStatus(chanId string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_PAY_CHAN_CHANNEL_STATUS, NewDeBytes(b)).Serialize(), nil
 }
 
+// GetChanStatus queries & returns the status of the channel (if the channel is still active)
 func (p *PayChanCtrt) GetChanStatus(chanId string) (bool, error) {
 	dbKey, err := NewDBKeyPayChanCtrtChanStatus(chanId)
 	if err != nil {
@@ -577,6 +584,7 @@ func (p *PayChanCtrt) CollectPayment(
 	return resp, nil
 }
 
+// OffchainPay generates the offchain payment signature.
 func (p *PayChanCtrt) OffchainPay(key *PriKey, chanId string, amount float64) (string, error) {
 	msg, err := p.getPayMsg(chanId, amount)
 	if err != nil {
@@ -589,6 +597,7 @@ func (p *PayChanCtrt) OffchainPay(key *PriKey, chanId string, amount float64) (s
 	return B58Encode(sig_bytes), nil
 }
 
+// VerifySig verifies the payment signature.
 func (p *PayChanCtrt) VerifySig(
 	chanId string,
 	amount float64,
@@ -609,6 +618,7 @@ func (p *PayChanCtrt) VerifySig(
 	return Verify(pubKey.Bytes, msg, sig_bytes), nil
 }
 
+// getPayMsg generates the payment message in Bytes.
 func (p *PayChanCtrt) getPayMsg(chanId string, amount float64) (Bytes, error) {
 	unit, err := p.Unit()
 	if err != nil {

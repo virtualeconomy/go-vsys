@@ -2,6 +2,7 @@ package vsys
 
 import "fmt"
 
+// VSwapCtrt is the struct for VSYS Swap Contract.
 type VSwapCtrt struct {
 	*Ctrt
 	tokACtrt   BaseTokCtrt
@@ -12,6 +13,7 @@ type VSwapCtrt struct {
 	liqTokId   *TokenId
 }
 
+// NewVSwapCtrt creates instance of VSwapCtrt from given contract id.
 func NewVSwapCtrt(ctrtId string, chain *Chain) (*VSwapCtrt, error) {
 	ctrtIdMd, err := NewCtrtIdFromB58Str(ctrtId)
 	if err != nil {
@@ -26,6 +28,7 @@ func NewVSwapCtrt(ctrtId string, chain *Chain) (*VSwapCtrt, error) {
 	}, nil
 }
 
+// RegisterVSwapCtrt registers a Swap Contract.
 func RegisterVSwapCtrt(
 	by *Account,
 	tokenAId string,
@@ -144,6 +147,7 @@ func NewDBKeyVSwapForGetLiqTokBal(addr string) (Bytes, error) {
 	return NewStateMap(STATE_MAP_IDX_V_SWAP_LIQUIDITY_TOKEN_BALANCE, NewDeAddr(addrMd)).Serialize(), nil
 }
 
+// TokAUnit returns the unit of token A.
 func (vs *VSwapCtrt) TokAUnit() (Unit, error) {
 	tc, err := vs.TokACtrt()
 	if err != nil {
@@ -152,6 +156,7 @@ func (vs *VSwapCtrt) TokAUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// TokBUnit returns the unit of token B.
 func (vs *VSwapCtrt) TokBUnit() (Unit, error) {
 	tc, err := vs.TokBCtrt()
 	if err != nil {
@@ -160,6 +165,7 @@ func (vs *VSwapCtrt) TokBUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// LiqTokUnit returns the unit of liquidity token.
 func (vs *VSwapCtrt) LiqTokUnit() (Unit, error) {
 	tc, err := vs.LiqTokCtrt()
 	if err != nil {
@@ -168,6 +174,7 @@ func (vs *VSwapCtrt) LiqTokUnit() (Unit, error) {
 	return tc.Unit()
 }
 
+// TokACtrt returns the token contract instance for token A.
 func (vs *VSwapCtrt) TokACtrt() (BaseTokCtrt, error) {
 	if vs.tokACtrt == nil {
 		tokAId, err := vs.TokAId()
@@ -182,6 +189,8 @@ func (vs *VSwapCtrt) TokACtrt() (BaseTokCtrt, error) {
 	}
 	return vs.tokACtrt, nil
 }
+
+// TokBCtrt returns the token contract instance for token B.
 func (vs *VSwapCtrt) TokBCtrt() (BaseTokCtrt, error) {
 	if vs.tokBCtrt == nil {
 		tokAId, err := vs.TokBId()
@@ -197,6 +206,7 @@ func (vs *VSwapCtrt) TokBCtrt() (BaseTokCtrt, error) {
 	return vs.tokBCtrt, nil
 }
 
+// LiqTokCtrt returns the token contract instance for liquidtiy token.
 func (vs *VSwapCtrt) LiqTokCtrt() (BaseTokCtrt, error) {
 	if vs.liqTokCtrt == nil {
 		liqTokId, err := vs.LiqTokId()
@@ -212,8 +222,8 @@ func (vs *VSwapCtrt) LiqTokCtrt() (BaseTokCtrt, error) {
 	return vs.liqTokCtrt, nil
 }
 
+// TokAId queries & returns the token A ID of the contract.
 func (vs *VSwapCtrt) TokAId() (*TokenId, error) {
-
 	if vs.tokAId == nil {
 		resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokenAId())
 		if err != nil {
@@ -229,6 +239,7 @@ func (vs *VSwapCtrt) TokAId() (*TokenId, error) {
 	return vs.tokAId, nil
 }
 
+// TokBId queries & returns the token B ID of the contract.
 func (vs *VSwapCtrt) TokBId() (*TokenId, error) {
 	if vs.tokBId == nil {
 		resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokenBId())
@@ -245,6 +256,7 @@ func (vs *VSwapCtrt) TokBId() (*TokenId, error) {
 	return vs.tokBId, nil
 }
 
+// LiqTokId queries & returns liqidity token ID of the contract.
 func (vs *VSwapCtrt) LiqTokId() (*TokenId, error) {
 	if vs.liqTokId == nil {
 		resp, err := vs.QueryDBKey(NewDBKeyVSwapForLiqTokId())
@@ -261,6 +273,7 @@ func (vs *VSwapCtrt) LiqTokId() (*TokenId, error) {
 	return vs.liqTokId, nil
 }
 
+// Maker queries & returns the maker of the contract.
 func (vs *VSwapCtrt) Maker() (*Addr, error) {
 	resp, err := vs.QueryDBKey(
 		NewDBKeyVSwapForMaker(),
@@ -276,6 +289,7 @@ func (vs *VSwapCtrt) Maker() (*Addr, error) {
 	return addr, nil
 }
 
+// IsSwapActive queries & returns the swap status of whether the swap is currently active.
 func (vs *VSwapCtrt) IsSwapActive() (bool, error) {
 	resp, err := vs.QueryDBKey(NewDBKeyVSwapForSwapStatus())
 	if err != nil {
@@ -289,6 +303,7 @@ func (vs *VSwapCtrt) IsSwapActive() (bool, error) {
 	return val, nil
 }
 
+// MinLiq queries & returns the minimum liquidity of the contract.
 func (vs *VSwapCtrt) MinLiq() (*Token, error) {
 	resp, err := vs.QueryDBKey(NewDBKeyVSwapForMinLiq())
 	if err != nil {
@@ -306,6 +321,7 @@ func (vs *VSwapCtrt) MinLiq() (*Token, error) {
 	return tok, nil
 }
 
+// TokAReserved queries & returns the amount of token A inside the pool.
 func (vs *VSwapCtrt) TokAReserved() (*Token, error) {
 	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokAReserved())
 	if err != nil {
@@ -323,6 +339,7 @@ func (vs *VSwapCtrt) TokAReserved() (*Token, error) {
 	return tok, nil
 }
 
+// TokBReserved queries & returns the amount of token B inside the pool.
 func (vs *VSwapCtrt) TokBReserved() (*Token, error) {
 	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTokBReserved())
 	if err != nil {
@@ -340,6 +357,7 @@ func (vs *VSwapCtrt) TokBReserved() (*Token, error) {
 	return tok, nil
 }
 
+// TotalLiqTokSupply queries & returns the total amount of liquidity tokens that can be minted.
 func (vs *VSwapCtrt) TotalLiqTokSupply() (*Token, error) {
 	resp, err := vs.QueryDBKey(NewDBKeyVSwapForTotalLiqTokSupply())
 	if err != nil {
@@ -357,6 +375,7 @@ func (vs *VSwapCtrt) TotalLiqTokSupply() (*Token, error) {
 	return tok, nil
 }
 
+// LiqTokLeft queries & returns the amount of liquidity tokens left to be minted.
 func (vs *VSwapCtrt) LiqTokLeft() (*Token, error) {
 	resp, err := vs.QueryDBKey(NewDBKeyVSwapForLiqTokLeft())
 	if err != nil {
@@ -374,6 +393,8 @@ func (vs *VSwapCtrt) LiqTokLeft() (*Token, error) {
 	return tok, nil
 }
 
+// GetTokABal queries & returns the balance of token A stored within the contract belonging
+// to the given user address.
 func (vs *VSwapCtrt) GetTokABal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVSwapForGetTokABal(addr)
 	if err != nil {
@@ -395,6 +416,8 @@ func (vs *VSwapCtrt) GetTokABal(addr string) (*Token, error) {
 	return tok, nil
 }
 
+// GetTokBBal queries & returns the balance of token B stored within the contract belonging
+// to the given user address.
 func (vs *VSwapCtrt) GetTokBBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVSwapForGetTokBBal(addr)
 	if err != nil {
@@ -416,6 +439,8 @@ func (vs *VSwapCtrt) GetTokBBal(addr string) (*Token, error) {
 	return tok, nil
 }
 
+// GetLiqTokBal queries & returns the balance of liquidity token stored within the contract belonging
+// to the given user address.
 func (vs *VSwapCtrt) GetLiqTokBal(addr string) (*Token, error) {
 	dbKey, err := NewDBKeyVSwapForGetLiqTokBal(addr)
 	if err != nil {
@@ -437,6 +462,7 @@ func (vs *VSwapCtrt) GetLiqTokBal(addr string) (*Token, error) {
 	return tok, nil
 }
 
+// Supersede transfers the contract rights of the contract to a new account.
 func (vs *VSwapCtrt) Supersede(by *Account, newOwner, attachment string) (*BroadcastExecuteTxResp, error) {
 	newOwnerMd, err := NewAddrFromB58Str(newOwner)
 	if err != nil {
@@ -461,6 +487,7 @@ func (vs *VSwapCtrt) Supersede(by *Account, newOwner, attachment string) (*Broad
 	return resp, nil
 }
 
+// SetSwap creates a swap and deposit initial amounts into the pool.
 func (vs *VSwapCtrt) SetSwap(by *Account, amountA, amountB float64, attachment string) (*BroadcastExecuteTxResp, error) {
 	tokAUnit, err := vs.TokAUnit()
 	if err != nil {
@@ -499,6 +526,9 @@ func (vs *VSwapCtrt) SetSwap(by *Account, amountA, amountB float64, attachment s
 	return resp, nil
 }
 
+// AddLiquidity adds liquidity to the pool. The final added amount of token A & B will
+// be in the same proportion as the pool at that moment as the liquidity provider shouldn't
+// change the price of the token while the price is determined by the ratio between A & B.
 func (vs *VSwapCtrt) AddLiquidity(
 	by *Account,
 	amountA, amountB, amountAmin, amountBmin float64,
@@ -553,6 +583,7 @@ func (vs *VSwapCtrt) AddLiquidity(
 	return resp, nil
 }
 
+// RemoveLiquidity removes liquidity from the pool by redeeming token A & B with liquidity tokens.
 func (vs *VSwapCtrt) RemoveLiquidity(
 	by *Account,
 	amountLiq, amountAmin, amountBmin float64,
@@ -606,6 +637,7 @@ func (vs *VSwapCtrt) RemoveLiquidity(
 	return resp, nil
 }
 
+// SwapBForExactA swaps token B for token A where the desired amount of token A is fixed.
 func (vs *VSwapCtrt) SwapBForExactA(
 	by *Account,
 	amountA, amountBMax float64,
@@ -646,6 +678,7 @@ func (vs *VSwapCtrt) SwapBForExactA(
 	return resp, nil
 }
 
+// SwapExactBForA swaps token B for token A where the amount of token B to pay is fixed.
 func (vs *VSwapCtrt) SwapExactBForA(
 	by *Account,
 	amountAmin, amountB float64,
@@ -686,6 +719,8 @@ func (vs *VSwapCtrt) SwapExactBForA(
 	return resp, nil
 }
 
+// SwapAForExactB swaps token A for token B where the desired amount of token B
+// is fixed.
 func (vs *VSwapCtrt) SwapAForExactB(
 	by *Account,
 	amountB, amountAMax float64,
@@ -726,6 +761,7 @@ func (vs *VSwapCtrt) SwapAForExactB(
 	return resp, nil
 }
 
+// SwapExactAForB swaps token A for token B where the amount of token A to pay is fixed.
 func (vs *VSwapCtrt) SwapExactAForB(
 	by *Account,
 	amountBmin, amountA float64,
