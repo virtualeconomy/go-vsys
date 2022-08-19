@@ -12,7 +12,7 @@ type GetTokIdResp struct {
 // GetTokId gets the token ID of the given contract with the given token index.
 func (na *NodeAPI) GetTokId(ctrtId string, tokIdx uint32) (*GetTokIdResp, error) {
 	res := &GetTokIdResp{}
-	resp, err := na.R().Get(
+	resp, err := na.R().SetResult(res).Get(
 		fmt.Sprintf("/contract/contractId/%s/tokenIndex/%d", ctrtId, tokIdx),
 	)
 	if err != nil {
@@ -236,7 +236,7 @@ type LastTokenIdxResp struct {
 // GetLastIndex gets the last index of the token in a token-defining contract(e.g. NFT contract, token contract).
 func (na *NodeAPI) GetLastIndex(ctrtId string) (*LastTokenIdxResp, error) {
 	res := &LastTokenIdxResp{}
-	resp, err := na.R().Get(
+	resp, err := na.R().SetResult(res).Get(
 		fmt.Sprintf("/contract/lastTokenIndex/%s", ctrtId),
 	)
 	if err != nil {
