@@ -40,3 +40,7 @@ func (i DeInt32) Serialize() Bytes {
 func (i DeInt32) Size() int {
 	return 1 + len(i.DataBytes())
 }
+
+func (i DeInt32) String() string {
+	return fmt.Sprintf("%T(%d)", i, i.Data)
+}

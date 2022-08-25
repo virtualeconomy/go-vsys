@@ -9,8 +9,7 @@ type DeCtrtAcnt struct {
 }
 
 func NewDeCtrtAcntFromBytesGeneric(b []byte) (DataEntry, error) {
-	a := B58Encode(b[1 : 1+26])
-	return NewDeCtrtAcnt(Bytes(a)), nil
+	return NewDeCtrtAcnt(Bytes(b[1 : 1+26])), nil
 }
 
 func (a *DeCtrtAcnt) IdxBytes() Bytes {

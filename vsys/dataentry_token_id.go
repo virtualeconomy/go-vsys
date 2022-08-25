@@ -18,8 +18,7 @@ func NewDeTokenId(t *TokenId) *DeTokenId {
 }
 
 func NewDeTokenIdFromBytesGeneric(b []byte) (DataEntry, error) {
-	a := B58Encode(b[1 : 1+30])
-	t, err := NewTokenId([]byte(a))
+	t, err := NewTokenId(b[1 : 1+30])
 	if err != nil {
 		return nil, fmt.Errorf("NewDeAcntFromBytesGeneric: %w", err)
 	}
@@ -40,4 +39,8 @@ func (d *DeTokenId) Serialize() Bytes {
 
 func (d *DeTokenId) Size() int {
 	return 1 + len(d.DataBytes())
+}
+
+func (d *DeTokenId) String() string {
+	return fmt.Sprintf("%T(%s)", d, d.Data.B58Str())
 }

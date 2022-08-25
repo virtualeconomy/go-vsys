@@ -24,7 +24,7 @@ func NewDeStrFromBytesGeneric(b []byte) (DataEntry, error) {
 	if err != nil {
 		return nil, fmt.Errorf("NewDeStrFromBytesGeneric: %w", err)
 	}
-	s, err := B58Decode(string(b[3 : 3+l]))
+	s := b[3 : 3+l]
 	if err != nil {
 		return nil, fmt.Errorf("NewDeStrFromBytesGeneric: %w", err)
 	}
