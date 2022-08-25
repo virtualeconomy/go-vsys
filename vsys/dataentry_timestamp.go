@@ -14,6 +14,15 @@ func NewDeTimestamp(t VSYSTimestamp) *DeTimestamp {
 		Data: t,
 	}
 }
+
+func NewDeTimestampFromBytesGeneric(b []byte) (DataEntry, error) {
+	i, err := UnpackUInt64(b[1 : 1+8])
+	if err != nil {
+		return nil, fmt.Errorf("NewDeTimestampFromBytesGeneric: %w", err)
+	}
+	return NewDeTimestamp(VSYSTimestamp(i)), nil
+}
+
 func NewDeTimestampForNow() *DeTimestamp {
 	return NewDeTimestamp(NewVSYSTimestampForNow())
 }

@@ -7,8 +7,16 @@ import (
 var idxMap = map[int]func([]byte) (DataEntry, error){
 	1:  NewDePubKeyFromBytesGeneric,
 	2:  NewDeAddrFromBytesGeneric,
+	3:  NewDeAmountFromBytesGeneric,
+	4:  NewDeInt32FromBytesGeneric,
 	5:  NewDeStrFromBytesGeneric,
+	6:  NewDeCtrtAcntFromBytesGeneric,
+	7:  NewDeAddrFromBytesGeneric, // No DeAccount type, but same function
+	8:  NewDeTokenIdFromBytesGeneric,
+	9:  NewDeTimestampFromBytesGeneric,
+	10: NewDeBoolFromBytesGeneric,
 	11: NewDeBytesFromBytesGeneric,
+	12: NewDeTimestampFromBytesGeneric, // No Timestamp type but same function
 }
 
 type DataStack []DataEntry

@@ -20,7 +20,15 @@ func NewDeStrFromString(s string) *DeStr {
 }
 
 func NewDeStrFromBytesGeneric(b []byte) (DataEntry, error) {
-	return NewDeStr(Str(b[1:])), nil
+	l, err := UnpackUInt16(b[1 : 1+2])
+	if err != nil {
+		return nil, fmt.Errorf("NewDeStrFromBytesGeneric: %w", err)
+	}
+	s, err := B58Decode(string(b[3 : 3+l]))
+	if err != nil {
+		return nil, fmt.Errorf("NewDeStrFromBytesGeneric: %w", err)
+	}
+	return NewDeStrFromString(string(s)), nil
 }
 
 func NewDeStrFromBytes(b []byte) *DeStr {

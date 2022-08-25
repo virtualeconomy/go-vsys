@@ -8,6 +8,11 @@ type DeCtrtAcnt struct {
 	Data Bytes
 }
 
+func NewDeCtrtAcntFromBytesGeneric(b []byte) (DataEntry, error) {
+	a := B58Encode(b[1 : 1+26])
+	return NewDeCtrtAcnt(Bytes(a)), nil
+}
+
 func (a *DeCtrtAcnt) IdxBytes() Bytes {
 	return a.Idx.Serialize()
 }

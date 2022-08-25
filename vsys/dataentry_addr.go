@@ -18,7 +18,7 @@ func NewDeAddr(a *Addr) *DeAddr {
 }
 
 func NewDeAddrFromBytesGeneric(b []byte) (DataEntry, error) {
-	a, err := NewAddr(b[1:])
+	a, err := NewAddr(b[1 : 1+26])
 	if err != nil {
 		return nil, fmt.Errorf("NewAddrFromBytesGeneric: %w", err)
 	}

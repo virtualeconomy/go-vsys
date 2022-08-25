@@ -1,5 +1,9 @@
 package vsys
 
+import (
+	"fmt"
+)
+
 type DeTokenId struct {
 	Idx DeIdx
 
@@ -11,6 +15,15 @@ func NewDeTokenId(t *TokenId) *DeTokenId {
 		Idx:  8,
 		Data: t,
 	}
+}
+
+func NewDeTokenIdFromBytesGeneric(b []byte) (DataEntry, error) {
+	a := B58Encode(b[1 : 1+30])
+	t, err := NewTokenId([]byte(a))
+	if err != nil {
+		return nil, fmt.Errorf("NewDeAcntFromBytesGeneric: %w", err)
+	}
+	return NewDeTokenId(t), nil
 }
 
 func (d *DeTokenId) IdxBytes() Bytes {
