@@ -17,6 +17,10 @@ func NewDeBool(b bool) *DeBool {
 	}
 }
 
+func NewDeBoolFromBytesGeneric(b []byte) (DataEntry, error) {
+	return NewDeBoolFromBytes(b[1:2])
+}
+
 func NewDeBoolFromBytes(b Bytes) (*DeBool, error) {
 	v, err := UnpackBool(b)
 	if err != nil {
@@ -31,10 +35,6 @@ func (b *DeBool) IdxBytes() Bytes {
 
 func (b *DeBool) DataBytes() Bytes {
 	return PackBool(b.Data)
-}
-
-func Deserialize(b Bytes) (*DeBool, error) {
-	return NewDeBoolFromBytes(b[1:2])
 }
 
 func (b *DeBool) Serialize() Bytes {

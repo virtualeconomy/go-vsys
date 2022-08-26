@@ -8,6 +8,10 @@ type DeCtrtAcnt struct {
 	Data Bytes
 }
 
+func NewDeCtrtAcntFromBytesGeneric(b []byte) (DataEntry, error) {
+	return NewDeCtrtAcnt(Bytes(b[1 : 1+26])), nil
+}
+
 func (a *DeCtrtAcnt) IdxBytes() Bytes {
 	return a.Idx.Serialize()
 }

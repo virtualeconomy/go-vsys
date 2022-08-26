@@ -18,7 +18,7 @@ func NewDePubKey(p *PubKey) *DePubKey {
 }
 
 func NewDePubKeyFromBytesGeneric(b []byte) (DataEntry, error) {
-	p, err := NewPubKey(b[1:])
+	p, err := NewPubKey(b[1 : 1+32])
 	if err != nil {
 		return nil, fmt.Errorf("NewDePubKeyFromBytesGeneric: %w", err)
 	}

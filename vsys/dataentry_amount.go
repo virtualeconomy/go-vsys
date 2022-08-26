@@ -15,6 +15,14 @@ func NewDeAmount(a Amount) *DeAmount {
 	}
 }
 
+func NewDeAmountFromBytesGeneric(b []byte) (DataEntry, error) {
+	i, err := UnpackUInt64(b[1 : 1+8])
+	if err != nil {
+		return nil, fmt.Errorf("NewDeAmountFromBytesGeneric: %w", err)
+	}
+	return NewDeAmount(Amount(i)), nil
+}
+
 func NewDeAmountForTokAmount(amount float64, unit uint64) (*DeAmount, error) {
 	token, err := NewTokenForAmount(amount, unit)
 	if err != nil {
