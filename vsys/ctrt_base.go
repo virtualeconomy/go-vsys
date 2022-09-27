@@ -33,51 +33,60 @@ func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
 	if err != nil {
 		return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
 	}
-	ctrtInfo, err := chain.NodeAPI.GetCtrtInfo(tokInfo.CtrtId.Str())
+	ctrt, err := GetCtrtFromCtrtId(tokInfo.CtrtId.Str(), chain)
 	if err != nil {
 		return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+	}
+	return ctrt, nil
+}
+
+// GetCtrtFromCtrtId return instance of token contract corresponding to given tokenId
+func GetCtrtFromCtrtId(ctrtId string, chain *Chain) (BaseTokCtrt, error) {
+	ctrtInfo, err := chain.NodeAPI.GetCtrtInfo(ctrtId)
+	if err != nil {
+		return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 	}
 	switch string(ctrtInfo.Type) {
 	case "NonFungibleContract":
 		n, err := NewNFTCtrt(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
-			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+			return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 		}
 		return n, nil
 	case "NFTContractWithBlacklist":
 		n, err := NewNFTCtrtV2Blacklist(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
-			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+			return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 		}
 		return n, nil
 	case "NFTContractWithWhitelist":
 		n, err := NewNFTCtrtV2Whitelist(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
-			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+			return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 		}
 		return n, nil
 	case "TokenContract":
 		n, err := NewTokCtrtWithoutSplit(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
-			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+			return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 		}
 		return n, nil
 	case "TokenContractWithSplit":
 		n, err := NewTokCtrtWithSplit(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
-			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+			return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 		}
 		return n, nil
 	case "TokenContractWithWhitelist":
 		n, err := NewTokCtrtWithoutSplitV2Whitelist(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
-			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+			return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 		}
 		return n, nil
 	case "TokenContractWithBlacklist":
 		n, err := NewTokCtrtWithoutSplitV2Blacklist(ctrtInfo.CtrtId.Str(), chain)
 		if err != nil {
-			return nil, fmt.Errorf("GetCtrtFromTokId: %w", err)
+			return nil, fmt.Errorf("GetCtrtFromCtrtId: %w", err)
 		}
 		return n, nil
 	default:
