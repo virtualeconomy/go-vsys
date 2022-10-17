@@ -1,6 +1,7 @@
 package vsys
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -136,6 +137,23 @@ func (c *CtrtMetaTriggers) Serialize() Bytes {
 	return c.CtrtMetaBytesList.Serialize(true)
 }
 
+func (c *CtrtMetaTriggers) UnmarshalJSON(b []byte) error {
+	var arr []string
+	if err := json.Unmarshal(b, &arr); err != nil {
+		return fmt.Errorf("UnmarshalJSON: CtrtMetaTriggers cannot unmarshal: %w", err)
+	}
+	arrb := make([]CtrtMetaBytes, len(arr))
+	for i := range arr {
+		d, err := NewBytesFromB58Str(arr[i])
+		if err != nil {
+			return fmt.Errorf("UnmarshalJSON: CtrtMetaTriggers cannot unmarshal: %w", err)
+		}
+		arrb[i] = CtrtMetaBytes(d)
+	}
+	c.CtrtMetaBytesList = arrb
+	return nil
+}
+
 func (c *CtrtMetaTriggers) String() string {
 	return fmt.Sprintf("%T(%s)", c, c.CtrtMetaBytesList.String())
 }
@@ -156,6 +174,23 @@ func (c *CtrtMetaDescriptors) Serialize() Bytes {
 	return c.CtrtMetaBytesList.Serialize(true)
 }
 
+func (c *CtrtMetaDescriptors) UnmarshalJSON(b []byte) error {
+	var arr []string
+	if err := json.Unmarshal(b, &arr); err != nil {
+		return fmt.Errorf("UnmarshalJSON: CtrtMetaDescriptors cannot unmarshal: %w", err)
+	}
+	arrb := make([]CtrtMetaBytes, len(arr))
+	for i := range arr {
+		d, err := NewBytesFromB58Str(arr[i])
+		if err != nil {
+			return fmt.Errorf("UnmarshalJSON: CtrtMetaDescriptors cannot unmarshal: %w", err)
+		}
+		arrb[i] = CtrtMetaBytes(d)
+	}
+	c.CtrtMetaBytesList = arrb
+	return nil
+}
+
 func (c *CtrtMetaDescriptors) String() string {
 	return fmt.Sprintf("%T(%s)", c, c.CtrtMetaBytesList.String())
 }
@@ -174,6 +209,23 @@ func NewCtrtMetaStateVarsFromBytes(b []byte) (*CtrtMetaStateVars, error) {
 
 func (c *CtrtMetaStateVars) Serialize() Bytes {
 	return c.CtrtMetaBytesList.Serialize(true)
+}
+
+func (c *CtrtMetaStateVars) UnmarshalJSON(b []byte) error {
+	var arr []string
+	if err := json.Unmarshal(b, &arr); err != nil {
+		return fmt.Errorf("UnmarshalJSON: CtrtMetaStateVars cannot unmarshal: %w", err)
+	}
+	arrb := make([]CtrtMetaBytes, len(arr))
+	for i := range arr {
+		d, err := NewBytesFromB58Str(arr[i])
+		if err != nil {
+			return fmt.Errorf("UnmarshalJSON: CtrtMetaStateVars cannot unmarshal: %w", err)
+		}
+		arrb[i] = CtrtMetaBytes(d)
+	}
+	c.CtrtMetaBytesList = arrb
+	return nil
 }
 
 func (c *CtrtMetaStateVars) String() string {
@@ -202,6 +254,23 @@ func (c *CtrtMetaStateMap) Serialize() Bytes {
 	return c.CtrtMetaBytesList.Serialize(true)
 }
 
+func (c *CtrtMetaStateMap) UnmarshalJSON(b []byte) error {
+	var arr []string
+	if err := json.Unmarshal(b, &arr); err != nil {
+		return fmt.Errorf("UnmarshalJSON: CtrtMetaStateMap cannot unmarshal: %w", err)
+	}
+	arrb := make([]CtrtMetaBytes, len(arr))
+	for i := range arr {
+		d, err := NewBytesFromB58Str(arr[i])
+		if err != nil {
+			return fmt.Errorf("UnmarshalJSON: CtrtMetaStateMap cannot unmarshal: %w", err)
+		}
+		arrb[i] = CtrtMetaBytes(d)
+	}
+	c.CtrtMetaBytesList = arrb
+	return nil
+}
+
 func (c *CtrtMetaStateMap) String() string {
 	return fmt.Sprintf("%T(%s)", c, c.CtrtMetaBytesList.String())
 }
@@ -210,12 +279,19 @@ type CtrtMetaTextual struct {
 	CtrtMetaBytesList
 }
 
+type CtrtMetaTextualJSON struct {
+	Triggers    string `json:"triggers"`
+	Descriptors string `json:"descriptors"`
+	StateVars   string `json:"stateVariables"`
+	StateMap    string `json:"stateMaps"`
+}
+
 func NewCtrtMetaTextualFromBytes(b []byte) (*CtrtMetaTextual, error) {
-	cbl, err := NewCtrtMetaBytesListFromBytes(b, false)
+	_, err := NewCtrtMetaBytesListFromBytes(b, false)
 	if err != nil {
 		return nil, fmt.Errorf("NewCtrtMetaTextualFromBytes: %w", err)
 	}
-	return &CtrtMetaTextual{cbl}, nil
+	return &CtrtMetaTextual{}, nil
 }
 
 func (c *CtrtMetaTextual) Serialize() Bytes {
@@ -224,6 +300,10 @@ func (c *CtrtMetaTextual) Serialize() Bytes {
 
 func (c *CtrtMetaTextual) String() string {
 	return fmt.Sprintf("%T(%s)", c, c.CtrtMetaBytesList.String())
+}
+
+func (c *CtrtMetaTextualJSON) String() string {
+	return fmt.Sprintf("%T(%+v)", c, *c)
 }
 
 const (
@@ -236,13 +316,18 @@ const (
 )
 
 type CtrtMeta struct {
-	LangCode    CtrtMetaLangCode
-	LangVer     CtrtMetaLangVer
-	Triggers    *CtrtMetaTriggers
-	Descriptors *CtrtMetaDescriptors
-	StateVars   *CtrtMetaStateVars
-	StateMap    *CtrtMetaStateMap
+	LangCode    CtrtMetaLangCode     `json:"languageCode"`
+	LangVer     CtrtMetaLangVer      `json:"languageVersion"`
+	Triggers    *CtrtMetaTriggers    `json:"triggers"`
+	Descriptors *CtrtMetaDescriptors `json:"descriptors"`
+	StateVars   *CtrtMetaStateVars   `json:"stateVariables"`
+	StateMap    *CtrtMetaStateMap    `json:"stateMaps"`
 	Textual     *CtrtMetaTextual
+}
+
+type CtrtMetaJSON struct {
+	CtrtMeta
+	Textual *CtrtMetaTextualJSON `json:"textual"`
 }
 
 func NewCtrtMeta(b []byte) (*CtrtMeta, error) {
