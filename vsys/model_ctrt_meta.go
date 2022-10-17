@@ -287,11 +287,11 @@ type CtrtMetaTextualJSON struct {
 }
 
 func NewCtrtMetaTextualFromBytes(b []byte) (*CtrtMetaTextual, error) {
-	_, err := NewCtrtMetaBytesListFromBytes(b, false)
+	cbl, err := NewCtrtMetaBytesListFromBytes(b, false)
 	if err != nil {
 		return nil, fmt.Errorf("NewCtrtMetaTextualFromBytes: %w", err)
 	}
-	return &CtrtMetaTextual{}, nil
+	return &CtrtMetaTextual{cbl}, nil
 }
 
 func (c *CtrtMetaTextual) Serialize() Bytes {
