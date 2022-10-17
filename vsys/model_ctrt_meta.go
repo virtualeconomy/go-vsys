@@ -322,17 +322,12 @@ type CtrtMeta struct {
 	Descriptors *CtrtMetaDescriptors `json:"descriptors"`
 	StateVars   *CtrtMetaStateVars   `json:"stateVariables"`
 	StateMap    *CtrtMetaStateMap    `json:"stateMaps"`
-	Textual     *CtrtMetaTextual     `json:"textual"`
+	Textual     *CtrtMetaTextual
 }
 
 type CtrtMetaJSON struct {
-	LangCode    CtrtMetaLangCode     `json:"languageCode"`
-	LangVer     CtrtMetaLangVer      `json:"languageVersion"`
-	Triggers    *CtrtMetaTriggers    `json:"triggers"`
-	Descriptors *CtrtMetaDescriptors `json:"descriptors"`
-	StateVars   *CtrtMetaStateVars   `json:"stateVariables"`
-	StateMap    *CtrtMetaStateMap    `json:"stateMaps"`
-	Textual     *CtrtMetaTextualJSON `json:"textual"`
+	CtrtMeta
+	Textual *CtrtMetaTextualJSON `json:"textual"`
 }
 
 func NewCtrtMeta(b []byte) (*CtrtMeta, error) {
