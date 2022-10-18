@@ -330,6 +330,53 @@ type CtrtMetaJSON struct {
 	Textual *CtrtMetaTextualJSON `json:"textual"`
 }
 
+func (c *CtrtMetaJSON) GetCtrtMeta() (*CtrtMeta, error) {
+	cm := &c.CtrtMeta
+	l := 3
+	if c.LangVer == 2 {
+		l++
+	}
+	b := PackUInt16(uint16(l))
+
+	var err error
+	bytes, err := B58Decode(c.Textual.Triggers)
+	if err != nil {
+		return nil, err
+	}
+	litem := PackUInt16(uint16(len(bytes)))
+	b = append(b, litem...)
+	b = append(b, bytes...)
+	bytes, err = B58Decode(c.Textual.Descriptors)
+	if err != nil {
+		return nil, err
+	}
+	litem = PackUInt16(uint16(len(bytes)))
+	b = append(b, litem...)
+	b = append(b, bytes...)
+	if err != nil {
+		return nil, err
+	}
+	litem = PackUInt16(uint16(len(bytes)))
+	b = append(b, litem...)
+	b = append(b, bytes...)
+	if c.LangVer == 2 {
+		bytes, err = B58Decode(c.Textual.StateMap)
+		if err != nil {
+			return nil, err
+		}
+		litem = PackUInt16(uint16(len(bytes)))
+		b = append(b, litem...)
+		b = append(b, bytes...)
+	}
+
+	cm.Textual, err = NewCtrtMetaTextualFromBytes(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return cm, nil
+}
+
 func NewCtrtMeta(b []byte) (*CtrtMeta, error) {
 	langCode := CtrtMetaLangCode(b[:CTRT_META_LANG_CODE_BYTE_LEN])
 	b = b[CTRT_META_LANG_CODE_BYTE_LEN:]
