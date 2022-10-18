@@ -608,8 +608,11 @@ func (c *CtrtMeta) Serialize() Bytes {
 		c.Triggers.Size() +
 		c.Descriptors.Size() +
 		c.StateVars.Size() +
-		c.StateMap.Size() +
 		c.Textual.Size()
+
+	if c.LangVer != 1 {
+		size += c.StateMap.Size()
+	}
 
 	b := make([]byte, 0, size)
 
