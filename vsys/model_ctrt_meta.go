@@ -335,6 +335,8 @@ func (c *CtrtMetaJSON) GetCtrtMeta() (*CtrtMeta, error) {
 	l := 3
 	if c.LangVer == 2 {
 		l++
+	} else {
+		c.StateMap = NewEmptyCtrtMetaStateMap()
 	}
 	b := PackUInt16(uint16(l))
 
@@ -346,6 +348,7 @@ func (c *CtrtMetaJSON) GetCtrtMeta() (*CtrtMeta, error) {
 	litem := PackUInt16(uint16(len(bytes)))
 	b = append(b, litem...)
 	b = append(b, bytes...)
+
 	bytes, err = B58Decode(c.Textual.Descriptors)
 	if err != nil {
 		return nil, err
@@ -353,12 +356,15 @@ func (c *CtrtMetaJSON) GetCtrtMeta() (*CtrtMeta, error) {
 	litem = PackUInt16(uint16(len(bytes)))
 	b = append(b, litem...)
 	b = append(b, bytes...)
+
+	bytes, err = B58Decode(c.Textual.StateVars)
 	if err != nil {
 		return nil, err
 	}
 	litem = PackUInt16(uint16(len(bytes)))
 	b = append(b, litem...)
 	b = append(b, bytes...)
+	
 	if c.LangVer == 2 {
 		bytes, err = B58Decode(c.Textual.StateMap)
 		if err != nil {
@@ -373,7 +379,6 @@ func (c *CtrtMetaJSON) GetCtrtMeta() (*CtrtMeta, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return cm, nil
 }
 
