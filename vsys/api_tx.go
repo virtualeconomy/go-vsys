@@ -145,7 +145,6 @@ func (r *ReleaseSlotsTxInfoResp) GetTxGeneral() TxGeneral {
 
 type RegCtrtTxInfoResp struct {
 	TxGeneral
-
 	CtrtId      Str          `json:"contractId"`
 	Ctrt        CtrtMetaJSON `json:"contract"`
 	InitData    Str          `json:"initData"`

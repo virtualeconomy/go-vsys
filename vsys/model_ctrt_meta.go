@@ -287,11 +287,11 @@ type CtrtMetaTextualJSON struct {
 }
 
 func NewCtrtMetaTextualFromBytes(b []byte) (*CtrtMetaTextual, error) {
-	_, err := NewCtrtMetaBytesListFromBytes(b, false)
+	cbl, err := NewCtrtMetaBytesListFromBytes(b, false)
 	if err != nil {
 		return nil, fmt.Errorf("NewCtrtMetaTextualFromBytes: %w", err)
 	}
-	return &CtrtMetaTextual{}, nil
+	return &CtrtMetaTextual{cbl}, nil
 }
 
 func (c *CtrtMetaTextual) Serialize() Bytes {
@@ -328,6 +328,58 @@ type CtrtMeta struct {
 type CtrtMetaJSON struct {
 	CtrtMeta
 	Textual *CtrtMetaTextualJSON `json:"textual"`
+}
+
+func (c *CtrtMetaJSON) GetCtrtMeta() (*CtrtMeta, error) {
+	cm := &c.CtrtMeta
+	l := 3
+	if c.LangVer == 2 {
+		l++
+	} else {
+		c.StateMap = NewEmptyCtrtMetaStateMap()
+	}
+	b := PackUInt16(uint16(l))
+
+	var err error
+	bytes, err := B58Decode(c.Textual.Triggers)
+	if err != nil {
+		return nil, err
+	}
+	litem := PackUInt16(uint16(len(bytes)))
+	b = append(b, litem...)
+	b = append(b, bytes...)
+
+	bytes, err = B58Decode(c.Textual.Descriptors)
+	if err != nil {
+		return nil, err
+	}
+	litem = PackUInt16(uint16(len(bytes)))
+	b = append(b, litem...)
+	b = append(b, bytes...)
+
+	bytes, err = B58Decode(c.Textual.StateVars)
+	if err != nil {
+		return nil, err
+	}
+	litem = PackUInt16(uint16(len(bytes)))
+	b = append(b, litem...)
+	b = append(b, bytes...)
+	
+	if c.LangVer == 2 {
+		bytes, err = B58Decode(c.Textual.StateMap)
+		if err != nil {
+			return nil, err
+		}
+		litem = PackUInt16(uint16(len(bytes)))
+		b = append(b, litem...)
+		b = append(b, bytes...)
+	}
+
+	cm.Textual, err = NewCtrtMetaTextualFromBytes(b)
+	if err != nil {
+		return nil, err
+	}
+	return cm, nil
 }
 
 func NewCtrtMeta(b []byte) (*CtrtMeta, error) {
@@ -561,8 +613,11 @@ func (c *CtrtMeta) Serialize() Bytes {
 		c.Triggers.Size() +
 		c.Descriptors.Size() +
 		c.StateVars.Size() +
-		c.StateMap.Size() +
 		c.Textual.Size()
+
+	if c.LangVer != 1 {
+		size += c.StateMap.Size()
+	}
 
 	b := make([]byte, 0, size)
 
