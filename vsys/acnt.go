@@ -231,6 +231,26 @@ func (a *Account) CancelLease(txId string) (*BroadcastCancelLeaseTxResp, error) 
 	return resp, nil
 }
 
+// DbPutByteArray Performs db put operation on vsys chain assuming that data is ByteArray type.
+func (a *Account) DbPutByteArray(dbKey string, data string) (*BroadcastPutDbTxResp, error) {
+	d := NewDbPutByteArray(data)
+	tsMd := NewVSYSTimestampForNow()
+
+	txReq := NewDbPutTxReq(DBPutKey(dbKey), d, tsMd, FEE_DBPUT)
+
+	payload, err := txReq.BroadcastDbPutPayload(a.PriKey, a.PubKey)
+	if err != nil {
+		return nil, fmt.Errorf("DbPutByteArray: %w", err)
+	}
+
+	resp, err := a.API().BroadcastDbPut(payload)
+	if err != nil {
+		return nil, fmt.Errorf("DbPutByteArray: %w", err)
+	}
+
+	return resp, nil
+}
+
 func (a *Account) RegisterCtrt(txReq *RegCtrtTxReq) (*BroadcastRegisterTxResp, error) {
 	payload, err := txReq.BroadcastRegisterPayload(a.PriKey, a.PubKey)
 	if err != nil {
