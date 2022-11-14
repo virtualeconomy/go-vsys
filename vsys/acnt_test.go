@@ -109,7 +109,7 @@ func Test_Account_DbPutAndDbGet(t *testing.T) {
 	const key = "func_test"
 	const data = "test_data"
 
-	resp, err := testAcnt0.DbPutByteArray(key, data)
+	resp, err := testAcnt0.DbPut(key, data)
 	if err != nil {
 		t.Fatal(err)
 	}
