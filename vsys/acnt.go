@@ -231,8 +231,9 @@ func (a *Account) CancelLease(txId string) (*BroadcastCancelLeaseTxResp, error) 
 	return resp, nil
 }
 
-// DbPutByteArray Performs db put operation on vsys chain assuming that data is ByteArray type.
-func (a *Account) DbPutByteArray(dbKey string, data string) (*BroadcastPutDbTxResp, error) {
+// DbPut performs db put operation on vsys chain assuming that data is ByteArray type.
+// Don't have any specific data type selection for now.
+func (a *Account) DbPut(dbKey string, data string) (*BroadcastPutDbTxResp, error) {
 	d := NewDbPutByteArray(data)
 	tsMd := NewVSYSTimestampForNow()
 
