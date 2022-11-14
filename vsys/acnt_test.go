@@ -103,5 +103,22 @@ func Test_Account_LeaseAndCancelLease(t *testing.T) {
 		t.Fatal(err)
 	}
 	require.Equal(t, effBalLease+amount-FEE_LEASING_CANCEL, effBalCancel)
+}
 
+func Test_Account_DbPutAndDbGet(t *testing.T) {
+	const key = "func_test"
+	const data = "test_data"
+
+	resp, err := testAcnt0.DbPutByteArray(key, data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitForBlock()
+	assertTxSuccess(t, resp.Id.Str())
+
+	resp2, err := testAcnt0.API().GetDB(testAcnt0.Addr.B58Str().Str(), key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	require.Equal(t, data, resp2.Data)
 }
