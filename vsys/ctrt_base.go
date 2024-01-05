@@ -29,7 +29,7 @@ type BaseTokCtrt interface {
 
 // GetCtrtFromTokId returns instance of token contract corresponding to given tokenId
 func GetCtrtFromTokId(tokId *TokenId, chain *Chain) (BaseTokCtrt, error) {
-	// Check if token id is vsys sytem contract
+	// Check if token id is vsys system contract
 	sysCtrt := NewSysCtrt(chain)
 	sysCtrtTokId, err := sysCtrt.TokId()
 	if err != nil {
