@@ -15,6 +15,16 @@ const (
 	TESTNET_CTRT_ID = "CF9Nd9wvQ8qVsGk8jYHbj6sf8TK7MJ2GYgt"
 )
 
+// NewSysCtrt returns the SysCtrt instance.
+func NewSysCtrt(ch *Chain) *SysCtrt {
+	if ch.ChainID == MAIN_NET {
+		return NewSysCtrtForMainnet(ch)
+	} else if ch.ChainID == TEST_NET {
+		return NewSysCtrtForTestnet(ch)
+	}
+	return nil
+}
+
 // NewSysCtrtForMainnet returns the SysCtrt instance for mainnet.
 func NewSysCtrtForMainnet(ch *Chain) *SysCtrt {
 	// No need to test for error since we set b58string
